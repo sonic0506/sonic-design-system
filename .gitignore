@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.tgz
+.next/
+next-env.d.ts
+.DS_Store
+fixtures/*/package-lock.json

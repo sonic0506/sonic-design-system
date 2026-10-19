@@ -1,0 +1,62 @@
+{
+  "name": "@xonic0506/sonic-ui",
+  "version": "0.1.0",
+  "description": "Figma-first personal design system (Base UI + Tailwind v4, prebuilt CSS)",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./tailwind.css": "./dist/tailwind.css",
+    "./DESIGN.md": "./DESIGN.md",
+    "./AI-RULES.md": "./AI-RULES.md",
+    "./eslint-design-rules": "./lint/design-rules.js"
+  },
+  "files": [
+    "dist",
+    "lint",
+    "DESIGN.md",
+    "AI-RULES.md"
+  ],
+  "scripts": {
+    "tokens": "node scripts/build-tokens.mjs",
+    "build:css": "node scripts/build-css.mjs",
+    "build:js": "vite build && tsc -p tsconfig.build.json",
+    "build": "rm -rf dist && npm run tokens && npm run build:js && npm run build:css",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "playground": "vite --config playground/vite.config.ts",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.9.0",
+    "class-variance-authority": "^0.7.1",
+    "tailwind-merge": "^3.7.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "jsdom": "^30.1.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  }
+}

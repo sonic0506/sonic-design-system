@@ -1,0 +1,57 @@
+/* 생성물: scripts/build-tokens.mjs. 손으로 수정 금지 (원본: Figma → scripts/figma-tokens.json) */
+/* Tailwind v4 @theme 매핑. sn 토큰을 Tailwind 클래스 이름으로 연결해요 (bg-primary, text-muted, rounded-md, text-body …).
+   inline reference: 클래스가 var(--sn-*)를 직접 참조하고, Tailwind 테마 변수는 따로 출력하지 않음 */
+@theme inline reference {
+  --spacing: var(--sn-space-1);
+  --radius-sm: var(--sn-radius-sm);
+  --radius-md: var(--sn-radius-md);
+  --radius-lg: var(--sn-radius-lg);
+  --radius-full: var(--sn-radius-full);
+  --ease-standard: var(--sn-easing-standard);
+  --font-sans: var(--sn-font-sans);
+  --font-mono: var(--sn-font-mono);
+  --text-display: var(--sn-text-display);
+  --text-display--line-height: var(--sn-text-display--line-height);
+  --text-display--font-weight: var(--sn-text-display--font-weight);
+  --text-display--letter-spacing: var(--sn-text-display--letter-spacing);
+  --text-title: var(--sn-text-title);
+  --text-title--line-height: var(--sn-text-title--line-height);
+  --text-title--font-weight: var(--sn-text-title--font-weight);
+  --text-title--letter-spacing: var(--sn-text-title--letter-spacing);
+  --text-body: var(--sn-text-body);
+  --text-body--line-height: var(--sn-text-body--line-height);
+  --text-body--font-weight: var(--sn-text-body--font-weight);
+  --text-body--letter-spacing: var(--sn-text-body--letter-spacing);
+  --text-body-strong: var(--sn-text-body-strong);
+  --text-body-strong--line-height: var(--sn-text-body-strong--line-height);
+  --text-body-strong--font-weight: var(--sn-text-body-strong--font-weight);
+  --text-body-strong--letter-spacing: var(--sn-text-body-strong--letter-spacing);
+  --text-label: var(--sn-text-label);
+  --text-label--line-height: var(--sn-text-label--line-height);
+  --text-label--font-weight: var(--sn-text-label--font-weight);
+  --text-label--letter-spacing: var(--sn-text-label--letter-spacing);
+  --text-caption: var(--sn-text-caption);
+  --text-caption--line-height: var(--sn-text-caption--line-height);
+  --text-caption--font-weight: var(--sn-text-caption--font-weight);
+  --text-caption--letter-spacing: var(--sn-text-caption--letter-spacing);
+  --background-color-canvas: var(--sn-color-bg-canvas);
+  --background-color-surface: var(--sn-color-bg-surface);
+  --background-color-subtle: var(--sn-color-bg-subtle);
+  --background-color-primary: var(--sn-color-bg-primary);
+  --background-color-primary-hover: var(--sn-color-bg-primary-hover);
+  --background-color-danger: var(--sn-color-bg-danger);
+  --background-color-overlay: var(--sn-color-bg-overlay);
+  --text-color-default: var(--sn-color-text-default);
+  --text-color-muted: var(--sn-color-text-muted);
+  --text-color-on-primary: var(--sn-color-text-on-primary);
+  --text-color-on-danger: var(--sn-color-text-on-danger);
+  --text-color-danger: var(--sn-color-text-danger);
+  --border-color-default: var(--sn-color-border-default);
+  --outline-color-default: var(--sn-color-border-default);
+  --border-color-strong: var(--sn-color-border-strong);
+  --outline-color-strong: var(--sn-color-border-strong);
+  --border-color-focus: var(--sn-color-border-focus);
+  --outline-color-focus: var(--sn-color-border-focus);
+  --border-color-danger: var(--sn-color-border-danger);
+  --outline-color-danger: var(--sn-color-border-danger);
+}

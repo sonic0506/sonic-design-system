@@ -1,0 +1,99 @@
+/* 생성물: scripts/build-tokens.mjs. 손으로 수정 금지 (원본: Figma → scripts/figma-tokens.json) */
+:root {
+  --sn-space-0: 0px;
+  --sn-space-1: 4px;
+  --sn-space-2: 8px;
+  --sn-space-3: 12px;
+  --sn-space-4: 16px;
+  --sn-space-5: 20px;
+  --sn-space-6: 24px;
+  --sn-space-7: 28px;
+  --sn-space-8: 32px;
+  --sn-space-10: 40px;
+  --sn-space-12: 48px;
+  --sn-space-16: 64px;
+  --sn-radius-sm: 2px;
+  --sn-radius-md: 4px;
+  --sn-radius-lg: 6px;
+  --sn-radius-full: 9999px;
+  --sn-stroke-default: 1px;
+  --sn-stroke-focus: 2px;
+  --sn-duration-fast: 120ms;
+  --sn-duration-normal: 200ms;
+  --sn-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --sn-opacity-disabled: 0.45;
+  --sn-font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --sn-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sn-text-display: 32px;
+  --sn-text-display--line-height: 40px;
+  --sn-text-display--font-weight: 600;
+  --sn-text-display--letter-spacing: -0.02em;
+  --sn-text-title: 20px;
+  --sn-text-title--line-height: 28px;
+  --sn-text-title--font-weight: 600;
+  --sn-text-title--letter-spacing: -0.01em;
+  --sn-text-body: 14px;
+  --sn-text-body--line-height: 20px;
+  --sn-text-body--font-weight: 400;
+  --sn-text-body--letter-spacing: 0em;
+  --sn-text-body-strong: 14px;
+  --sn-text-body-strong--line-height: 20px;
+  --sn-text-body-strong--font-weight: 500;
+  --sn-text-body-strong--letter-spacing: 0em;
+  --sn-text-label: 13px;
+  --sn-text-label--line-height: 16px;
+  --sn-text-label--font-weight: 500;
+  --sn-text-label--letter-spacing: 0em;
+  --sn-text-caption: 12px;
+  --sn-text-caption--line-height: 16px;
+  --sn-text-caption--font-weight: 400;
+  --sn-text-caption--letter-spacing: 0em;
+  --sn-text-mono: 14px;
+  --sn-text-mono--line-height: 20px;
+  --sn-text-mono--font-weight: 400;
+  --sn-text-mono--letter-spacing: 0em;
+  --sn-text-mono-caption: 12px;
+  --sn-text-mono-caption--line-height: 16px;
+  --sn-text-mono-caption--font-weight: 400;
+  --sn-text-mono-caption--letter-spacing: 0em;
+}
+
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --sn-color-bg-canvas: #F4F6F8;
+  --sn-color-bg-surface: #FFFFFF;
+  --sn-color-bg-subtle: #E6EAEE;
+  --sn-color-bg-primary: #2340D0;
+  --sn-color-bg-primary-hover: #1B33AE;
+  --sn-color-bg-danger: #C8312B;
+  --sn-color-bg-overlay: #0E121680;
+  --sn-color-text-default: #0E1216;
+  --sn-color-text-muted: #5B6672;
+  --sn-color-text-on-primary: #FFFFFF;
+  --sn-color-text-on-danger: #FFFFFF;
+  --sn-color-text-danger: #C8312B;
+  --sn-color-border-default: #D5DBE1;
+  --sn-color-border-strong: #8D99A6;
+  --sn-color-border-focus: #2340D0;
+  --sn-color-border-danger: #C8312B;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --sn-color-bg-canvas: #0E1216;
+  --sn-color-bg-surface: #161B21;
+  --sn-color-bg-subtle: #1E252D;
+  --sn-color-bg-primary: #6E86FF;
+  --sn-color-bg-primary-hover: #8C9FFF;
+  --sn-color-bg-danger: #F06A5F;
+  --sn-color-bg-overlay: #0E121680;
+  --sn-color-text-default: #E6EAEE;
+  --sn-color-text-muted: #8D99A6;
+  --sn-color-text-on-primary: #0E1216;
+  --sn-color-text-on-danger: #0E1216;
+  --sn-color-text-danger: #F06A5F;
+  --sn-color-border-default: #2A323B;
+  --sn-color-border-strong: #5B6672;
+  --sn-color-border-focus: #6E86FF;
+  --sn-color-border-danger: #F06A5F;
+}

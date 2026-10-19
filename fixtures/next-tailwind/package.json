@@ -1,18 +1,21 @@
 {
   "name": "fixture-next-tailwind",
   "private": true,
-  "scripts": { "build": "next build", "start": "next start -p 5182" },
+  "scripts": {
+    "build": "next build",
+    "start": "next start -p 5182"
+  },
   "dependencies": {
-    "@xonic0506/sonic-ui": "file:../xonic0506-sonic-ui-0.1.0.tgz",
+    "@xonic0506/sonic-ui": "^0.1.0",
     "next": "16.4.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",
-    "tailwindcss": "4.3.3",
-    "typescript": "^5",
+    "@types/node": "^22",
     "@types/react": "^19",
-    "@types/node": "^22"
+    "tailwindcss": "4.3.3",
+    "typescript": "^5"
   }
 }

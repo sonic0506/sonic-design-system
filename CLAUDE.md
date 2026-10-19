@@ -32,5 +32,5 @@ Figma(원본, fileKey `XifnZsjqJWJqFmAmrM6p3u`) → DESIGN.md(규칙) → 코드
 
 ## 검증 도구
 
-- `fixtures/vite-plain`, `fixtures/next-tailwind`: `npm pack` 결과를 설치해 확인하는 쓰는 쪽 예제예요(`.claude/launch.json`에 실행 설정).
+- `fixtures/vite-plain`, `fixtures/next-tailwind`: 쓰는 쪽 예제예요. 배포 전에는 `"file:../<npm pack 결과>.tgz"`로, 배포 후에는 npm 버전으로 설치해 확인해요(`.claude/launch.json`에 실행 설정).
 - `explorations/`: 1단계 디자인 시안. 참고용이고 패키지에 들어가지 않아요.

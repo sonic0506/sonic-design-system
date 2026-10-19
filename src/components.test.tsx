@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
+  EmptyState, ErrorState, Field, Skeleton,
   Avatar, Button, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
 } from './index';
 
@@ -99,5 +100,57 @@ describe('Dialog', () => {
     expect(await screen.findByRole('dialog', { name: '새 API 키' })).toBeInTheDocument();
     await user.keyboard('{Escape}');
     await vi.waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+  });
+});
+
+describe('Button loading', () => {
+  it('aria-busy가 붙고 클릭은 막히지만 포커스는 유지됨', async () => {
+    const onClick = vi.fn();
+    render(<Button loading onClick={onClick}>저장</Button>);
+    const btn = screen.getByRole('button', { name: '저장' });
+    expect(btn).toHaveAttribute('aria-busy', 'true');
+    expect(btn).toHaveAttribute('data-loading');
+    await userEvent.click(btn);
+    expect(onClick).not.toHaveBeenCalled();
+    btn.focus();
+    expect(btn).toHaveFocus();
+  });
+});
+
+describe('Field', () => {
+  it('invalid면 에러가 보이고 Input과 연결됨, 아니면 에러를 숨김', () => {
+    const { rerender } = render(<Field label="이메일" description="로그인할 때 써요." error="형식이 달라요" invalid><Input /></Field>);
+    const input = screen.getByRole('textbox', { name: '이메일' });
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAttribute('data-invalid');
+    const error = screen.getByText('형식이 달라요');
+    expect(input.getAttribute('aria-describedby')).toContain(error.id);
+    rerender(<Field label="이메일" error="형식이 달라요"><Input /></Field>);
+    expect(screen.queryByText('형식이 달라요')).not.toBeInTheDocument();
+  });
+});
+
+describe('Skeleton', () => {
+  it('스크린 리더에 숨기고 shape 클래스를 붙임', () => {
+    const { container } = render(<Skeleton shape="circle" />);
+    const el = container.firstElementChild!;
+    expect(el).toHaveAttribute('aria-hidden', 'true');
+    expect(el).toHaveClass('sn:size-8', 'sn:rounded-full');
+  });
+});
+
+describe('EmptyState / ErrorState', () => {
+  it('EmptyState는 제목과 행동 버튼을 보여 줌', () => {
+    render(<EmptyState title="API 키가 없어요" action={<Button>API 키 만들기</Button>} />);
+    expect(screen.getByText('API 키가 없어요')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'API 키 만들기' })).toBeInTheDocument();
+  });
+
+  it('ErrorState는 alert이고 다시 시도를 누르면 onRetry 호출', async () => {
+    const onRetry = vi.fn();
+    render(<ErrorState title="불러오지 못했어요" onRetry={onRetry} />);
+    expect(screen.getByRole('alert')).toHaveTextContent('불러오지 못했어요');
+    await userEvent.click(screen.getByRole('button', { name: '다시 시도' }));
+    expect(onRetry).toHaveBeenCalledOnce();
   });
 });

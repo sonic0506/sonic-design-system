@@ -29,7 +29,8 @@ Foundations, Core, Patterns 페이지는 읽는 사람을 위한 문서예요. �
 - 원본 컴포넌트는 Core 페이지 `Source components` 프레임에 둬요. 옮길 때 ID가 바뀌지 않게 해요(DESIGN.md §11 매핑표가 node id를 참조함).
 - 인스턴스를 `rescale`하지 않아요. 글자 크기가 바뀌어 텍스트 스타일 연결이 끊겨요.
 - 문서를 고친 뒤에는 하드코딩 감사(fill, stroke, padding, gap, radius, opacity, 텍스트 스타일 바인딩)를 실행해서 0건인지 확인해요. 단, `Icon /` 컴포넌트 안 벡터의 선 두께(Lucide 원본 2)는 감사에서 제외해요.
-- 아이콘 추가: 공식 `lucide-static` SVG(설치된 `lucide-react`와 같은 버전)를 `createNodeFromSvg`로 가져와 24×24 `Icon / <lucide 이름>` 컴포넌트로 만들고, 선 색을 `color/text/default`에 바인딩해요. Foundations `Source icons`에 넣고 04 Icon 문서의 Set에도 추가해요.
+- 아이콘 추가: 공식 `lucide-static` SVG(설치된 `lucide-react`와 같은 버전)를 `createNodeFromSvg`로 가져와 24×24 `Icon / <lucide 이름>` 컴포넌트로 만들고, **벡터를 `Icon`이라는 레이어 하나로 합쳐요(flatten)**. 선 색은 `color/text/default`에 바인딩해요. 모든 아이콘의 레이어 구조가 같아야 버튼 안에서 아이콘을 교체해도 색 지정(on-primary 등)이 유지돼요.
+- 스크립트로 instance swap 속성을 지정할 때 기본값과 같은 아이콘을 다시 넣지 않아요. Figma가 안쪽 색 지정을 초기화해요. 바꿀 때만 지정해요. Foundations `Source icons`에 넣고 04 Icon 문서의 Set에도 추가해요.
 
 ## Pattern 승격 기준
 

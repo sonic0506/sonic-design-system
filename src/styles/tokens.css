@@ -21,6 +21,7 @@
   --sn-duration-fast: 120ms;
   --sn-duration-normal: 200ms;
   --sn-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --sn-duration-loop: 1000ms;
   --sn-opacity-disabled: 0.45;
   --sn-font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --sn-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;

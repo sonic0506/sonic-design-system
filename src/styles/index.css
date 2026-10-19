@@ -6,3 +6,11 @@
 @import "./theme.css";
 
 @source "../components";
+
+/* 반복 애니메이션 (duration/loop). 사용처에서 motion-reduce일 때 끔 */
+@keyframes sn-pulse {
+  50% { opacity: 0.5; }
+}
+@keyframes sn-spin {
+  to { transform: rotate(360deg); }
+}

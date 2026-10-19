@@ -110,18 +110,18 @@ Figma Variable 이름이 그대로 CSS 변수가 돼요. `/`는 `-`로 바꾸고
 | 항목 | 규칙 |
 |---|---|
 | 이름 | Lucide 이름 그대로. Figma `Icon / chevron-down` = 코드 `<ChevronDown />` |
-| 크기 | `space/4` 16 (버튼 sm·md, 입력란 안, 본문 옆) · `space/5` 20 (버튼 lg) · `space/6` 24 (아이콘만 있는 버튼, 빈 상태) |
+| 크기 | `space/4` 16 (버튼 sm·md·icon-sm·icon-md, 입력란 안, 본문 옆) · `space/5` 20 (버튼 lg·icon-lg) · `space/6` 24 (빈 상태처럼 아이콘이 주인공일 때) |
 | 선 두께 | Lucide 기본 2 (24 기준). 크기에 비례해 줄어요. `absoluteStrokeWidth`는 쓰지 않아요. Figma에서는 Scale(K)로 줄여요 |
 | 색 | `currentColor`. 주변 글자색 토큰을 따라가요. 아이콘에만 다른 색을 줄 때도 text 토큰만 써요 |
 | 접근성 | 글자와 함께 쓰면 장식이라 숨겨요(lucide-react 기본 `aria-hidden`). 아이콘만 있는 버튼은 `aria-label`을 꼭 달아요 |
 | 추가 | 새 아이콘이 필요하면 Lucide에서 가져와 Figma `Icon /` 컴포넌트로 추가하고, 이 표 규칙을 따라요. 다른 아이콘 세트는 섞지 않아요 |
 
-Button 안에 넣은 아이콘은 크기가 자동으로 맞춰져요(sm·md 16, lg 20). 아이콘과 글자 사이 간격은 `space/2`예요.
+Button 안에 넣은 아이콘은 크기가 자동으로 맞춰져요(sm·md 16, lg 20). 아이콘과 글자 사이 간격은 `space/2`예요. 아이콘은 글자 앞(left), 뒤(right), 양쪽(both)에 둘 수 있고, 뒤쪽 아이콘은 펼침(chevron)이나 외부 링크처럼 결과를 알려 줄 때만 써요. 아이콘만 있는 버튼은 `size="icon-*"`를 써요(§10 Button).
 
 ```tsx
 import { Plus } from 'lucide-react';
 <Button><Plus />API 키 만들기</Button>
-<Button variant="ghost" aria-label="더 보기"><Ellipsis /></Button>
+<Button size="icon-md" variant="ghost" aria-label="더 보기"><Ellipsis /></Button>
 ```
 
 ## 4. Auto layout 규칙 (Figma)
@@ -242,15 +242,23 @@ Figma Core 페이지의 컴포넌트 속성 이름 = React props 이름이에요
 | prop | 값 | 기본값 |
 |---|---|---|
 | `variant` | `primary` · `secondary` · `ghost` · `danger` | `primary` |
-| `size` | `sm` · `md` · `lg` | `md` |
+| `size` | `sm` · `md` · `lg` · `icon-sm` · `icon-md` · `icon-lg` | `md` |
 | `disabled` | boolean | `false` |
-| `children` | 버튼 문구 | — |
+| `children` | 버튼 문구. 아이콘은 문구 앞뒤에 lucide 컴포넌트로 넣음 | — |
+| `aria-label` | icon 크기일 때 **필수** (타입으로 강제) | — |
 
 | | sm | md | lg |
 |---|---|---|---|
 | 높이 | `space/7` (28) | `space/8` (32) | `space/10` (40) |
 | 좌우 padding | `space/2` | `space/3` | `space/4` |
 | 글자 | `label` | `body-strong` | `body-strong` |
+| 아이콘 | 16 | 16 | 20 |
+
+| | icon-sm | icon-md | icon-lg |
+|---|---|---|---|
+| 크기 (정사각형) | `space/7` (28) | `space/8` (32) | `space/10` (40) |
+| padding | 0 | 0 | 0 |
+| 아이콘 | 16 | 16 | 20 |
 
 | variant | 바탕 | 글자 | 테두리 | hover |
 |---|---|---|---|---|
@@ -335,6 +343,7 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Figma 컴포넌트 (Core 페이지) | node id | 코드 | 파일 |
 |---|---|---|---|
 | Button | `5:52` | `<Button variant size disabled>` | `src/components/button.tsx` |
+| Button Icon | `23:2294` | `<Button size="icon-*" variant disabled aria-label>` + 아이콘 자식 | `src/components/button.tsx` |
 | Input | `5:61` | `<Input invalid disabled placeholder>` | `src/components/input.tsx` |
 | Text | `5:110` | `<Text variant tone as>` | `src/components/text.tsx` |
 | Avatar | `5:117` | `<Avatar size src alt fallback>` | `src/components/avatar.tsx` |
@@ -342,4 +351,4 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Dialog | `6:13` | `Dialog`, `DialogTrigger`, `DialogPopup`, `DialogTitle`, `DialogDescription`, `DialogClose`, `DialogFooter` | `src/components/dialog.tsx` |
 | Icon (32개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
-Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요.
+Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

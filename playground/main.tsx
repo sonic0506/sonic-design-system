@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import '../dist/styles.css';
-import { Download, Ellipsis, Plus, Search } from 'lucide-react';
+import { ChevronDown, Download, Ellipsis, Plus, Search, Settings, Trash2 } from 'lucide-react';
 import {
   Avatar, Button, Card, CardBody, CardDescription, CardFooter, CardHeader, CardTitle,
   Dialog, DialogClose, DialogDescription, DialogFooter, DialogPopup, DialogTitle, DialogTrigger, Input, Text, type TextVariant,
@@ -28,12 +28,15 @@ function App() {
         <div id="texts" className={panel} style={{ width: 480 }}>
           {textVariants.flatMap(v => tones.map(t => <Text key={v + t} variant={v} tone={t}>{v}</Text>))}
         </div>
-        <div id="icons" className={panel}>
-          <Button size="sm"><Plus />추가</Button>
-          <Button><Plus />API 키 만들기</Button>
-          <Button size="lg" variant="secondary"><Download />내보내기</Button>
-          <Button variant="ghost" aria-label="더 보기"><Ellipsis /></Button>
-          <Text tone="muted"><Search size={16} style={{ verticalAlign: 'middle' }} /> 본문 옆 아이콘</Text>
+        <div id="icons" className={panel} style={{ width: 560 }}>
+          <Button size="sm"><Plus />추가하기</Button>
+          <Button variant="secondary">정렬<ChevronDown /></Button>
+          <Button size="lg"><Download />내보내기<ChevronDown /></Button>
+          <Button size="icon-sm" aria-label="추가"><Plus /></Button>
+          <Button size="icon-md" variant="secondary" aria-label="설정"><Settings /></Button>
+          <Button size="icon-md" variant="ghost" aria-label="더 보기"><Ellipsis /></Button>
+          <Button size="icon-lg" variant="danger" aria-label="삭제"><Trash2 /></Button>
+          <Text tone="muted"><Search size={16} /> 본문 옆 아이콘</Text>
         </div>
         <div id="avatars" className={panel}>
           {sizes.map(s => <Avatar key={s} size={s} fallback="HP" />)}

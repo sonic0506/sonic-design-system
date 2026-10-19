@@ -32,6 +32,21 @@ describe('Button 아이콘', () => {
   });
 });
 
+describe('Button icon 크기', () => {
+  it('정사각형이고 padding이 없음', () => {
+    render(<Button size="icon-md" variant="ghost" aria-label="더 보기"><svg aria-hidden /></Button>);
+    const btn = screen.getByRole('button', { name: '더 보기' });
+    expect(btn).toHaveClass('sn:size-8', 'sn:p-0', 'sn:[&_svg]:size-4');
+    expect(btn).not.toHaveClass('sn:h-8');
+  });
+
+  it('aria-label이 없으면 타입 에러', () => {
+    // @ts-expect-error icon 크기에는 aria-label이 필수
+    const el = <Button size="icon-sm"><svg /></Button>;
+    expect(el).toBeTruthy();
+  });
+});
+
 describe('Input', () => {
   it('invalid면 aria-invalid가 붙고 focus 링이 danger 색', () => {
     render(<Input invalid placeholder="이메일" />);

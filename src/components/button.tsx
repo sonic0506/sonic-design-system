@@ -17,19 +17,26 @@ const buttonVariants = cva(
         sm: 'sn:h-7 sn:px-2 sn:text-label sn:[&_svg]:size-4',
         md: 'sn:h-8 sn:px-3 sn:text-body-strong sn:[&_svg]:size-4',
         lg: 'sn:h-10 sn:px-4 sn:text-body-strong sn:[&_svg]:size-5',
+        // 아이콘만 있는 정사각형 버튼
+        'icon-sm': 'sn:size-7 sn:p-0 sn:[&_svg]:size-4',
+        'icon-md': 'sn:size-8 sn:p-0 sn:[&_svg]:size-4',
+        'icon-lg': 'sn:size-10 sn:p-0 sn:[&_svg]:size-5',
       },
     },
     defaultVariants: { variant: 'primary', size: 'md' },
   },
 );
 
-export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
+interface ButtonBaseProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
   className?: string;
   /** 다른 요소로 렌더링할 때 (예: render={<a href="/" />}) */
   render?: React.ReactElement;
 }
+
+/** 아이콘만 있는 버튼은 읽을 글자가 없어서 aria-label이 필수예요 */
+export type ButtonProps = ButtonBaseProps &
+  ({ size?: 'sm' | 'md' | 'lg' } | { size: 'icon-sm' | 'icon-md' | 'icon-lg'; 'aria-label': string });
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   { variant, size, className, render, ...props },

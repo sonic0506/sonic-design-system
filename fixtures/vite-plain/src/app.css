@@ -1,0 +1,8 @@
+/* 쓰는 쪽 CSS (layer 없음). Tailwind 없이 sonic-ui를 쓰는 경우 */
+body { margin: 0; padding: 24px; background: var(--sn-color-bg-canvas); font-family: var(--sn-font-sans); }
+#root { isolation: isolate; display: grid; gap: 16px; }
+/* 충돌 확인: 쓰는 쪽에 같은 이름의 클래스가 있어도 sonic-ui(sn: 접두사)에는 영향이 없어야 함 */
+.inline-flex { display: block; }
+.bg-primary { background: lime; }
+/* className 덮어쓰기 확인 */
+.my-btn { background: hotpink; color: black; }

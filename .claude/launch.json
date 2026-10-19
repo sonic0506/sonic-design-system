@@ -1,0 +1,8 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "fixture-vite-plain", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "fixtures/vite-plain", "run", "dev"], "port": 5181 },
+    { "name": "fixture-next-tailwind", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "fixtures/next-tailwind", "run", "start"], "port": 5182 },
+    { "name": "playground", "runtimeExecutable": "npm", "runtimeArgs": ["run", "playground"], "port": 5180 }
+  ]
+}

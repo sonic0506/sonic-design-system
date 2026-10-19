@@ -1,0 +1,7 @@
+/* README의 권장 설정: sonic은 preflight(base)보다 위, 쓰는 쪽 components/utilities보다 아래 */
+@layer theme, base, sonic, components, utilities;
+@import "tailwindcss";
+@import "@xonic0506/sonic-ui/styles.css";
+@import "@xonic0506/sonic-ui/tailwind.css";
+
+/* 충돌 확인용: 쓰는 쪽에도 같은 이름 유틸리티가 생성됨 */

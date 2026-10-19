@@ -150,7 +150,7 @@ import { Plus } from 'lucide-react';
 | 제목 ↔ 바로 아래 설명 | `space/1` |
 
 - 버튼 묶음은 오른쪽 정렬이고, 보조 버튼이 왼쪽, primary가 맨 오른쪽이에요. Dialog Footer도 같아요.
-- 에러 상태: 입력란 테두리를 `color/border/danger`로 바꾸고, 입력란 바로 아래에 `caption` + `color/text/danger`로 고치는 방법을 씁니다. 라벨 색은 바꾸지 않아요. 이 묶음은 **Field 컴포넌트**가 처리해요(§10).
+- 에러 상태: 입력란 테두리를 `color/border/danger`로 바꾸고, 입력란 바로 아래(설명 자리)에 `caption` + `color/text/danger`로 고치는 방법을 씁니다. 설명은 숨겨요. 라벨 색은 바꾸지 않아요. 이 묶음은 **Field 컴포넌트**가 처리해요(§10).
 - 문구는 한국어 해요체예요. 취소 버튼은 "취소"로 충분해요. 무엇을 취소하는지는 바로 옆 primary 버튼 문구가 알려 줘요.
 - Avatar 이니셜은 이름에서 1~2글자를 써요(한글은 이름 첫 글자, 영문은 이름·성 첫 글자).
 
@@ -361,11 +361,13 @@ radius `radius/full`, 바탕 `bg/subtle`, fallback 글자 `text/muted`. 이미�
 |---|---|
 | `label` | 라벨 문구 (필수) |
 | `description` | 설명 문구 (선택) |
-| `error` | 에러 문구. `invalid`일 때만 보여요 |
+| `error` | 에러 문구. `invalid`일 때만 보이고, 그때는 **설명 자리를 대신해요** |
 | `invalid`, `disabled` | boolean. 안의 Input에 자동으로 전달돼요 (Base UI Field) |
 | `children` | 입력 컨트롤 (지금은 `Input`) |
 
-간격: 라벨 ↔ 입력 ↔ 설명·에러 `space/2`. 라벨 `label` + `text/default`(invalid여도 그대로), 설명 `caption` + `text/muted`, 에러 `caption` + `text/danger`. **Field 안의 Input에는 `invalid`를 따로 주지 않아요.** 입력 컨트롤과 설명·에러는 `aria-describedby`로 연결돼요.
+간격: 라벨 ↔ 입력 ↔ 설명·에러 `space/2`. 라벨 `label` + `text/default`(invalid여도 그대로), 설명 `caption` + `text/muted`, 에러 `caption` + `text/danger`. **Field 안의 Input에는 `invalid`를 따로 주지 않아요.** 입력 컨트롤과 설명 또는 에러는 `aria-describedby`로 연결돼요.
+
+에러는 설명과 함께 보이지 않고 **설명을 대신해요**(Material, Carbon, Spectrum과 같은 방식). 아래 줄이 늘어나지 않아 레이아웃이 밀리지 않고, 화면 낭독기도 에러 하나만 읽어요. 설명에 있던 형식 안내는 에러 문구가 대신 전해야 하니, 에러 문구에는 고치는 방법을 꼭 써요(§5).
 
 ### Skeleton
 

@@ -118,14 +118,34 @@ describe('Button loading', () => {
 });
 
 describe('Field', () => {
-  it('invalid면 에러가 보이고 Input과 연결됨, 아니면 에러를 숨김', () => {
-    const { rerender } = render(<Field label="이메일" description="로그인할 때 써요." error="형식이 달라요" invalid><Input /></Field>);
+  it('invalid면 에러가 설명 자리를 대신하고 Input과 연결됨', () => {
+    render(<Field label="이메일" description="로그인할 때 써요." error="형식이 달라요" invalid><Input /></Field>);
     const input = screen.getByRole('textbox', { name: '이메일' });
     expect(input).toHaveAttribute('aria-invalid', 'true');
     expect(input).toHaveAttribute('data-invalid');
     const error = screen.getByText('형식이 달라요');
     expect(input.getAttribute('aria-describedby')).toContain(error.id);
-    rerender(<Field label="이메일" error="형식이 달라요"><Input /></Field>);
+    expect(screen.queryByText('로그인할 때 써요.')).not.toBeInTheDocument();
+  });
+
+  it('invalid가 켜졌다 꺼져도 aria-describedby가 보이는 문구만 가리킴', () => {
+    const ui = (invalid: boolean) => <Field label="이메일" description="로그인할 때 써요." error="형식이 달라요" invalid={invalid}><Input /></Field>;
+    const { rerender } = render(ui(false));
+    const input = screen.getByRole('textbox', { name: '이메일' });
+    const descId = screen.getByText('로그인할 때 써요.').id;
+    rerender(ui(true));
+    const errId = screen.getByText('형식이 달라요').id;
+    expect(input.getAttribute('aria-describedby')?.split(' ')).toEqual([errId]);
+    rerender(ui(false));
+    expect(input.getAttribute('aria-describedby')?.split(' ')).toEqual([screen.getByText('로그인할 때 써요.').id]);
+    expect(descId).toBeTruthy();
+  });
+
+  it('invalid가 아니면 설명만 보이고 에러는 숨김', () => {
+    render(<Field label="이메일" description="로그인할 때 써요." error="형식이 달라요"><Input /></Field>);
+    const input = screen.getByRole('textbox', { name: '이메일' });
+    const desc = screen.getByText('로그인할 때 써요.');
+    expect(input.getAttribute('aria-describedby')).toContain(desc.id);
     expect(screen.queryByText('형식이 달라요')).not.toBeInTheDocument();
   });
 });

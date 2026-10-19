@@ -103,6 +103,27 @@ Figma Variable 이름이 그대로 CSS 변수가 돼요. `/`는 `-`로 바꾸고
 | `duration/normal` | 200ms (Dialog 열기/닫기) |
 | `easing/standard` | `cubic-bezier(0.2, 0, 0, 1)` |
 
+### 3.6 아이콘 (Lucide)
+
+아이콘은 [Lucide](https://lucide.dev)만 써요. 쓰는 쪽 프로젝트에서 `lucide-react`를 설치해요. Figma에는 Sonic이 쓰는 아이콘만 `Icon / <이름>` 컴포넌트로 있어요(Foundations › 04 Icon).
+
+| 항목 | 규칙 |
+|---|---|
+| 이름 | Lucide 이름 그대로. Figma `Icon / chevron-down` = 코드 `<ChevronDown />` |
+| 크기 | `space/4` 16 (버튼 sm·md, 입력란 안, 본문 옆) · `space/5` 20 (버튼 lg) · `space/6` 24 (아이콘만 있는 버튼, 빈 상태) |
+| 선 두께 | Lucide 기본 2 (24 기준). 크기에 비례해 줄어요. `absoluteStrokeWidth`는 쓰지 않아요. Figma에서는 Scale(K)로 줄여요 |
+| 색 | `currentColor`. 주변 글자색 토큰을 따라가요. 아이콘에만 다른 색을 줄 때도 text 토큰만 써요 |
+| 접근성 | 글자와 함께 쓰면 장식이라 숨겨요(lucide-react 기본 `aria-hidden`). 아이콘만 있는 버튼은 `aria-label`을 꼭 달아요 |
+| 추가 | 새 아이콘이 필요하면 Lucide에서 가져와 Figma `Icon /` 컴포넌트로 추가하고, 이 표 규칙을 따라요. 다른 아이콘 세트는 섞지 않아요 |
+
+Button 안에 넣은 아이콘은 크기가 자동으로 맞춰져요(sm·md 16, lg 20). 아이콘과 글자 사이 간격은 `space/2`예요.
+
+```tsx
+import { Plus } from 'lucide-react';
+<Button><Plus />API 키 만들기</Button>
+<Button variant="ghost" aria-label="더 보기"><Ellipsis /></Button>
+```
+
 ## 4. Auto layout 규칙 (Figma)
 
 - 자식이 둘 이상인 프레임은 모두 auto layout을 씁니다. 절대 좌표 배치는 쓰지 않아요.
@@ -319,5 +340,6 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Avatar | `5:117` | `<Avatar size src alt fallback>` | `src/components/avatar.tsx` |
 | Card | `6:2` | `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardBody`, `CardFooter` | `src/components/card.tsx` |
 | Dialog | `6:13` | `Dialog`, `DialogTrigger`, `DialogPopup`, `DialogTitle`, `DialogDescription`, `DialogClose`, `DialogFooter` | `src/components/dialog.tsx` |
+| Icon (32개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요.

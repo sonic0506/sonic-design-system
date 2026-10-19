@@ -28,7 +28,8 @@ Foundations, Core, Patterns 페이지는 읽는 사람을 위한 문서예요. �
 - 상호작용이 있는 컴포넌트는 "Interaction states" 섹션(Default / Hover / Focus / Disabled)을 둬요. hover는 코드와 같은 토큰을 인스턴스에 오버라이드하고, focus는 `Focus ring` 프레임(padding·선 두께 = `stroke/focus`, 바깥쪽 선, `radius/lg`)으로 감싸요. 코드의 상태 클래스를 바꾸면 이 섹션도 함께 고쳐요.
 - 원본 컴포넌트는 Core 페이지 `Source components` 프레임에 둬요. 옮길 때 ID가 바뀌지 않게 해요(DESIGN.md §11 매핑표가 node id를 참조함).
 - 인스턴스를 `rescale`하지 않아요. 글자 크기가 바뀌어 텍스트 스타일 연결이 끊겨요.
-- 문서를 고친 뒤에는 하드코딩 감사(fill, stroke, padding, gap, radius, opacity, 텍스트 스타일 바인딩)를 실행해서 0건인지 확인해요.
+- 문서를 고친 뒤에는 하드코딩 감사(fill, stroke, padding, gap, radius, opacity, 텍스트 스타일 바인딩)를 실행해서 0건인지 확인해요. 단, `Icon /` 컴포넌트 안 벡터의 선 두께(Lucide 원본 2)는 감사에서 제외해요.
+- 아이콘 추가: 공식 `lucide-static` SVG(설치된 `lucide-react`와 같은 버전)를 `createNodeFromSvg`로 가져와 24×24 `Icon / <lucide 이름>` 컴포넌트로 만들고, 선 색을 `color/text/default`에 바인딩해요. Foundations `Source icons`에 넣고 04 Icon 문서의 Set에도 추가해요.
 
 ## Pattern 승격 기준
 

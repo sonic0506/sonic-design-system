@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import '../dist/styles.css';
+import { Download, Ellipsis, Plus, Search } from 'lucide-react';
 import {
   Avatar, Button, Card, CardBody, CardDescription, CardFooter, CardHeader, CardTitle,
   Dialog, DialogClose, DialogDescription, DialogFooter, DialogPopup, DialogTitle, DialogTrigger, Input, Text, type TextVariant,
@@ -26,6 +27,13 @@ function App() {
         </div>
         <div id="texts" className={panel} style={{ width: 480 }}>
           {textVariants.flatMap(v => tones.map(t => <Text key={v + t} variant={v} tone={t}>{v}</Text>))}
+        </div>
+        <div id="icons" className={panel}>
+          <Button size="sm"><Plus />추가</Button>
+          <Button><Plus />API 키 만들기</Button>
+          <Button size="lg" variant="secondary"><Download />내보내기</Button>
+          <Button variant="ghost" aria-label="더 보기"><Ellipsis /></Button>
+          <Text tone="muted"><Search size={16} style={{ verticalAlign: 'middle' }} /> 본문 옆 아이콘</Text>
         </div>
         <div id="avatars" className={panel}>
           {sizes.map(s => <Avatar key={s} size={s} fallback="HP" />)}

@@ -22,6 +22,16 @@ describe('Button', () => {
   });
 });
 
+describe('Button 아이콘', () => {
+  it('lg는 아이콘을 20px(size-5)로 맞추고, className으로 덮어쓸 수 있음', () => {
+    render(<><Button size="lg"><svg aria-hidden />내보내기</Button><Button className="sn:[&_svg]:size-6">큰 아이콘</Button></>);
+    expect(screen.getByRole('button', { name: '내보내기' })).toHaveClass('sn:[&_svg]:size-5');
+    const big = screen.getByRole('button', { name: '큰 아이콘' });
+    expect(big).toHaveClass('sn:[&_svg]:size-6');
+    expect(big).not.toHaveClass('sn:[&_svg]:size-4');
+  });
+});
+
 describe('Input', () => {
   it('invalid면 aria-invalid가 붙고 focus 링이 danger 색', () => {
     render(<Input invalid placeholder="이메일" />);

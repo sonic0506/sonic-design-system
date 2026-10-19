@@ -165,7 +165,15 @@ Figma에서도 레이어 이름을 이 이름으로 맞춰요. 예: `Dialog / Ba
 | `highlighted=true` | `[data-highlighted]` (키보드나 hover로 선택된 항목) |
 | `invalid=true` | `[data-invalid]` (Base UI Field) |
 
-hover, focus는 Figma에서 `state=hover`, `state=focus`로 그리고, 코드에서는 CSS의 `:hover`, `:focus-visible`로 처리해요.
+hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 아니라 브라우저가 정하는 상태라서예요.
+
+| 상태 | Figma | 코드 |
+|---|---|---|
+| hover | Core 문서 "Interaction states" 매트릭스에 인스턴스 오버라이드로 그림 | `:hover` (disabled일 때는 적용 안 함) |
+| focus | 같은 매트릭스. 2px `border/focus` 링, 간격 2px | `:focus-visible` → `outline 2px`, `outline-offset 2px` |
+| press | 그리지 않음 | 구현 안 함 (v0.1) |
+
+상태별 토큰은 §10 컴포넌트 스펙 표가 기준이에요. 화면 디자인에서는 hover, focus를 따로 그리지 않아요. 컴포넌트가 자동으로 처리해요.
 
 ## 7. 3계층 판단 기준
 

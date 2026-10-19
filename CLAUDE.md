@@ -25,6 +25,7 @@ Foundations, Core, Patterns 페이지는 읽는 사람을 위한 문서예요. �
 - **Doc Kit 페이지의 컴포넌트로만 만들어요**: `Doc / Page Header`, `Doc / Section`(Content slot), `Doc / Table Header`, `Doc / Table Row`, `Doc / Token Chip`, `Doc / Swatch`.
 - 문서 한 장 = 너비 1240 프레임(이름 `Doc · NN 제목`). Semantic **Dark** 모드를 지정한 canvas 배경 위에 Page Header 1개와 Section 카드(**Light** 모드)를 쌓아요. 새 색이나 문서 전용 토큰은 만들지 않아요.
 - 컴포넌트 문서에는 스펙 표와 상태 × 크기 매트릭스를 넣고, Light/Dark를 함께 보여 줘요. 매트릭스에는 원본 컴포넌트의 **인스턴스**만 놓아요.
+- 상호작용이 있는 컴포넌트는 "Interaction states" 섹션(Default / Hover / Focus / Disabled)을 둬요. hover는 코드와 같은 토큰을 인스턴스에 오버라이드하고, focus는 `Focus ring` 프레임(padding·선 두께 = `stroke/focus`, 바깥쪽 선, `radius/lg`)으로 감싸요. 코드의 상태 클래스를 바꾸면 이 섹션도 함께 고쳐요.
 - 원본 컴포넌트는 Core 페이지 `Source components` 프레임에 둬요. 옮길 때 ID가 바뀌지 않게 해요(DESIGN.md §11 매핑표가 node id를 참조함).
 - 인스턴스를 `rescale`하지 않아요. 글자 크기가 바뀌어 텍스트 스타일 연결이 끊겨요.
 - 문서를 고친 뒤에는 하드코딩 감사(fill, stroke, padding, gap, radius, opacity, 텍스트 스타일 바인딩)를 실행해서 0건인지 확인해요.

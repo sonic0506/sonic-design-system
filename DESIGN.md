@@ -170,7 +170,7 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 | 상태 | Figma | 코드 |
 |---|---|---|
 | hover | Core 문서 "Interaction states" 매트릭스에 인스턴스 오버라이드로 그림 | `:hover` (disabled일 때는 적용 안 함) |
-| focus | 같은 매트릭스. 2px `border/focus` 링, 간격 2px | `:focus-visible` → `outline 2px`, `outline-offset 2px` |
+| focus | 같은 매트릭스. 2px `border/focus` 링, 간격 2px. invalid Input은 `border/danger` 링 | `:focus-visible` → `outline 2px`, `outline-offset 2px` |
 | press | 그리지 않음 | 구현 안 함 (v0.1) |
 
 상태별 토큰은 §10 컴포넌트 스펙 표가 기준이에요. 화면 디자인에서는 hover, focus를 따로 그리지 않아요. 컴포넌트가 자동으로 처리해요.
@@ -251,6 +251,8 @@ Figma Core 페이지의 컴포넌트 속성 이름 = React props 이름이에요
 | 그 외 | 기본 `<input>` 속성 전부 |
 
 높이 `space/8`, 좌우 padding `space/3`, radius `radius/md`, 바탕 `bg/surface`, 테두리 `border/default`(hover `border/strong`, invalid `border/danger`), 입력값 `body` + `text/default`, placeholder `text/muted`, 너비는 부모를 채움.
+
+focus 링은 2px, 간격 2px이고, 색은 기본 `border/focus`, invalid일 때 `border/danger`예요. 에러 상태에서 파란 링이 뜨면 상태 신호가 섞이기 때문이에요.
 
 ### Text
 

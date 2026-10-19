@@ -23,9 +23,12 @@ describe('Button', () => {
 });
 
 describe('Input', () => {
-  it('invalid면 aria-invalid가 붙음', () => {
+  it('invalid면 aria-invalid가 붙고 focus 링이 danger 색', () => {
     render(<Input invalid placeholder="이메일" />);
-    expect(screen.getByPlaceholderText('이메일')).toHaveAttribute('aria-invalid', 'true');
+    const input = screen.getByPlaceholderText('이메일');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    // 에러 상태에서는 focus 링도 danger 색 (DESIGN.md §10 Input)
+    expect(input).toHaveClass('sn:aria-invalid:focus-visible:outline-danger');
   });
 });
 

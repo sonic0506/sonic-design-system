@@ -102,6 +102,9 @@ Figma Variable 이름이 그대로 CSS 변수가 돼요. `/`는 `-`로 바꾸고
 | `duration/fast` | 120ms (hover, 색 전환) |
 | `duration/normal` | 200ms (Dialog 열기/닫기) |
 | `easing/standard` | `cubic-bezier(0.2, 0, 0, 1)` |
+| `duration/loop` | 1000ms (반복 애니메이션: Skeleton 깜빡임, 로딩 스피너 회전) |
+
+반복 애니메이션은 `prefers-reduced-motion`이면 멈춰요.
 
 ### 3.6 아이콘 (Lucide)
 
@@ -147,7 +150,7 @@ import { Plus } from 'lucide-react';
 | 제목 ↔ 바로 아래 설명 | `space/1` |
 
 - 버튼 묶음은 오른쪽 정렬이고, 보조 버튼이 왼쪽, primary가 맨 오른쪽이에요. Dialog Footer도 같아요.
-- 에러 상태: 입력란 테두리를 `color/border/danger`로 바꾸고, 입력란 바로 아래에 `caption` + `color/text/danger`로 고치는 방법을 씁니다. 라벨 색은 바꾸지 않아요.
+- 에러 상태: 입력란 테두리를 `color/border/danger`로 바꾸고, 입력란 바로 아래에 `caption` + `color/text/danger`로 고치는 방법을 씁니다. 라벨 색은 바꾸지 않아요. 이 묶음은 **Field 컴포넌트**가 처리해요(§10).
 - 문구는 한국어 해요체예요. 취소 버튼은 "취소"로 충분해요. 무엇을 취소하는지는 바로 옆 primary 버튼 문구가 알려 줘요.
 - Avatar 이니셜은 이름에서 1~2글자를 써요(한글은 이름 첫 글자, 영문은 이름·성 첫 글자).
 
@@ -200,9 +203,11 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 
 | 계층 | 위치 | 기준 | 예 |
 |---|---|---|---|
-| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Text, Card, Avatar, Dialog |
+| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Text, Card, Avatar, Dialog, Field, Skeleton, EmptyState, ErrorState |
 | **Pattern** | sonic-ui `src/patterns/` | Core 조합이고 도메인을 모르지만, **두 프로젝트 이상에서 같은 형태로 복사됨** | (아직 없음) |
 | **Domain** | 각 프로젝트 | 도메인 타입, API, 비즈니스 로직 중 하나라도 앎 | `UserProfileCard`, `ApiKeyList` |
+
+예외: EmptyState와 ErrorState는 Core 조합이라 원래는 Pattern 후보지만, §8 규칙이 모든 데이터 화면에 요구하는 **시스템 컴포넌트**라서 Core에 둬요.
 
 판단 순서:
 1. props에 도메인 타입(`User`, `Order`)이 들어가나요? → **Domain**
@@ -212,16 +217,16 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 
 ## 8. 데이터 화면의 4가지 상태
 
-데이터를 보여 주는 화면은 Figma에서 **4가지 상태를 모두 그려야** 개발로 넘어가요.
+데이터를 보여 주는 화면은 Figma에서 **4가지 상태를 모두 그려야** 개발로 넘어가요. 각 상태는 아래 컴포넌트로 그려요(예: Figma Playground › `Sample / API keys — 4 states`).
 
-| 상태 | 그릴 것 |
-|---|---|
-| 정상 | 실제와 비슷한 양의 데이터 |
-| 로딩 | 정상 화면과 같은 배치에 자리만 표시(`color/bg/subtle` 블록) |
-| 빈 상태 | 무엇이 없는지, 다음에 할 행동 하나(버튼) |
-| 에러 | 무엇이 실패했는지, 다시 시도할 방법 |
+| 상태 | 그릴 것 | 컴포넌트 |
+|---|---|---|
+| 정상 | 실제와 비슷한 양의 데이터 | 화면 구성 그대로 |
+| 로딩 | 정상 화면과 **같은 배치**에 자리만 표시 | `Skeleton` (text · rect · circle) |
+| 빈 상태 | 무엇이 없는지, 다음에 할 행동 하나 | `EmptyState` |
+| 에러 | 무엇이 실패했는지, 다시 시도할 방법 | `ErrorState` |
 
-Skeleton, EmptyState, ErrorState 컴포넌트는 첫 실제 프로젝트에서 필요할 때 Core에 추가해요. 그 전에는 Core 조합으로 그립니다.
+저장처럼 사용자가 일으킨 동작이 진행 중일 때는 화면 전체가 아니라 그 버튼에 `loading`을 켜요.
 
 ## 9. frontend-design 사용 규칙
 
@@ -245,6 +250,7 @@ Figma Core 페이지의 컴포넌트 속성 이름 = React props 이름이에요
 | `size` | `sm` · `md` · `lg` · `icon-sm` · `icon-md` · `icon-lg` | `md` |
 | `disabled` | boolean | `false` |
 | `children` | 버튼 문구. 아이콘은 문구 앞뒤에 lucide 컴포넌트로 넣음 | — |
+| `loading` | boolean. 스피너 + 클릭 막기 + `aria-busy` | `false` |
 | `aria-label` | icon 크기일 때 **필수** (타입으로 강제) | — |
 
 | | sm | md | lg |
@@ -336,6 +342,59 @@ radius `radius/full`, 바탕 `bg/subtle`, fallback 글자 `text/muted`. 이미�
 - 열기/닫기: `duration/normal` + `easing/standard`. `[data-starting-style]`과 `[data-ending-style]`에서 opacity 0, scale 0.98. Backdrop은 opacity만 바꿔요.
 - `open`, `onOpenChange`로 제어할 수 있어요. Esc와 바깥 클릭으로 닫혀요.
 
+### Button loading
+
+`<Button loading>저장</Button>`
+
+- 왼쪽에 `loader-circle`이 `duration/loop`로 회전하고, 클릭이 막혀요. 포커스는 유지되고 `aria-busy="true"`, `data-loading`이 붙어요.
+- 로딩 중에는 왼쪽 아이콘을 넣지 않아요(스피너가 그 자리를 써요). icon 버튼은 아이콘 자리에 스피너만 보여요.
+
+### Field
+
+```tsx
+<Field label="이메일" description="로그인할 때 써요." error="https://로 시작하는 주소를 입력하세요." invalid>
+  <Input />
+</Field>
+```
+
+| prop | 값 |
+|---|---|
+| `label` | 라벨 문구 (필수) |
+| `description` | 설명 문구 (선택) |
+| `error` | 에러 문구. `invalid`일 때만 보여요 |
+| `invalid`, `disabled` | boolean. 안의 Input에 자동으로 전달돼요 (Base UI Field) |
+| `children` | 입력 컨트롤 (지금은 `Input`) |
+
+간격: 라벨 ↔ 입력 ↔ 설명·에러 `space/2`. 라벨 `label` + `text/default`(invalid여도 그대로), 설명 `caption` + `text/muted`, 에러 `caption` + `text/danger`. **Field 안의 Input에는 `invalid`를 따로 주지 않아요.** 입력 컨트롤과 설명·에러는 `aria-describedby`로 연결돼요.
+
+### Skeleton
+
+`<Skeleton shape="text" className="w-40" />`
+
+| shape | 기본 크기 | radius |
+|---|---|---|
+| `text` | 높이 `space/3` (12, body 한 줄 자리), 너비 100% | `radius/sm` |
+| `rect` | 높이 `space/16` (64), 너비 100% | `radius/md` |
+| `circle` | `space/8` (32) | `radius/full` |
+
+바탕 `bg/subtle`, opacity 1 ↔ 0.5를 `duration/loop`로 반복해요. 크기는 쓰는 곳에서 `className`으로 정하고, 스크린 리더에는 숨겨요(`aria-hidden`). 로딩 영역 전체에는 `aria-busy`를 둬요.
+
+### EmptyState / ErrorState
+
+```tsx
+<EmptyState icon={<Inbox />} title="API 키가 없어요" description="키를 만들면 여기에서 사용량을 볼 수 있어요." action={<Button>API 키 만들기</Button>} />
+<ErrorState title="API 키를 불러오지 못했어요" description="네트워크 연결을 확인하고 다시 시도해 주세요." onRetry={refetch} />
+```
+
+| | EmptyState | ErrorState |
+|---|---|---|
+| 아이콘 | `icon` prop (24, `text/muted`, `bg/subtle` 원 `space/12`) | 기본 `triangle-alert` (`text/danger`), `icon`으로 바꿀 수 있음 |
+| 제목 / 설명 | `body-strong` / `body` + `text/muted`, 가운데 정렬 | 같음 |
+| 행동 | `action` (보통 primary Button 하나) | `onRetry`가 있으면 secondary Button + `refresh-cw`, 문구 `retryLabel`(기본 "다시 시도") |
+| 간격 | 요소 사이 `space/4`, 위아래 `space/12`, 좌우 `space/6` | 같음 |
+
+에러 문구는 사과하지 않고, 무엇이 실패했고 어떻게 하면 되는지 써요.
+
 ## 11. Figma ↔ 코드 매핑 (Code Connect 대체)
 
 Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수 없어요. 아래 표로 대신합니다. Figma 컴포넌트를 코드로 옮길 때는 이 표의 컴포넌트를 그대로 써요.
@@ -349,6 +408,10 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Avatar | `5:117` | `<Avatar size src alt fallback>` | `src/components/avatar.tsx` |
 | Card | `6:2` | `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardBody`, `CardFooter` | `src/components/card.tsx` |
 | Dialog | `6:13` | `Dialog`, `DialogTrigger`, `DialogPopup`, `DialogTitle`, `DialogDescription`, `DialogClose`, `DialogFooter` | `src/components/dialog.tsx` |
+| Field | `31:1543` | `<Field label description error invalid disabled>` + `<Input />` | `src/components/field.tsx` |
+| Skeleton | `31:1547` | `<Skeleton shape>` | `src/components/skeleton.tsx` |
+| EmptyState | `31:1548` | `<EmptyState icon title description action>` | `src/components/empty-state.tsx` |
+| ErrorState | `31:1561` | `<ErrorState icon title description onRetry retryLabel>` | `src/components/error-state.tsx` |
 | Icon (32개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

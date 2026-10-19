@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ko" data-theme="light" data-dir="a">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sonic explorations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- 참고용 시안. 라이브러리에 포함하지 않음. 시안마다 토큰 세트만 다르고 마크업은 같음 -->
+<style>
+/* ---------- A. Cobalt Instrument ---------- */
+[data-dir="a"] {
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif; --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --r-sm: 2px; --r-md: 4px; --r-lg: 6px; --r-full: 999px;
+  --h-sm: 28px; --h-md: 32px; --h-lg: 40px;
+  --dur: 120ms; --ease: cubic-bezier(.2, 0, 0, 1);
+}
+[data-dir="a"][data-theme="light"] {
+  --bg: #F4F6F8; --surface: #FFFFFF; --surface-2: #EBEFF3; --border: #D5DBE1; --text: #14191F; --muted: #5B6672;
+  --primary: #2340D0; --primary-hover: #1B33AE; --on-primary: #FFFFFF; --danger: #C8312B; --focus: #2340D0; --overlay: rgb(20 25 31 / .4);
+}
+[data-dir="a"][data-theme="dark"] {
+  --bg: #0E1216; --surface: #161B21; --surface-2: #1E252D; --border: #2A323B; --text: #E6EAEE; --muted: #8D99A6;
+  --primary: #6E86FF; --primary-hover: #8C9FFF; --on-primary: #0E1216; --danger: #F06A5F; --focus: #6E86FF; --overlay: rgb(0 0 0 / .6);
+}
+/* ---------- B. Graphite Amber ---------- */
+[data-dir="b"] {
+  --font-sans: "Geist", system-ui, sans-serif; --font-mono: "Geist Mono", ui-monospace, monospace;
+  --r-sm: 3px; --r-md: 6px; --r-lg: 10px; --r-full: 999px;
+  --h-sm: 30px; --h-md: 36px; --h-lg: 44px;
+  --dur: 160ms; --ease: cubic-bezier(.3, 0, 0, 1);
+}
+[data-dir="b"][data-theme="light"] {
+  --bg: #F1F2F3; --surface: #FFFFFF; --surface-2: #E7E8EA; --border: #CFD2D6; --text: #1B1D21; --muted: #61666E;
+  --primary: #1B1D21; --primary-hover: #34373D; --on-primary: #FFFFFF; --danger: #B93A2E; --focus: #D98A1C; --overlay: rgb(27 29 33 / .45);
+}
+[data-dir="b"][data-theme="dark"] {
+  --bg: #17191C; --surface: #202327; --surface-2: #2A2D32; --border: #33373D; --text: #ECEDEE; --muted: #959AA2;
+  --primary: #F0B44C; --primary-hover: #F5C673; --on-primary: #17191C; --danger: #F27565; --focus: #F0B44C; --overlay: rgb(0 0 0 / .6);
+}
+/* ---------- C. Signal Violet ---------- */
+[data-dir="c"] {
+  --font-sans: "Inter Tight", system-ui, sans-serif; --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-full: 999px;
+  --h-sm: 32px; --h-md: 40px; --h-lg: 48px;
+  --dur: 200ms; --ease: cubic-bezier(.2, .8, .2, 1);
+}
+[data-dir="c"][data-theme="light"] {
+  --bg: #FFFFFF; --surface: #F7F7FB; --surface-2: #EEEEF6; --border: #E3E3EE; --text: #15141F; --muted: #6A6880;
+  --primary: #5B3DF5; --primary-hover: #4A2EE0; --on-primary: #FFFFFF; --danger: #D63B4A; --focus: #5B3DF5; --overlay: rgb(21 20 31 / .4);
+}
+[data-dir="c"][data-theme="dark"] {
+  --bg: #0F0E17; --surface: #1A1926; --surface-2: #232234; --border: #2D2B40; --text: #ECEBF5; --muted: #9B98B3;
+  --primary: #8E78FF; --primary-hover: #A493FF; --on-primary: #0F0E17; --danger: #FF6B7A; --focus: #8E78FF; --overlay: rgb(0 0 0 / .6);
+}
+
+/* ---------- 공통 (토큰만 참조) ---------- */
+* { box-sizing: border-box; margin: 0; }
+body { background: var(--bg); color: var(--text); font: 400 14px/20px var(--font-sans); -webkit-font-smoothing: antialiased; }
+.switcher { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.switcher .sep { flex: 1; }
+.page { max-width: 960px; margin: 0 auto; padding: 32px 16px 64px; display: grid; gap: 24px; }
+
+.t-display { font-size: 32px; line-height: 40px; font-weight: 600; letter-spacing: -0.02em; }
+.t-title { font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
+.t-body { font-size: 14px; line-height: 20px; }
+.t-caption { font-size: 12px; line-height: 16px; color: var(--muted); }
+.t-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: var(--h-md); padding: 0 12px; border-radius: var(--r-md); border: 1px solid transparent; font: 500 14px/1 var(--font-sans); cursor: pointer; transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+.btn:focus-visible, .input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.btn-sm { height: var(--h-sm); padding: 0 8px; font-size: 13px; }
+.btn-lg { height: var(--h-lg); padding: 0 16px; font-size: 15px; }
+.btn-primary { background: var(--primary); color: var(--on-primary); }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { background: var(--surface-2); }
+.btn-ghost { background: transparent; color: var(--text); }
+.btn-ghost:hover { background: var(--surface-2); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.field { display: grid; gap: 6px; }
+.label { font-size: 13px; font-weight: 500; }
+.input { height: var(--h-md); padding: 0 12px; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--surface); color: var(--text); font: 400 14px var(--font-sans); transition: border-color var(--dur) var(--ease); }
+.input:hover { border-color: var(--muted); }
+.input[aria-invalid="true"] { border-color: var(--danger); }
+.hint-error { font-size: 12px; color: var(--danger); }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; display: grid; gap: 16px; align-content: start; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+.avatar { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: var(--r-full); background: var(--surface-2); color: var(--muted); font: 500 12px var(--font-sans); overflow: hidden; flex: none; }
+.avatar-sm { width: 24px; height: 24px; font-size: 10px; }
+.avatar-lg { width: 40px; height: 40px; font-size: 14px; }
+
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.meter { height: 6px; border-radius: var(--r-full); background: var(--surface-2); overflow: hidden; }
+.meter > i { display: block; height: 100%; background: var(--primary); }
+.kv { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; }
+.kv dt { color: var(--muted); }
+.list { display: grid; }
+.list > div { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+.list > div:first-child { border-top: 0; }
+.list .grow { flex: 1; min-width: 0; }
+
+dialog { border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); color: var(--text); padding: 24px; width: min(440px, calc(100% - 32px)); margin: auto; opacity: 1; transform: none; transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), overlay var(--dur) allow-discrete, display var(--dur) allow-discrete; }
+dialog::backdrop { background: var(--overlay); }
+@starting-style { dialog[open] { opacity: 0; transform: translateY(4px) scale(.98); } }
+dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+dialog form { display: grid; gap: 16px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="switcher">
+  <button class="btn btn-secondary btn-sm" data-set-dir="a">A Cobalt Instrument</button>
+  <button class="btn btn-secondary btn-sm" data-set-dir="b">B Graphite Amber</button>
+  <button class="btn btn-secondary btn-sm" data-set-dir="c">C Signal Violet</button>
+  <span class="sep"></span>
+  <button class="btn btn-ghost btn-sm" id="theme">다크 모드</button>
+</div>
+
+<main class="page">
+  <header class="row" style="justify-content: space-between">
+    <div>
+      <h1 class="t-display">API 사용량</h1>
+      <p class="t-caption">10월 1일부터 19일까지 · 매시간 갱신</p>
+    </div>
+    <div class="row">
+      <button class="btn btn-secondary">CSV 내보내기</button>
+      <button class="btn btn-primary" id="open">API 키 만들기</button>
+    </div>
+  </header>
+
+  <section class="grid-2">
+    <article class="card">
+      <div class="card-head"><h2 class="t-title">이번 달 요청</h2><span class="t-caption t-mono">한도 100,000</span></div>
+      <p class="t-display t-mono">72,418</p>
+      <div class="meter" role="meter" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" aria-label="한도 사용률"><i style="width: 72%"></i></div>
+      <dl class="kv t-body">
+        <dt>평균 응답 시간</dt><dd class="t-mono">184 ms</dd>
+        <dt>오류율</dt><dd class="t-mono">0.42%</dd>
+        <dt>남은 기간</dt><dd class="t-mono">12일</dd>
+      </dl>
+    </article>
+
+    <article class="card">
+      <div class="card-head"><h2 class="t-title">API 키</h2><button class="btn btn-ghost btn-sm">모두 보기</button></div>
+      <div class="list">
+        <div><span class="avatar">HP</span><div class="grow"><p class="t-body">production</p><p class="t-caption t-mono">sk_live_…a91f · 3분 전 사용</p></div><button class="btn btn-secondary btn-sm">관리</button></div>
+        <div><span class="avatar">CI</span><div class="grow"><p class="t-body">github-actions</p><p class="t-caption t-mono">sk_live_…07bd · 2시간 전 사용</p></div><button class="btn btn-secondary btn-sm">관리</button></div>
+        <div><span class="avatar">LC</span><div class="grow"><p class="t-body">local-dev</p><p class="t-caption t-mono">sk_test_…c3e2 · 사용 기록 없음</p></div><button class="btn btn-secondary btn-sm" disabled>관리</button></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="card">
+    <h2 class="t-title">컴포넌트 샘플</h2>
+    <div class="row">
+      <button class="btn btn-primary btn-sm">Primary sm</button>
+      <button class="btn btn-primary">Primary md</button>
+      <button class="btn btn-primary btn-lg">Primary lg</button>
+      <button class="btn btn-secondary">Secondary</button>
+      <button class="btn btn-ghost">Ghost</button>
+      <button class="btn btn-danger">Danger</button>
+      <button class="btn btn-primary" disabled>Disabled</button>
+    </div>
+    <div class="grid-2">
+      <label class="field"><span class="label">키 이름</span><input class="input" placeholder="예: production"></label>
+      <label class="field"><span class="label">웹훅 URL</span><input class="input" value="htp://example" aria-invalid="true"><span class="hint-error">https://로 시작하는 주소를 입력하세요</span></label>
+    </div>
+    <div class="row"><span class="avatar avatar-sm">S</span><span class="avatar">HP</span><span class="avatar avatar-lg">HP</span></div>
+    <div><p class="t-display">Display 32</p><p class="t-title">Title 20</p><p class="t-body">Body 14 — 본문은 이 크기를 기본으로 씁니다.</p><p class="t-caption">Caption 12</p><p class="t-body t-mono">Mono 1,234,567.89</p></div>
+  </section>
+</main>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <form method="dialog">
+    <div><h2 class="t-title" id="dlg-title">API 키 만들기</h2><p class="t-caption">키는 만든 직후 한 번만 보여 줍니다.</p></div>
+    <label class="field"><span class="label">키 이름</span><input class="input" placeholder="예: staging" autofocus></label>
+    <div class="actions"><button class="btn btn-ghost" value="cancel">취소</button><button class="btn btn-primary" value="ok">만들기</button></div>
+  </form>
+</dialog>
+
+<script>
+const root = document.documentElement;
+document.querySelectorAll('[data-set-dir]').forEach(b => b.onclick = () => root.dataset.dir = b.dataset.setDir);
+document.getElementById('theme').onclick = e => {
+  root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+  e.target.textContent = root.dataset.theme === 'light' ? '다크 모드' : '라이트 모드';
+};
+document.getElementById('open').onclick = () => document.getElementById('dlg').showModal();
+</script>
+</body>
+</html>

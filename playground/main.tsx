@@ -4,6 +4,7 @@ import { ChevronDown, Download, Ellipsis, Inbox, Plus, Search, Settings, Trash2 
 import {
   Avatar, Button, Card, CardBody, CardDescription, CardFooter, CardHeader, CardTitle,
   Dialog, DialogClose, DialogDescription, DialogFooter, DialogPopup, DialogTitle, DialogTrigger, EmptyState, ErrorState, Field, Input, Skeleton, Text, type TextVariant,
+  Checkbox, CheckboxGroup, Radio, RadioGroup, Select, Switch, Textarea,
 } from '../src';
 
 const variants = ['primary', 'secondary', 'ghost', 'danger'] as const;
@@ -38,6 +39,37 @@ function KeyCard({ state }: { state: 'normal' | 'loading' | 'empty' | 'error' })
   );
 }
 
+const PLANS = [{ value: 'free', label: 'Free' }, { value: 'pro', label: 'Pro' }, { value: 'team', label: 'Team' }, { value: 'ent', label: 'Enterprise', disabled: true }];
+const TAGS = [{ value: 'design', label: 'Design' }, { value: 'frontend', label: 'Frontend' }, { value: 'backend', label: 'Backend' }, { value: 'marketing', label: 'Marketing' }];
+
+function Forms() {
+  const col = { display: 'flex', flexDirection: 'column', gap: 'var(--sn-space-4)', width: 240 } as const;
+  return (
+    <div id="forms" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sn-space-10)', alignItems: 'flex-start' }}>
+      <div style={col}>
+        <Checkbox>알림 받기</Checkbox>
+        <Checkbox defaultChecked>알림 받기</Checkbox>
+        <Checkbox indeterminate>알림 받기</Checkbox>
+        <Checkbox disabled>알림 받기</Checkbox>
+        <CheckboxGroup label="알림 채널" defaultValue={['email', 'push']}><Checkbox value="email">이메일</Checkbox><Checkbox value="sms">문자</Checkbox><Checkbox value="push">푸시</Checkbox></CheckboxGroup>
+      </div>
+      <div style={col}>
+        <RadioGroup label="결제 주기" defaultValue="month"><Radio value="month">월간 결제</Radio><Radio value="year">연간 결제 (2개월 무료)</Radio><Radio value="x" disabled>분기 결제</Radio></RadioGroup>
+        <Switch>이메일 알림</Switch>
+        <Switch defaultChecked>이메일 알림</Switch>
+        <Switch disabled>이메일 알림</Switch>
+      </div>
+      <div style={col}>
+        <Field label="요금제"><Select options={PLANS} defaultValue="pro" placeholder="요금제 선택" /></Field>
+        <Field label="태그"><Select multiple options={TAGS} defaultValue={['design', 'frontend']} placeholder="태그 선택" /></Field>
+        <Field label="요금제" error="요금제를 고르세요." invalid><Select options={PLANS} placeholder="요금제 선택" /></Field>
+        <Field label="메모" description="최대 200자"><Textarea placeholder="내용을 입력하세요" /></Field>
+        <Field label="메모" error="200자 이하로 줄여 주세요." invalid><Textarea defaultValue="너무 긴 메모" /></Field>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   return (
     <div className="sn:flex sn:flex-col sn:gap-6 sn:p-6 sn:font-sans">
@@ -68,6 +100,7 @@ function App() {
           {sizes.map(s => <Avatar key={s} size={s} fallback="HP" />)}
         </div>
       </div>
+      <Forms />
       <div id="states" className="sn:flex sn:flex-wrap sn:items-start sn:gap-6">
         {(['normal', 'loading', 'empty', 'error'] as const).map(s => <KeyCard key={s} state={s} />)}
       </div>

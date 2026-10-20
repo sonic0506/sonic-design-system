@@ -220,7 +220,7 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 
 | 계층 | 위치 | 기준 | 예 |
 |---|---|---|---|
-| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Field, Skeleton, EmptyState, ErrorState |
+| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Toast, Badge, Progress, Field, Skeleton, EmptyState, ErrorState |
 | **Pattern** | sonic-ui `src/patterns/` | Core 조합이고 도메인을 모르지만, **두 프로젝트 이상에서 같은 형태로 복사됨** | (아직 없음) |
 | **Domain** | 각 프로젝트 | 도메인 타입, API, 비즈니스 로직 중 하나라도 앎 | `UserProfileCard`, `ApiKeyList` |
 
@@ -560,6 +560,62 @@ const retryRef = useRef<HTMLButtonElement>(null);
 
 `<Separator orientation="horizontal" />` — 1px `border/default`. 관련 없는 묶음 사이를 나눌 때만 쓰고, 카드 안 영역이나 목록 행은 간격으로 먼저 구분해요.
 
+### Toast
+
+```tsx
+// 앱 최상단에 한 번 (Next.js는 layout.tsx). 알림 상자를 화면 오른쪽 아래에 그려요
+<ToastProvider>{children}</ToastProvider>
+
+// 클라이언트 컴포넌트 어디서든
+const toast = useToast();
+toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한 번만 보여 줘요.', tone: 'success' });
+```
+
+| `add` 옵션 | 값 | 기본값 |
+|---|---|---|
+| `title` | 결과 한 줄 (필수) | — |
+| `description` | 덧붙일 설명 | — |
+| `tone` | `neutral` · `success` · `warning` · `danger` | `neutral` |
+| `timeout` | 사라지기까지 ms. `0`이면 직접 닫을 때까지 남아요 | 5000 |
+
+- 사용자 동작의 결과를 잠깐 알려 줄 때 써요. 되돌릴 수 없는 동작의 확인은 AlertDialog, 화면을 채우는 실패는 ErrorState를 써요.
+- 너비 360(좁은 화면은 좌우 `space/4`를 뺀 너비), 화면 가장자리에서 `space/4`, 알림 사이 `space/2`. 최대 3개까지 보이고 오래된 것부터 가려져요.
+- 상자: 떠 있는 요소 공통 스타일(`bg/surface` + 1px `border/default` + `radius/lg`, 그림자 없음), padding·간격 `space/3`.
+- 아이콘 16: neutral `info`(`text/muted`) · success `circle-check`(`text/success`) · warning `triangle-alert`(`text/warning`) · danger `circle-alert`(`text/danger`). 제목 `body-strong`, 설명 `caption` + `text/muted`, 오른쪽에 닫기(ghost `icon-sm`, `x`, "알림 닫기").
+- 마우스를 올리거나 포커스하면 시간이 멈춰요. 들어오고 나갈 때 opacity와 위치(`space/2`)가 `duration/normal`로 바뀌어요.
+- 화면 낭독기: 보통은 차례가 오면 읽고, `danger`는 바로 읽어요. 알림은 F6으로 이동할 수 있어요.
+- `useToast`는 클라이언트 컴포넌트에서만 써요(`ToastProvider` 안).
+
+### Badge
+
+`<Badge tone="success" variant="subtle">활성</Badge>`
+
+| prop | 값 | 기본값 |
+|---|---|---|
+| `tone` | `neutral` · `success` · `warning` · `danger` | `neutral` |
+| `variant` | `subtle` · `solid` | `subtle` |
+
+| | subtle | solid |
+|---|---|---|
+| neutral | `bg/subtle` + `text/default` | `bg/inverse` + `text/inverse` |
+| success | `bg/success-subtle` + `text/success` | `bg/success` + `text/on-success` |
+| warning | `bg/warning-subtle` + `text/warning` | `bg/warning` + `text/on-warning` |
+| danger | `bg/danger-subtle` + `text/danger` | `bg/danger` + `text/on-danger` |
+
+높이 20(`space/5`), 좌우 `space/2`, `label`, `radius/sm`. 상태를 짧은 낱말로 표시해요. 목록과 표에서는 subtle을, 꼭 눈에 띄어야 하는 한 곳에만 solid를 써요. 누를 수 없는 표시라 버튼처럼 쓰지 않아요.
+
+### Progress
+
+`<Progress value={45} label="내보내는 중" />`
+
+| prop | 값 |
+|---|---|
+| `value` | 현재 값 (필수) |
+| `max` | 최댓값 (기본 100) |
+| `label` | 라벨 문구. 없으면 `aria-label`이 필수예요 (타입으로 강제) |
+
+라벨 `label` + `text/default`, 오른쪽에 백분율 `mono-caption` + `text/muted`, 막대와 사이 `space/2`. 트랙 높이 4(`space/1`) `bg/subtle` `radius/full`, 채움 `bg/primary`이 `duration/normal`로 늘어나요. 끝이 정해진 작업(업로드, 내보내기)에만 써요. 끝을 알 수 없는 기다림은 Button `loading`이나 Skeleton을 써요.
+
 ## 11. Figma ↔ 코드 매핑 (Code Connect 대체)
 
 Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수 없어요. 아래 표로 대신합니다. Figma 컴포넌트를 코드로 옮길 때는 이 표의 컴포넌트를 그대로 써요.
@@ -588,6 +644,9 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Tooltip | `49:3040` | `<Tooltip content>` | `src/components/tooltip.tsx` |
 | Tab · Tabs List | `49:3050` · `49:3051` | `Tabs`, `TabsList`, `<Tab value disabled>`, `TabsPanel` (`selected` → 현재 값) | `src/components/tabs.tsx` |
 | Separator | `49:3039` | `<Separator orientation>` | `src/components/separator.tsx` |
+| Toast | `57:3549` | `useToast().add({ tone, title, description })` (`showDescription` → `description`을 넘길지), 앱에는 `<ToastProvider>` | `src/components/toast.tsx` |
+| Badge | `57:3498` | `<Badge tone variant>` (`children` → 자식 문구) | `src/components/badge.tsx` |
+| Progress | `58:5093` | `<Progress value max label>` (`value` variant는 채움 미리보기, `value text`는 코드가 자동 표시) | `src/components/progress.tsx` |
 | Icon (32개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

@@ -88,6 +88,8 @@ import { Button, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, Dia
 
 컴포넌트별 props는 [DESIGN.md §10](./DESIGN.md#10-컴포넌트-스펙-core)에 있어요. 모든 파일에 `"use client"`가 붙어 있어서 Next.js 서버 컴포넌트에서도 바로 import할 수 있어요. 하위 컴포넌트는 `CardHeader`처럼 이름 있는 export로 써요.
 
+Toast를 쓰려면 앱 최상단(Next.js는 `app/layout.tsx`)을 `<ToastProvider>`로 한 번 감싸고, 클라이언트 컴포넌트에서 `useToast().add({ title, tone })`로 띄워요.
+
 ## Claude Code에서 쓰기
 
 프로젝트 CLAUDE.md에 추가해요.

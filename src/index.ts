@@ -45,3 +45,4 @@ export { Link, type LinkProps } from './components/link';
 export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './components/table';
 export { ToggleGroup, ToggleGroupItem, type ToggleGroupProps, type ToggleGroupItemProps } from './components/toggle-group';
 export { Accordion, AccordionItem, AccordionTrigger, AccordionPanel, type AccordionProps, type AccordionItemProps } from './components/accordion';
+export { FileDropzone, FileList, formatBytes, type FileDropzoneProps, type FileListProps, type FileItemData, type FileRejection } from './components/file-upload';

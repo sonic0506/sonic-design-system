@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   AlertDialog, AlertDialogClose, AlertDialogPopup, AlertDialogTitle, AlertDialogTrigger, Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger,
@@ -7,6 +7,7 @@ import {
   Checkbox, CheckboxGroup, Radio, RadioGroup, Select, Switch, Textarea,
   EmptyState, ErrorState, Field, Skeleton, Badge, Progress, ToastProvider, useToast,
   Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
+  FileDropzone, FileList, formatBytes, type FileItemData,
   Avatar, Button, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
 } from './index';
 
@@ -391,10 +392,11 @@ describe('포커스 링', () => {
         <Link href="/">링크</Link>
         <ToggleGroup defaultValue="a"><ToggleGroupItem value="a">A</ToggleGroupItem></ToggleGroup>
         <Accordion><AccordionItem value="a"><AccordionTrigger>제목</AccordionTrigger><AccordionPanel>내용</AccordionPanel></AccordionItem></Accordion>
+        <FileDropzone onFilesChange={() => {}} />
       </>,
     );
     const ringed = [...container.querySelectorAll('[class*="focus-visible:outline-2"]')];
-    expect(ringed.length).toBeGreaterThanOrEqual(12);
+    expect(ringed.length).toBeGreaterThanOrEqual(13);
     for (const el of ringed) expect(el.className).not.toMatch(/(^|\s)sn:outline-none(\s|$)/);
   });
 });
@@ -583,5 +585,98 @@ describe('콘텐츠·펼치기: Link, Table, ToggleGroup, Accordion', () => {
     trigger.focus();
     await user.keyboard('{Enter}');
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+});
+
+describe('파일 업로드: FileDropzone, FileList', () => {
+  const pdf = (name = '계약서.pdf', size = 1000) => new File([new Uint8Array(size)], name, { type: 'application/pdf' });
+
+  it('조건에 맞는 파일은 accepted, 크기·형식이 다르면 rejected로 넘기고 고치는 방법을 보여 줌', async () => {
+    const user = userEvent.setup({ applyAccept: false });
+    const onFilesChange = vi.fn();
+    const { container } = render(<FileDropzone multiple accept=".pdf" maxSize={2048} description="PDF, 2KB 이하" onFilesChange={onFilesChange} />);
+    const input = container.querySelector('input[type=file]') as HTMLInputElement;
+    const ok = pdf('a.pdf'), big = pdf('b.pdf', 5000), png = new File(['x'], 'c.png', { type: 'image/png' });
+    await user.upload(input, [ok, big, png]);
+    const [accepted, rejected] = onFilesChange.mock.calls[0];
+    expect(accepted).toEqual([ok]);
+    expect(rejected.map((r: { reason: string }) => r.reason)).toEqual(['size', 'type']);
+    const zone = screen.getByRole('button', { name: /파일을 끌어다 놓거나/ });
+    expect(zone).toHaveAttribute('data-invalid');
+    expect(zone).toHaveAccessibleDescription('b.pdf: 2 KB보다 큰 파일은 올릴 수 없어요. (외 1개)');
+  });
+
+  it('multiple이 없으면 한 개만, maxFiles를 넘으면 count로 거부', async () => {
+    const user = userEvent.setup();
+    const single = vi.fn();
+    const { unmount } = render(<FileDropzone onFilesChange={single} />);
+    fireEvent.drop(screen.getByRole('button', { name: /파일을 끌어다/ }), { dataTransfer: { files: [pdf('a.pdf'), pdf('b.pdf')] } });
+    expect(single.mock.calls[0][0]).toHaveLength(1);
+    expect(single.mock.calls[0][1][0].reason).toBe('count');
+    unmount();
+    const many = vi.fn();
+    const r = render(<FileDropzone multiple maxFiles={1} onFilesChange={many} />);
+    await user.upload(r.container.querySelector('input[type=file]') as HTMLInputElement, [pdf('a.pdf'), pdf('b.pdf')]);
+    expect(many.mock.calls[0][1][0].message).toBe('1개까지 올릴 수 있어요.');
+  });
+
+  it('Enter로 파일 선택 창을 열고, 끌어다 놓아도 파일을 받음', async () => {
+    const user = userEvent.setup();
+    const onFilesChange = vi.fn();
+    const click = vi.spyOn(HTMLInputElement.prototype, 'click');
+    render(<FileDropzone onFilesChange={onFilesChange} />);
+    const zone = screen.getByRole('button', { name: /파일을 끌어다/ });
+    zone.focus();
+    await user.keyboard('{Enter}');
+    expect(click).toHaveBeenCalled();
+    click.mockRestore();
+    fireEvent.dragEnter(zone, { dataTransfer: { files: [] } });
+    expect(zone).toHaveAttribute('data-dragging');
+    const file = pdf();
+    fireEvent.drop(zone, { dataTransfer: { files: [file] } });
+    expect(zone).not.toHaveAttribute('data-dragging');
+    expect(onFilesChange).toHaveBeenCalledWith([file], []);
+  });
+
+  it('FileList: 업로드 중은 Progress, 완료는 Link, 에러는 다시 시도·삭제', async () => {
+    const user = userEvent.setup();
+    const onRetry = vi.fn(), onRemove = vi.fn();
+    const items: FileItemData[] = [
+      { id: '1', name: 'a.pdf', status: 'uploading', progress: 45 },
+      { id: '2', name: 'b.pdf', status: 'done', size: 2_516_582, url: 'https://files.example/b.pdf' },
+      { id: '3', name: 'c.pdf', status: 'error', error: '네트워크가 끊겨 올리지 못했어요. 다시 시도해 주세요.' },
+    ];
+    render(<FileList items={items} onRetry={onRetry} onRemove={onRemove} />);
+    expect(screen.getByRole('progressbar', { name: 'a.pdf 올리는 중' })).toHaveAttribute('aria-valuenow', '45');
+    expect(screen.getByRole('link', { name: 'b.pdf' })).toHaveAttribute('href', 'https://files.example/b.pdf');
+    expect(screen.getByText('2.4 MB')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'c.pdf 다시 시도' }));
+    await user.click(screen.getByRole('button', { name: 'a.pdf 삭제' }));
+    expect(onRetry).toHaveBeenCalledWith('3');
+    expect(onRemove).toHaveBeenCalledWith('1');
+  });
+
+  it('grid 미리보기: previewUrl(서버·data URL)은 그대로, 로컬 파일은 blob URL을 만들고 사라지면 해제', () => {
+    const create = vi.fn(() => 'blob:local-1');
+    const revoke = vi.fn();
+    Object.assign(URL, { createObjectURL: create, revokeObjectURL: revoke });
+    const local = new File(['x'], 'local.png', { type: 'image/png' });
+    const { unmount } = render(
+      <FileList layout="grid" items={[
+        { id: 's', name: 'server.png', status: 'done', type: 'image/png', previewUrl: 'https://cdn.example/thumb.png' },
+        { id: 'b', name: 'base64.png', status: 'done', type: 'image/png', previewUrl: 'data:image/png;base64,iVBORw0KGgo=' },
+        { id: 'l', name: 'local.png', status: 'uploading', progress: 10, file: local },
+      ]} />,
+    );
+    expect(screen.getByRole('img', { name: 'server.png' })).toHaveAttribute('src', 'https://cdn.example/thumb.png');
+    expect(screen.getByRole('img', { name: 'base64.png' })).toHaveAttribute('src', 'data:image/png;base64,iVBORw0KGgo=');
+    expect(screen.getByRole('img', { name: 'local.png' })).toHaveAttribute('src', 'blob:local-1');
+    expect(create).toHaveBeenCalledWith(local);
+    unmount();
+    expect(revoke).toHaveBeenCalledWith('blob:local-1');
+  });
+
+  it('formatBytes', () => {
+    expect([formatBytes(512), formatBytes(2048), formatBytes(2_516_582)]).toEqual(['512 B', '2 KB', '2.4 MB']);
   });
 });

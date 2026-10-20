@@ -676,6 +676,18 @@ describe('파일 업로드: FileDropzone, FileList', () => {
     expect(revoke).toHaveBeenCalledWith('blob:local-1');
   });
 
+  it('Field로 감싸면 라벨이 버튼 이름이 되고, 설명·에러·invalid가 연결됨', () => {
+    render(
+      <Field label="첨부 파일" error="파일을 1개 이상 올려 주세요." invalid>
+        <FileDropzone onFilesChange={() => {}} />
+      </Field>,
+    );
+    const zone = screen.getByRole('button', { name: '첨부 파일' });
+    expect(zone).toHaveAttribute('aria-invalid', 'true');
+    expect(zone).toHaveAccessibleDescription(/파일을 1개 이상 올려 주세요./);
+    expect(zone).toHaveClass('sn:aria-invalid:border-danger');
+  });
+
   it('formatBytes', () => {
     expect([formatBytes(512), formatBytes(2048), formatBytes(2_516_582)]).toEqual(['512 B', '2 KB', '2.4 MB']);
   });

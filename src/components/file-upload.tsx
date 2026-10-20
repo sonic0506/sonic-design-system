@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Field as BaseField } from '@base-ui/react/field';
 import { CircleAlert, File as FileIcon, Image as ImageIcon, RefreshCw, Upload, X } from 'lucide-react';
 import { cn } from '../lib/cn';
 import { Button } from './button';
@@ -56,7 +57,7 @@ export interface FileDropzoneProps {
   /** 파일 하나의 최대 크기(바이트) */
   maxSize?: number;
   variant?: 'file' | 'image';
-  /** 버튼 이름이 돼요 */
+  /** 영역 안 안내 문구. Field 밖에서 쓰면 버튼 이름이 돼요 */
   title?: React.ReactNode;
   description?: React.ReactNode;
   invalid?: boolean;
@@ -66,6 +67,7 @@ export interface FileDropzoneProps {
   className?: string;
 }
 
+/** Input처럼 Field로 감싸면 라벨·설명·에러·invalid·disabled가 연결돼요 */
 export function FileDropzone({ onFilesChange, accept, multiple, maxFiles, maxSize, variant = 'file', title, description, invalid, disabled, name, id, className }: FileDropzoneProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = React.useState(false);
@@ -83,12 +85,13 @@ export function FileDropzone({ onFilesChange, accept, multiple, maxFiles, maxSiz
 
   return (
     <>
-      <button
-        type="button"
+      <BaseField.Control
+        render={<button type="button" />}
         id={id}
         disabled={disabled}
         aria-describedby={messageId}
         data-dragging={dragging ? '' : undefined}
+        aria-invalid={invalid || undefined}
         data-invalid={showInvalid ? '' : undefined}
         onClick={() => inputRef.current?.click()}
         onDragEnter={e => { e.preventDefault(); if (!disabled) setDragging(true); }}
@@ -96,16 +99,16 @@ export function FileDropzone({ onFilesChange, accept, multiple, maxFiles, maxSiz
         onDragLeave={e => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDragging(false); }}
         onDrop={e => { e.preventDefault(); setDragging(false); if (!disabled) handle([...e.dataTransfer.files]); }}
         className={cn(
-          'sn:group sn:box-border sn:flex sn:w-full sn:flex-col sn:items-center sn:gap-2 sn:rounded-lg sn:border sn:border-dashed sn:border-strong sn:bg-surface sn:px-4 sn:py-6 sn:font-sans sn:text-center sn:cursor-pointer sn:transition-colors sn:duration-(--sn-duration-fast) sn:ease-standard sn:hover:not-disabled:bg-subtle sn:data-dragging:border-focus sn:data-dragging:bg-subtle sn:data-invalid:border-danger sn:focus-visible:outline-2 sn:focus-visible:outline-offset-2 sn:focus-visible:outline-focus sn:disabled:cursor-not-allowed sn:disabled:opacity-(--sn-opacity-disabled) sn:motion-reduce:transition-none',
+          'sn:group sn:box-border sn:flex sn:w-full sn:flex-col sn:items-center sn:gap-2 sn:rounded-lg sn:border sn:border-dashed sn:border-strong sn:bg-surface sn:px-4 sn:py-6 sn:font-sans sn:text-center sn:cursor-pointer sn:transition-colors sn:duration-(--sn-duration-fast) sn:ease-standard sn:hover:not-disabled:bg-subtle sn:data-dragging:border-focus sn:data-dragging:bg-subtle sn:data-invalid:border-danger sn:aria-invalid:border-danger sn:focus-visible:outline-2 sn:focus-visible:outline-offset-2 sn:focus-visible:outline-focus sn:disabled:cursor-not-allowed sn:disabled:opacity-(--sn-opacity-disabled) sn:motion-reduce:transition-none',
           className,
         )}
       >
-        <Icon className="sn:size-6 sn:text-muted sn:group-data-invalid:text-danger" />
+        <Icon className="sn:size-6 sn:text-muted sn:group-data-invalid:text-danger sn:group-aria-invalid:text-danger" />
         <span className="sn:text-body-strong sn:text-default">{title ?? (variant === 'image' ? '이미지를 끌어다 놓거나 눌러서 고르세요' : '파일을 끌어다 놓거나 눌러서 고르세요')}</span>
         <span id={messageId} aria-live="polite" className={cn('sn:text-caption', rejectMessage ? 'sn:text-danger' : 'sn:text-muted')}>
           {rejectMessage ?? description}
         </span>
-      </button>
+      </BaseField.Control>
       <input
         ref={inputRef}
         type="file"

@@ -1,10 +1,13 @@
 import { createRoot } from 'react-dom/client';
 import '../dist/styles.css';
-import { ChevronDown, Download, Ellipsis, Inbox, Plus, Search, Settings, Trash2 } from 'lucide-react';
+import { ChevronDown, Copy, Download, Ellipsis, Inbox, Pencil, Plus, Search, Settings, Trash2 } from 'lucide-react';
 import {
   Avatar, Button, Card, CardBody, CardDescription, CardFooter, CardHeader, CardTitle,
   Dialog, DialogClose, DialogDescription, DialogFooter, DialogPopup, DialogTitle, DialogTrigger, EmptyState, ErrorState, Field, Input, Skeleton, Text, type TextVariant,
   Checkbox, CheckboxGroup, Radio, RadioGroup, Select, Switch, Textarea,
+  AlertDialog, AlertDialogClose, AlertDialogDescription, AlertDialogFooter, AlertDialogPopup, AlertDialogTitle, AlertDialogTrigger,
+  Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger, Popover, PopoverDescription, PopoverPopup, PopoverTitle, PopoverTrigger,
+  Separator, Tab, Tabs, TabsList, TabsPanel, Tooltip,
 } from '../src';
 
 const variants = ['primary', 'secondary', 'ghost', 'danger'] as const;
@@ -70,6 +73,54 @@ function Forms() {
   );
 }
 
+function Overlays() {
+  const row = { display: 'flex', flexWrap: 'wrap', gap: 'var(--sn-space-4)', alignItems: 'center' } as const;
+  return (
+    <div id="overlays" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sn-space-6)', maxWidth: 720 }}>
+      <div style={row}>
+        <AlertDialog>
+          <AlertDialogTrigger id="open-alert" render={<Button variant="danger" />}>키 삭제</AlertDialogTrigger>
+          <AlertDialogPopup>
+            <AlertDialogTitle>API 키를 삭제할까요?</AlertDialogTitle>
+            <AlertDialogDescription>이 키로 보내는 요청이 바로 실패해요. 삭제하면 되돌릴 수 없어요.</AlertDialogDescription>
+            <AlertDialogFooter>
+              <AlertDialogClose render={<Button variant="secondary" />}>취소</AlertDialogClose>
+              <AlertDialogClose render={<Button variant="danger" />}>삭제</AlertDialogClose>
+            </AlertDialogFooter>
+          </AlertDialogPopup>
+        </AlertDialog>
+        <Menu>
+          <MenuTrigger id="open-menu" render={<Button size="icon-md" variant="ghost" aria-label="더 보기" />}><Ellipsis /></MenuTrigger>
+          <MenuPopup>
+            <MenuItem><Pencil />이름 바꾸기</MenuItem>
+            <MenuItem><Copy />키 복사</MenuItem>
+            <MenuSeparator />
+            <MenuItem tone="danger"><Trash2 />삭제</MenuItem>
+          </MenuPopup>
+        </Menu>
+        <Popover>
+          <PopoverTrigger id="open-popover" render={<Button variant="secondary" />}>공유</PopoverTrigger>
+          <PopoverPopup>
+            <PopoverTitle>링크 공유</PopoverTitle>
+            <PopoverDescription>링크가 있는 사람은 누구나 볼 수 있어요.</PopoverDescription>
+            <div style={{ display: 'flex', gap: 'var(--sn-space-2)' }}><Input defaultValue="sonic.app/s/a91f" readOnly /><Button variant="secondary">복사</Button></div>
+          </PopoverPopup>
+        </Popover>
+        <Tooltip content="설정"><Button id="tip-settings" size="icon-md" variant="ghost" aria-label="설정"><Settings /></Button></Tooltip>
+        <Tooltip content="다운로드"><Button size="icon-md" variant="ghost" aria-label="다운로드"><Download /></Button></Tooltip>
+      </div>
+      <Tabs defaultValue="overview">
+        <TabsList><Tab value="overview">개요</Tab><Tab value="usage">사용량</Tab><Tab value="settings">설정</Tab><Tab value="billing" disabled>결제</Tab></TabsList>
+        <TabsPanel value="overview">개요 내용</TabsPanel>
+        <TabsPanel value="usage">사용량 내용</TabsPanel>
+        <TabsPanel value="settings">설정 내용</TabsPanel>
+      </Tabs>
+      <div style={{ ...row, gap: 'var(--sn-space-3)' }}><Text tone="muted">문서</Text><Separator orientation="vertical" /><Text tone="muted">상태</Text><Separator orientation="vertical" /><Text tone="muted">문의</Text></div>
+      <Separator />
+    </div>
+  );
+}
+
 function App() {
   return (
     <div className="sn:flex sn:flex-col sn:gap-6 sn:p-6 sn:font-sans">
@@ -100,6 +151,7 @@ function App() {
           {sizes.map(s => <Avatar key={s} size={s} fallback="HP" />)}
         </div>
       </div>
+      <Overlays />
       <Forms />
       <div id="states" className="sn:flex sn:flex-wrap sn:items-start sn:gap-6">
         {(['normal', 'loading', 'empty', 'error'] as const).map(s => <KeyCard key={s} state={s} />)}

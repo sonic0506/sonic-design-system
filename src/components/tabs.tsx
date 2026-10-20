@@ -19,9 +19,18 @@ export function Tabs({ value, defaultValue, onValueChange, className, children }
   );
 }
 
-export function TabsList({ className, children }: { className?: string; children?: React.ReactNode }) {
+export interface TabsListProps {
+  /** 화살표 키로 이동하면 바로 탭을 바꿀지 (기본 true). false면 화살표로 이동하고 Enter·Space로 바꿔요 */
+  activateOnFocus?: boolean;
+  /** 끝에서 화살표를 누르면 처음으로 돌아갈지 (기본 true) */
+  loopFocus?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+export function TabsList({ activateOnFocus = true, loopFocus = true, className, children }: TabsListProps) {
   return (
-    <BaseTabs.List className={cn('sn:relative sn:flex sn:border-b sn:border-default', className)}>
+    <BaseTabs.List activateOnFocus={activateOnFocus} loopFocus={loopFocus} className={cn('sn:relative sn:flex sn:border-b sn:border-default', className)}>
       {children}
       <BaseTabs.Indicator className="sn:absolute sn:bottom-[-1px] sn:left-0 sn:h-0.5 sn:w-(--active-tab-width) sn:translate-x-(--active-tab-left) sn:bg-primary sn:transition-[translate,width] sn:duration-(--sn-duration-normal) sn:ease-standard sn:motion-reduce:transition-none" />
     </BaseTabs.List>
@@ -42,7 +51,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab({ 
       value={value}
       disabled={disabled}
       className={cn(
-        'sn:box-border sn:flex sn:h-8 sn:items-center sn:border-0 sn:bg-transparent sn:px-3 sn:font-sans sn:text-body-strong sn:text-muted sn:cursor-pointer sn:outline-none sn:focus-visible:outline-2 sn:focus-visible:-outline-offset-2 sn:focus-visible:outline-focus sn:transition-colors sn:duration-(--sn-duration-fast) sn:hover:not-data-disabled:text-default sn:data-active:text-default sn:data-disabled:cursor-not-allowed sn:data-disabled:opacity-(--sn-opacity-disabled)',
+        'sn:box-border sn:flex sn:h-8 sn:items-center sn:border-0 sn:bg-transparent sn:px-3 sn:font-sans sn:text-body-strong sn:text-muted sn:cursor-pointer sn:focus-visible:outline-2 sn:focus-visible:-outline-offset-2 sn:focus-visible:outline-focus sn:transition-colors sn:duration-(--sn-duration-fast) sn:hover:not-data-disabled:text-default sn:data-active:text-default sn:data-disabled:cursor-not-allowed sn:data-disabled:opacity-(--sn-opacity-disabled)',
         className,
       )}
     >
@@ -53,7 +62,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab({ 
 
 export function TabsPanel({ value, className, children }: { value: string; className?: string; children?: React.ReactNode }) {
   return (
-    <BaseTabs.Panel value={value} className={cn('sn:text-body sn:text-default sn:outline-none sn:focus-visible:outline-2 sn:focus-visible:outline-offset-2 sn:focus-visible:outline-focus', className)}>
+    <BaseTabs.Panel value={value} className={cn('sn:text-body sn:text-default sn:focus-visible:outline-2 sn:focus-visible:outline-offset-2 sn:focus-visible:outline-focus', className)}>
       {children}
     </BaseTabs.Panel>
   );

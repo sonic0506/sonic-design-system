@@ -211,7 +211,7 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 | 상태 | Figma | 코드 |
 |---|---|---|
 | hover | Core 문서 "Interaction states" 매트릭스에 인스턴스 오버라이드로 그림 | `:hover` (disabled일 때는 적용 안 함) |
-| focus | 같은 매트릭스. 2px `border/focus` 링, 간격 2px. invalid Input은 `border/danger` 링 | `:focus-visible` → `outline 2px`, `outline-offset 2px` |
+| focus | 같은 매트릭스. 2px `border/focus` 링, 간격 2px. invalid Input은 `border/danger` 링 | `:focus-visible` → `outline 2px`, `outline-offset 2px` (Tab만 안쪽 −2px). 포커스 링을 그리는 요소에는 `outline-none`을 같이 쓰지 않아요(Tailwind v4에서 링이 사라져요) |
 | press | 그리지 않음 | 구현 안 함 (v0.1) |
 
 상태별 토큰은 §10 컴포넌트 스펙 표가 기준이에요. 화면 디자인에서는 hover, focus를 따로 그리지 않아요. 컴포넌트가 자동으로 처리해요.
@@ -526,7 +526,9 @@ radius `radius/full`, 바탕 `bg/subtle`, fallback 글자 `text/muted`. 이미�
 </Tabs>
 ```
 
-같은 대상의 다른 보기를 오갈 때만 써요(페이지 이동 링크에는 쓰지 않아요). 탭 높이 32, padding `space/3`, `body-strong`. 선택 `text/default`, 나머지 `text/muted`(hover 시 `text/default`). 목록 아래 1px `border/default`, 선택 표시 막대 2px `bg/primary`가 `duration/normal`로 움직여요. 목록과 패널 사이 `space/4`, 화살표 키로 이동해요.
+같은 대상의 다른 보기를 오갈 때만 써요(페이지 이동 링크에는 쓰지 않아요). 탭 높이 32, padding `space/3`, `body-strong`. 선택 `text/default`, 나머지 `text/muted`(hover 시 `text/default`). 목록 아래 1px `border/default`, 선택 표시 막대 2px `bg/primary`가 `duration/normal`로 움직여요. 목록과 패널 사이 `space/4`예요.
+
+키보드: 기본은 화살표 키로 이동하면 **바로 탭이 바뀌어요**(`activateOnFocus`, 기본 `true`). 탭을 바꿀 때 무거운 내용을 불러온다면 `<TabsList activateOnFocus={false}>`로 화살표는 이동만, Enter·Space로 전환하게 해요. 끝에서 처음으로 돌아가는 `loopFocus`도 기본 `true`예요. 키보드 조작 자체를 끄는 옵션은 없어요. 포커스 링은 탭끼리 겹치지 않도록 탭 **안쪽**(offset −2px)에 그려요.
 
 ### Separator
 

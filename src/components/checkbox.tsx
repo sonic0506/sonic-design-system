@@ -8,7 +8,8 @@ import { boxClass } from './popup-styles';
 
 const labelClass = 'sn:inline-flex sn:items-center sn:gap-2 sn:font-sans sn:text-body sn:text-default sn:cursor-pointer';
 const disabledClass = 'sn:cursor-not-allowed sn:opacity-(--sn-opacity-disabled)';
-const focusClass = 'sn:outline-none sn:focus-visible:outline-2 sn:focus-visible:outline-offset-2 sn:focus-visible:outline-focus';
+// outline-none을 같이 쓰면 Tailwind v4에서 --tw-outline-style이 none이 되어 포커스 링이 사라져요
+const focusClass = 'sn:focus-visible:outline-2 sn:focus-visible:outline-offset-2 sn:focus-visible:outline-focus';
 
 export interface CheckboxProps {
   checked?: boolean;

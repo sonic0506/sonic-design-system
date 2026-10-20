@@ -334,6 +334,28 @@ describe('Popover / Tooltip', () => {
 });
 
 describe('Tabs / Separator', () => {
+  it('기본값은 화살표만으로 탭이 바뀌고, activateOnFocus=false면 Enter로 바뀜', async () => {
+    const user = userEvent.setup();
+    const ui = (auto: boolean) => (
+      <Tabs defaultValue="overview">
+        <TabsList activateOnFocus={auto}><Tab value="overview">개요</Tab><Tab value="usage">사용량</Tab></TabsList>
+        <TabsPanel value="overview">개요 내용</TabsPanel>
+        <TabsPanel value="usage">사용량 내용</TabsPanel>
+      </Tabs>
+    );
+    const { unmount } = render(ui(true));
+    screen.getByRole('tab', { name: '개요' }).focus();
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: '사용량' })).toHaveAttribute('aria-selected', 'true');
+    unmount();
+    render(ui(false));
+    screen.getByRole('tab', { name: '개요' }).focus();
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: '사용량' })).toHaveAttribute('aria-selected', 'false');
+    await user.keyboard('{Enter}');
+    expect(screen.getByRole('tab', { name: '사용량' })).toHaveAttribute('aria-selected', 'true');
+  });
+
   it('화살표로 탭을 옮기면 패널이 바뀜', async () => {
     const user = userEvent.setup();
     render(
@@ -352,5 +374,22 @@ describe('Tabs / Separator', () => {
   it('Separator는 separator 역할과 방향을 가짐', () => {
     render(<Separator orientation="vertical" />);
     expect(screen.getByRole('separator')).toHaveAttribute('aria-orientation', 'vertical');
+  });
+});
+
+describe('포커스 링', () => {
+  // Tailwind v4에서 outline-none이 --tw-outline-style을 none으로 만들어 focus-visible 링이 사라지는 문제 재발 방지
+  it('포커스 링이 있는 요소에는 outline-none을 같이 쓰지 않음', () => {
+    const { container } = render(
+      <>
+        <Button>버튼</Button><Input /><Textarea /><Checkbox>체크</Checkbox><Switch>스위치</Switch>
+        <RadioGroup label="그룹"><Radio value="a">라디오</Radio></RadioGroup>
+        <Select aria-label="선택" options={[{ value: 'a', label: 'A' }]} />
+        <Tabs defaultValue="a"><TabsList><Tab value="a">탭</Tab></TabsList><TabsPanel value="a">패널</TabsPanel></Tabs>
+      </>,
+    );
+    const ringed = [...container.querySelectorAll('[class*="focus-visible:outline-2"]')];
+    expect(ringed.length).toBeGreaterThanOrEqual(9);
+    for (const el of ringed) expect(el.className).not.toMatch(/(^|\s)sn:outline-none(\s|$)/);
   });
 });

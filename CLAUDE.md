@@ -43,6 +43,7 @@ Foundations, Core, Patterns 페이지는 읽는 사람을 위한 문서예요. �
 - 상태 스타일은 Base UI data 속성을 써요(`data-disabled`, `data-open`, `data-starting-style`, `data-ending-style` …).
 - 컴포넌트를 구현할 때는 frontend-design을 쓰지 않아요. Figma를 그대로 따라요.
 - 하위 컴포넌트는 이름 있는 export만 써요(`CardHeader`). `Card.Header`는 서버 컴포넌트에서 깨져요.
+- 포커스 링(`focus-visible:outline-2`)을 그리는 요소에 `outline-none`을 같이 쓰지 않아요. Tailwind v4에서 `--tw-outline-style`이 none이 되어 링이 사라져요(테스트 '포커스 링'이 막아요). 포커스 확인은 클래스가 아니라 실제 키보드 이동으로 해요.
 
 ## 검증 도구
 

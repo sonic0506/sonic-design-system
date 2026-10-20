@@ -221,7 +221,7 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 
 | 계층 | 위치 | 기준 | 예 |
 |---|---|---|---|
-| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Toast, Badge, Progress, Link, Table, ToggleGroup, Accordion, Field, Skeleton, EmptyState, ErrorState |
+| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Toast, Badge, Progress, Link, Table, ToggleGroup, Accordion, FileDropzone, FileList, Field, Skeleton, EmptyState, ErrorState |
 | **Pattern** | sonic-ui `src/patterns/` | Core 조합이고 도메인을 모르지만, **두 프로젝트 이상에서 같은 형태로 복사됨** | (아직 없음) |
 | **Domain** | 각 프로젝트 | 도메인 타입, API, 비즈니스 로직 중 하나라도 앎 | `UserProfileCard`, `ApiKeyList` |
 
@@ -691,6 +691,73 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 
 긴 내용을 제목만 먼저 보여 주고 필요할 때 펼칠 때 써요(자주 묻는 질문, 문서 사이드바 그룹). 꼭 읽어야 하는 내용은 접어 두지 않아요. 항목 아래 1px `border/default`. 트리거는 위아래 `space/3` + `body-strong`, 오른쪽 `chevron-down` 16(`text/muted`)이 열리면 180° 돌아요. 패널은 `body` + `text/muted`, 아래 `space/4`이고, 높이가 `duration/normal`로 변해요. 닫힌 내용도 브라우저 페이지 찾기로 찾아 열 수 있어요.
 
+### FileDropzone / FileList
+
+```tsx
+const [items, setItems] = useState<FileItemData[]>(serverFiles.map(toItem));   // 서버 파일도 같은 모양으로
+
+<FileDropzone
+  multiple accept=".pdf" maxSize={10_000_000} maxFiles={5 - items.length}
+  description="PDF, 10MB 이하, 5개까지"
+  onFilesChange={(accepted, rejected) => { addItems(accepted); upload(accepted); }}   // 업로드는 프로젝트가 해요
+/>
+<FileList items={items} onRemove={remove} onRetry={retry} />
+<FileList layout="grid" items={images} onRemove={remove} />
+```
+
+컴포넌트는 **고르기·검사·표시만** 해요. 실제 업로드(어느 API로, 어떤 인증으로), 진행률 계산, 재시도는 API를 아는 프로젝트가 하고, 그 결과를 `items`로 넘겨요(§7). 두 번째 프로젝트에서 같은 업로드 코드를 복사하게 되면 `useFileUpload` Pattern으로 올려요.
+
+**FileDropzone**
+
+| prop | 값 |
+|---|---|
+| `onFilesChange` | `(accepted: File[], rejected: FileRejection[]) => void` (필수) |
+| `accept` | `.pdf`, `image/*`, `image/png` 같은 목록 (쉼표로 구분) |
+| `multiple`, `maxFiles` | 여러 개 고르기와 최대 개수. `multiple`이 없으면 한 개만 받아요 |
+| `maxSize` | 파일 하나의 최대 크기(바이트) |
+| `variant` | `file` · `image` (아이콘과 기본 문구) |
+| `title`, `description` | 기본 문구 대신 쓸 문구. 제목이 버튼 이름이 돼요 |
+| `invalid`, `disabled` | boolean |
+
+- 영역 전체가 버튼이라 눌러도, Enter·Space를 눌러도 파일 선택 창이 열려요. 파일을 끌어다 놓아도 돼요. Field 없이 단독으로 써요.
+- 조건(형식 `type`, 크기 `size`, 개수 `count`)에 맞지 않는 파일은 `rejected`로 넘기고, 영역 안에 고치는 방법을 기본 문구로 보여 줘요(예: "계약서.pdf: 10MB보다 큰 파일은 올릴 수 없어요"). 문구는 `rejected[].message`로 바꿀 수 있어요.
+- 점선 1px `border/strong` + `bg/surface` + `radius/lg`, 위아래 `space/6`, 좌우 `space/4`, 요소 사이 `space/2`. 아이콘 24(`upload` · `image`, `text/muted`), 제목 `body-strong`, 조건 `caption` + `text/muted`. hover `bg/subtle`, 끌어다 놓는 중 `border/focus` + `bg/subtle`, 거부되면 `border/danger` + 문구 `text/danger`.
+
+**FileList**
+
+| prop | 값 |
+|---|---|
+| `items` | `FileItemData[]` (아래) |
+| `layout` | `list` (일반 파일) · `grid` (이미지 썸네일) |
+| `onRemove`, `onRetry` | `(id) => void`. 넘기면 삭제·다시 시도 버튼이 생겨요 |
+
+```ts
+interface FileItemData {
+  id: string;
+  name: string;
+  size?: number;                       // 바이트, "2.4 MB"로 표시
+  type?: string;                       // MIME, 이미지 여부 판단
+  status: 'uploading' | 'done' | 'error';
+  progress?: number;                   // 0~100, uploading일 때 Progress
+  error?: string;                      // error일 때 문구 (고치는 방법 포함)
+  url?: string;                        // done 파일을 열 주소 → 이름이 Link
+  previewUrl?: string;                 // 썸네일 주소
+  file?: File;                         // 방금 고른 로컬 파일
+}
+```
+
+미리보기는 `previewUrl` 문자열 하나로 받아요.
+
+| 출처 | `previewUrl` | 비고 |
+|---|---|---|
+| 서버 이미지 | `https://…/thumb.jpg` | 서버가 썸네일 주소를 따로 주는 게 가장 가벼워요 |
+| 서버가 base64로 줌 | `data:image/png;base64,…` | 그대로 표시돼요. 응답이 커지니 썸네일 크기만 권장 |
+| 방금 고른 파일 | 넣지 않고 `file`만 넘김 | 컴포넌트가 blob URL을 만들고, 목록에서 빠지면 해제해요 |
+| 인증이 필요한 파일 | 프로젝트가 받아 만든 blob URL | `<img>`는 인증 헤더를 붙일 수 없어요 |
+
+- `list`: `bg/surface` + 1px `border/default` + `radius/md`, padding·간격 `space/3`, 항목 사이 `space/2`. 아이콘 칸 32(`bg/subtle`, `file` 16), 이름 `body`(완료이고 `url`이 있으면 Link), 크기·진행률 `mono-caption` + `text/muted`. 업로드 중에는 라벨 없는 Progress, 에러면 `border/danger` + `caption` + `text/danger`. 버튼은 ghost `icon-sm`(`refresh-cw` 다시 시도, `x` 삭제).
+- `grid`: 썸네일 96×96(`bg/subtle`, 1px `border/default`, `radius/md`, 안쪽 `space/1`), 항목 사이 `space/3`. 오른쪽 위 secondary `icon-sm` 버튼, 아래 Progress, 아래 이름 `caption` 한 줄 말줄임. 에러면 `border/danger` + `circle-alert`.
+
 ## 11. Figma ↔ 코드 매핑 (Code Connect 대체)
 
 Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수 없어요. 아래 표로 대신합니다. Figma 컴포넌트를 코드로 옮길 때는 이 표의 컴포넌트를 그대로 써요.
@@ -726,6 +793,7 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Table Cell · Table | `65:3742` · `65:3743` | `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell` (`type=header` → `TableHead`, `align` → 같은 prop) | `src/components/table.tsx` |
 | Toggle Item · Toggle Group | `66:3760` · `66:3761` | `<ToggleGroup multiple>` + `<ToggleGroupItem value disabled>` (`pressed` → 현재 값, `content=icon`이면 `aria-label`) | `src/components/toggle-group.tsx` |
 | Accordion Item · Accordion | `66:3792` · `66:3793` | `Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionPanel` (`open` → 현재 값, `title`/`content` → 자식) | `src/components/accordion.tsx` |
-| Icon (32개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
+| File Dropzone · File Item | `71:4191` · `72:4251` | `<FileDropzone variant accept multiple maxSize maxFiles onFilesChange>` (`state` → 끌어다 놓기·거부·`disabled`), `<FileList layout items onRemove onRetry>` (`status` → `items[].status`) | `src/components/file-upload.tsx` |
+| Icon (35개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

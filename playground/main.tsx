@@ -11,6 +11,7 @@ import {
   Separator, Tab, Tabs, TabsList, TabsPanel, Tooltip,
   Badge, Progress, ToastProvider, useToast, type ToastTone,
   Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
+  FileDropzone, FileList, type FileItemData,
 } from '../src';
 
 const variants = ['primary', 'secondary', 'ghost', 'danger'] as const;
@@ -70,6 +71,53 @@ function Feedback() {
         <Progress value={100} label="완료" />
         <Progress value={10} aria-label="업로드" />
         <Button size="sm" variant="secondary" onClick={() => setValue(v => (v >= 100 ? 0 : v + 15))}>진행</Button>
+      </div>
+    </div>
+  );
+}
+
+// 업로드는 프로젝트가 해요: 여기서는 setInterval로 진행률만 흉내 내요
+function useFakeUpload(initial: FileItemData[]) {
+  const [items, setItems] = React.useState(initial);
+  const start = (files: File[]) => {
+    const added = files.map(file => ({ id: crypto.randomUUID(), name: file.name, size: file.size, type: file.type, file, status: 'uploading' as const, progress: 0 }));
+    setItems(prev => [...prev, ...added]);
+    for (const a of added) {
+      const t = setInterval(() => setItems(prev => prev.map(i => {
+        if (i.id !== a.id || i.status !== 'uploading') return i;
+        const progress = (i.progress ?? 0) + 20;
+        if (progress < 100) return { ...i, progress };
+        clearInterval(t);
+        return { ...i, status: 'done', progress: 100, url: '#files' };
+      })), 400);
+    }
+  };
+  const remove = (id: string) => setItems(prev => prev.filter(i => i.id !== id));
+  const retry = (id: string) => setItems(prev => prev.map(i => (i.id === id ? { ...i, status: 'done', error: undefined, url: '#files' } : i)));
+  return { items, start, remove, retry };
+}
+
+const SVG_THUMB = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><rect width="96" height="96" fill="#6E86FF"/><circle cx="30" cy="30" r="10" fill="#fff"/></svg>');
+
+function FileUploads() {
+  const docs = useFakeUpload([
+    { id: 'u', name: '계약서_최종.pdf', size: 2_516_582, status: 'uploading', progress: 45 },
+    { id: 'd', name: '견적서.pdf', size: 820_000, status: 'done', url: '#files' },
+    { id: 'e', name: '사업자등록증.pdf', size: 1_200_000, status: 'error', error: '네트워크가 끊겨 올리지 못했어요. 다시 시도해 주세요.' },
+  ]);
+  const images = useFakeUpload([
+    { id: 'b64', name: 'base64-thumb.svg', type: 'image/svg+xml', status: 'done', previewUrl: SVG_THUMB },
+    { id: 'ie', name: 'broken.png', type: 'image/png', status: 'error', error: '5MB보다 큰 이미지는 올릴 수 없어요.' },
+  ]);
+  return (
+    <div id="files" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sn-space-10)', alignItems: 'flex-start' }}>
+      <div className="sn:flex sn:flex-col sn:gap-2" style={{ width: 400 }}>
+        <FileDropzone id="dz-file" multiple accept=".pdf" maxSize={10_000_000} maxFiles={5} description="PDF, 10MB 이하, 5개까지" onFilesChange={a => docs.start(a)} />
+        <FileList items={docs.items} onRemove={docs.remove} onRetry={docs.retry} />
+      </div>
+      <div className="sn:flex sn:flex-col sn:gap-2" style={{ width: 400 }}>
+        <FileDropzone id="dz-image" variant="image" multiple accept="image/*" maxSize={5_000_000} description="JPG, PNG, 5MB 이하" onFilesChange={a => images.start(a)} />
+        <FileList layout="grid" items={images.items} onRemove={images.remove} onRetry={images.retry} />
       </div>
     </div>
   );
@@ -273,6 +321,7 @@ function App() {
           {sizes.map(s => <Avatar key={s} size={s} fallback="HP" />)}
         </div>
       </div>
+      <FileUploads />
       <ContentDisclosure />
       <Feedback />
       <Overlays />

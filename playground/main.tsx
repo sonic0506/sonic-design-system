@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import '../dist/styles.css';
-import { ChevronDown, Copy, Download, Ellipsis, Inbox, Pencil, Plus, Search, Settings, Trash2 } from 'lucide-react';
+import { ChevronDown, Copy, Download, Ellipsis, Inbox, LayoutGrid, List, Pencil, Plus, Search, Settings, Trash2 } from 'lucide-react';
 import {
   Avatar, Button, Card, CardBody, CardDescription, CardFooter, CardHeader, CardTitle,
   Dialog, DialogClose, DialogDescription, DialogFooter, DialogPopup, DialogTitle, DialogTrigger, EmptyState, ErrorState, Field, Input, Skeleton, Text, type TextVariant,
@@ -10,6 +10,7 @@ import {
   Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger, Popover, PopoverDescription, PopoverPopup, PopoverTitle, PopoverTrigger,
   Separator, Tab, Tabs, TabsList, TabsPanel, Tooltip,
   Badge, Progress, ToastProvider, useToast, type ToastTone,
+  Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
 } from '../src';
 
 const variants = ['primary', 'secondary', 'ghost', 'danger'] as const;
@@ -69,6 +70,46 @@ function Feedback() {
         <Progress value={100} label="완료" />
         <Progress value={10} aria-label="업로드" />
         <Button size="sm" variant="secondary" onClick={() => setValue(v => (v >= 100 ? 0 : v + 15))}>진행</Button>
+      </div>
+    </div>
+  );
+}
+
+function ContentDisclosure() {
+  return (
+    <div id="content" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sn-space-10)', alignItems: 'flex-start' }}>
+      <div id="links" className="sn:flex sn:flex-col sn:gap-3">
+        <Text>규칙은 <Link id="link-default" href="#content">DESIGN.md 보기</Link>에 있어요.</Text>
+        <Link id="link-external" href="https://base-ui.com" external>Base UI 문서</Link>
+      </div>
+      <div id="table" style={{ width: 480 }}>
+        <Table>
+          <TableHeader><TableRow><TableHead>이름</TableHead><TableHead>상태</TableHead><TableHead align="end">요청 수</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {[['production', '활성', '12,480'], ['github-actions', '활성', '3,215'], ['local-dev', '만료 예정', '0']].map(([n, st, c]) => (
+              <TableRow key={n}><TableCell>{n}</TableCell><TableCell>{st}</TableCell><TableCell align="end">{c}</TableCell></TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <div id="toggles" className="sn:flex sn:flex-col sn:gap-3">
+        <ToggleGroup defaultValue="list" aria-label="보기 방식">
+          <ToggleGroupItem value="list">목록</ToggleGroupItem>
+          <ToggleGroupItem value="card">카드</ToggleGroupItem>
+          <ToggleGroupItem value="table">표</ToggleGroupItem>
+        </ToggleGroup>
+        <ToggleGroup defaultValue="list" aria-label="아이콘 보기">
+          <ToggleGroupItem value="list" iconOnly aria-label="목록"><List /></ToggleGroupItem>
+          <ToggleGroupItem value="grid" iconOnly aria-label="격자"><LayoutGrid /></ToggleGroupItem>
+          <ToggleGroupItem value="off" iconOnly aria-label="비활성" disabled><Settings /></ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+      <div id="accordion" style={{ width: 400 }}>
+        <Accordion defaultValue={['limit']}>
+          <AccordionItem value="limit"><AccordionTrigger>키는 몇 개까지 만들 수 있나요?</AccordionTrigger><AccordionPanel>프로젝트마다 10개까지 만들 수 있어요. 쓰지 않는 키는 삭제해 주세요.</AccordionPanel></AccordionItem>
+          <AccordionItem value="restore"><AccordionTrigger>삭제한 키를 되살릴 수 있나요?</AccordionTrigger><AccordionPanel>되살릴 수 없어요. 새 키를 만들어 주세요.</AccordionPanel></AccordionItem>
+          <AccordionItem value="share" disabled><AccordionTrigger>키를 다른 사람과 같이 써도 되나요?</AccordionTrigger><AccordionPanel>권장하지 않아요.</AccordionPanel></AccordionItem>
+        </Accordion>
       </div>
     </div>
   );
@@ -232,6 +273,7 @@ function App() {
           {sizes.map(s => <Avatar key={s} size={s} fallback="HP" />)}
         </div>
       </div>
+      <ContentDisclosure />
       <Feedback />
       <Overlays />
       <Forms />

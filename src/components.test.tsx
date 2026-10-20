@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
+  Checkbox, CheckboxGroup, Radio, RadioGroup, Select, Switch, Textarea,
   EmptyState, ErrorState, Field, Skeleton,
   Avatar, Button, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
 } from './index';
@@ -172,5 +173,97 @@ describe('EmptyState / ErrorState', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('불러오지 못했어요');
     await userEvent.click(screen.getByRole('button', { name: '다시 시도' }));
     expect(onRetry).toHaveBeenCalledOnce();
+  });
+});
+
+describe('Textarea', () => {
+  it('textarea로 렌더하고 Field의 invalid를 받음', () => {
+    render(<Field label="메모" error="너무 길어요" invalid><Textarea /></Field>);
+    const ta = screen.getByRole('textbox', { name: '메모' });
+    expect(ta.tagName).toBe('TEXTAREA');
+    expect(ta).toHaveAttribute('aria-invalid', 'true');
+    expect(ta).toHaveAttribute('rows', '3');
+  });
+});
+
+describe('Checkbox / CheckboxGroup', () => {
+  it('Space로 토글하고 indeterminate는 mixed로 알림', async () => {
+    const onChange = vi.fn();
+    render(<><Checkbox onCheckedChange={onChange}>알림 받기</Checkbox><Checkbox indeterminate>전체</Checkbox></>);
+    const cb = screen.getByRole('checkbox', { name: '알림 받기' });
+    cb.focus();
+    await userEvent.keyboard(' ');
+    expect(onChange).toHaveBeenCalledWith(true);
+    expect(screen.getByRole('checkbox', { name: '전체' })).toHaveAttribute('aria-checked', 'mixed');
+  });
+
+  it('그룹은 legend로 이름이 붙고 값 배열을 돌려줌', async () => {
+    const onChange = vi.fn();
+    render(<CheckboxGroup label="알림 채널" defaultValue={['email']} onValueChange={onChange}><Checkbox value="email">이메일</Checkbox><Checkbox value="push">푸시</Checkbox></CheckboxGroup>);
+    expect(screen.getByRole('group', { name: '알림 채널' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('checkbox', { name: '푸시' }));
+    expect(onChange).toHaveBeenLastCalledWith(['email', 'push']);
+  });
+});
+
+describe('RadioGroup', () => {
+  it('화살표 키로 다음 항목을 선택함', async () => {
+    const onChange = vi.fn();
+    render(<RadioGroup label="결제 주기" defaultValue="month" onValueChange={onChange}><Radio value="month">월간</Radio><Radio value="year">연간</Radio></RadioGroup>);
+    screen.getByRole('radio', { name: '월간' }).focus();
+    await userEvent.keyboard('{ArrowDown}');
+    expect(onChange).toHaveBeenLastCalledWith('year');
+    expect(screen.getByRole('radio', { name: '연간' })).toHaveAttribute('aria-checked', 'true');
+  });
+});
+
+describe('Switch', () => {
+  it('switch 역할이고 Space로 켜짐', async () => {
+    const onChange = vi.fn();
+    render(<Switch onCheckedChange={onChange}>이메일 알림</Switch>);
+    const sw = screen.getByRole('switch', { name: '이메일 알림' });
+    sw.focus();
+    await userEvent.keyboard(' ');
+    expect(onChange).toHaveBeenCalledWith(true);
+  });
+});
+
+describe('Select', () => {
+  const opts = [{ value: 'free', label: 'Free' }, { value: 'pro', label: 'Pro' }, { value: 'team', label: 'Team' }];
+
+  it('단일: 고르면 닫히고 라벨을 보여 줌', async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    render(<Select aria-label="요금제" options={opts} placeholder="요금제 선택" onValueChange={onChange} />);
+    const trigger = screen.getByRole('combobox', { name: '요금제' });
+    expect(trigger).toHaveTextContent('요금제 선택');
+    await user.click(trigger);
+    await user.click(await screen.findByRole('option', { name: 'Pro' }));
+    expect(onChange).toHaveBeenLastCalledWith('pro');
+    await vi.waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument());
+    expect(trigger).toHaveTextContent('Pro');
+  });
+
+  it('다중: 여러 개를 골라도 열려 있고 값은 배열, 트리거는 쉼표로 표시', async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    render(<Select multiple aria-label="태그" options={opts} placeholder="태그 선택" onValueChange={onChange} />);
+    const trigger = screen.getByRole('combobox', { name: '태그' });
+    await user.click(trigger);
+    await user.click(await screen.findByRole('option', { name: 'Free' }));
+    await user.click(screen.getByRole('option', { name: 'Team' }));
+    expect(onChange).toHaveBeenLastCalledWith(['free', 'team']);
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+    expect(trigger).toHaveTextContent('Free, Team');
+  });
+
+  it('Field 안에서 라벨과 invalid가 연결되고, 단일에 배열을 주면 타입 에러', () => {
+    render(<Field label="요금제" error="요금제를 고르세요" invalid><Select options={opts} /></Field>);
+    const trigger = screen.getByRole('combobox', { name: '요금제' });
+    expect(trigger).toHaveAttribute('data-invalid');
+    expect(trigger.getAttribute('aria-describedby')).toContain(screen.getByText('요금제를 고르세요').id);
+    // @ts-expect-error multiple이 아니면 value는 배열이 될 수 없음
+    const el = <Select options={opts} value={['pro']} />;
+    expect(el).toBeTruthy();
   });
 });

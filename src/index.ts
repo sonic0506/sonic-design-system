@@ -1,5 +1,10 @@
 export { Button, type ButtonProps } from './components/button';
 export { Input, type InputProps } from './components/input';
+export { Textarea, type TextareaProps } from './components/textarea';
+export { Checkbox, CheckboxGroup, type CheckboxProps, type CheckboxGroupProps } from './components/checkbox';
+export { RadioGroup, Radio, type RadioGroupProps, type RadioProps } from './components/radio-group';
+export { Switch, type SwitchProps } from './components/switch';
+export { Select, type SelectProps, type SelectOption } from './components/select';
 export { Text, type TextProps, type TextVariant } from './components/text';
 export { Card, CardHeader, CardTitle, CardDescription, CardBody, CardFooter, type CardProps } from './components/card';
 export { Avatar, type AvatarProps } from './components/avatar';

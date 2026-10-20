@@ -156,6 +156,7 @@ import { Plus } from 'lucide-react';
 | 위치 | 값 |
 |---|---|
 | 페이지 콘텐츠 | 최대 너비 960, 가운데 정렬. 좌우 padding `space/4`(960 안쪽), 위아래 padding `space/10` |
+| 사이드 내비가 있는 화면 | 헤더와 사이드 내비(너비 240)는 화면 전체를 쓰고, 960 규칙은 본문 영역에만 적용 |
 | 섹션 사이 | `space/6` |
 | Card 안쪽 padding / Header·Body·Footer 사이 | `space/5` / `space/4` |
 | 폼 필드 사이 | `space/4` |
@@ -211,7 +212,7 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 | 상태 | Figma | 코드 |
 |---|---|---|
 | hover | Core 문서 "Interaction states" 매트릭스에 인스턴스 오버라이드로 그림 | `:hover` (disabled일 때는 적용 안 함) |
-| focus | 같은 매트릭스. 2px `border/focus` 링, 간격 2px. invalid Input은 `border/danger` 링 | `:focus-visible` → `outline 2px`, `outline-offset 2px` (Tab만 안쪽 −2px). 포커스 링을 그리는 요소에는 `outline-none`을 같이 쓰지 않아요(Tailwind v4에서 링이 사라져요) |
+| focus | 같은 매트릭스. 2px `border/focus` 링, 간격 2px. invalid Input은 `border/danger` 링 | `:focus-visible` → `outline 2px`, `outline-offset 2px` (Tab, ToggleGroup 항목만 안쪽 −2px). 포커스 링을 그리는 요소에는 `outline-none`을 같이 쓰지 않아요(Tailwind v4에서 링이 사라져요) |
 | press | 그리지 않음 | 구현 안 함 (v0.1) |
 
 상태별 토큰은 §10 컴포넌트 스펙 표가 기준이에요. 화면 디자인에서는 hover, focus를 따로 그리지 않아요. 컴포넌트가 자동으로 처리해요.
@@ -220,7 +221,7 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 
 | 계층 | 위치 | 기준 | 예 |
 |---|---|---|---|
-| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Toast, Badge, Progress, Field, Skeleton, EmptyState, ErrorState |
+| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Toast, Badge, Progress, Link, Table, ToggleGroup, Accordion, Field, Skeleton, EmptyState, ErrorState |
 | **Pattern** | sonic-ui `src/patterns/` | Core 조합이고 도메인을 모르지만, **두 프로젝트 이상에서 같은 형태로 복사됨** | (아직 없음) |
 | **Domain** | 각 프로젝트 | 도메인 타입, API, 비즈니스 로직 중 하나라도 앎 | `UserProfileCard`, `ApiKeyList` |
 
@@ -616,6 +617,80 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 
 라벨 `label` + `text/default`, 오른쪽에 백분율 `mono-caption` + `text/muted`, 막대와 사이 `space/2`. 트랙 높이 4(`space/1`) `bg/subtle` `radius/full`, 채움 `bg/primary`이 `duration/normal`로 늘어나요. 끝이 정해진 작업(업로드, 내보내기)에만 써요. 끝을 알 수 없는 기다림은 Button `loading`이나 Skeleton을 써요.
 
+### Link
+
+```tsx
+<Link href="/docs">DESIGN.md 보기</Link>
+<Link href="https://base-ui.com" external>Base UI 문서</Link>
+<Link render={<NextLink href="/docs" />}>문서</Link>   // Next.js Link와 함께
+```
+
+| prop | 값 |
+|---|---|
+| `href` | 이동할 주소 |
+| `external` | 새 탭으로 열고(`rel="noopener noreferrer"`) 오른쪽에 `external-link` 아이콘을 붙여요 |
+| `render` | 다른 링크 컴포넌트로 렌더링 (예: Next.js `Link`) |
+
+다른 페이지나 문서로 **이동**할 때 써요. 동작을 실행하면 Button을 써요. 글자 크기는 부모를 따르고, 색은 `text/default` + 밑줄(offset 2px)이에요. 강조는 한 곳에만 쓰는 원칙(§1)에 따라 링크에 코발트를 쓰지 않아요. hover는 `text/muted`, 포커스 링은 공통 규칙(2px, offset 2px)이에요. 외부 링크 아이콘은 16, 글자와 간격 `space/1`이에요.
+
+### Table
+
+```tsx
+<Table>
+  <TableHeader>
+    <TableRow><TableHead>이름</TableHead><TableHead align="end">요청 수</TableHead></TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow><TableCell>production</TableCell><TableCell align="end">12,480</TableCell></TableRow>
+  </TableBody>
+</Table>
+```
+
+| prop | 값 |
+|---|---|
+| `TableHead`, `TableCell`의 `align` | `start` · `end` (숫자 열은 `end`) |
+
+여러 항목의 같은 속성을 비교할 때 써요. 행 높이 40(`space/10`), 좌우 padding `space/3`, 행 아래 1px `border/default`. 머리글 `label` + `text/muted`, 본문 `body` + `text/default`, `align="end"`인 본문 칸은 숫자라서 `mono`예요. 줄무늬나 hover 바탕은 쓰지 않아요. 표가 부모보다 넓으면 가로로 스크롤해요.
+
+### ToggleGroup
+
+```tsx
+<ToggleGroup value={view} onValueChange={setView} aria-label="보기 방식">          // 단일: string
+  <ToggleGroupItem value="list">목록</ToggleGroupItem>
+  <ToggleGroupItem value="card">카드</ToggleGroupItem>
+</ToggleGroup>
+<ToggleGroup multiple value={filters} onValueChange={setFilters}>…</ToggleGroup>   // 다중: string[]
+<ToggleGroupItem value="dark" iconOnly aria-label="다크 테마"><Moon /></ToggleGroupItem>   // 아이콘만이면 iconOnly + aria-label 필수
+```
+
+| prop | 값 |
+|---|---|
+| `multiple` | 여러 개를 함께 누를 수 있음. 켜면 `value`·`onValueChange`가 배열이에요(타입으로 강제) |
+| `value`, `defaultValue`, `onValueChange` | 단일은 `string`, 다중은 `string[]`. 단일은 항상 하나가 눌려 있어요(눌린 항목을 다시 눌러도 꺼지지 않음) |
+| `disabled` | 그룹 전체 또는 항목 하나 |
+| `ToggleGroupItem`의 `iconOnly` | 아이콘만 있는 24×24 항목. `aria-label`이 필수예요(타입으로 강제) |
+
+같은 대상을 **보는 방식**을 바꿀 때 써요(목록/카드, 라이트/다크). 누르면 바로 적용돼요. 폼에서 값을 고를 때는 RadioGroup이나 Select를 써요. 바탕 `bg/subtle` + 안쪽 `space/1` + `radius/md`(전체 높이 32). 항목 높이 24(`space/6`), 좌우 `space/2`, `label`, `radius/sm`. 눌린 항목 `bg/surface` + 1px `border/default` + `text/default`, 나머지 `text/muted`(hover `text/default`). 아이콘만 있는 항목은 24×24, 아이콘 16이에요. 화살표 키로 항목 사이를 이동해요. 항목끼리 붙어 있어서 포커스 링은 Tab처럼 **안쪽**(offset −2px)에 그려요.
+
+### Accordion
+
+```tsx
+<Accordion defaultValue={['limit']}>
+  <AccordionItem value="limit">
+    <AccordionTrigger>키는 몇 개까지 만들 수 있나요?</AccordionTrigger>
+    <AccordionPanel>프로젝트마다 10개까지 만들 수 있어요.</AccordionPanel>
+  </AccordionItem>
+</Accordion>
+```
+
+| prop | 값 |
+|---|---|
+| `multiple` | 여러 항목을 함께 열 수 있음 (기본 `false`) |
+| `value`, `defaultValue`, `onValueChange` | 열린 항목들의 `value` 배열 |
+| `AccordionItem`의 `disabled` | 항목 하나를 비활성화 |
+
+긴 내용을 제목만 먼저 보여 주고 필요할 때 펼칠 때 써요(자주 묻는 질문, 문서 사이드바 그룹). 꼭 읽어야 하는 내용은 접어 두지 않아요. 항목 아래 1px `border/default`. 트리거는 위아래 `space/3` + `body-strong`, 오른쪽 `chevron-down` 16(`text/muted`)이 열리면 180° 돌아요. 패널은 `body` + `text/muted`, 아래 `space/4`이고, 높이가 `duration/normal`로 변해요. 닫힌 내용도 브라우저 페이지 찾기로 찾아 열 수 있어요.
+
 ## 11. Figma ↔ 코드 매핑 (Code Connect 대체)
 
 Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수 없어요. 아래 표로 대신합니다. Figma 컴포넌트를 코드로 옮길 때는 이 표의 컴포넌트를 그대로 써요.
@@ -647,6 +722,10 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Toast | `57:3549` | `useToast().add({ tone, title, description })` (`showDescription` → `description`을 넘길지), 앱에는 `<ToastProvider>` | `src/components/toast.tsx` |
 | Badge | `57:3498` | `<Badge tone variant>` (`children` → 자식 문구) | `src/components/badge.tsx` |
 | Progress | `58:5093` | `<Progress value max label>` (`value` variant는 채움 미리보기, `value text`는 코드가 자동 표시) | `src/components/progress.tsx` |
+| Link | `65:3733` | `<Link href external>` (`children` → 자식 문구) | `src/components/link.tsx` |
+| Table Cell · Table | `65:3742` · `65:3743` | `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell` (`type=header` → `TableHead`, `align` → 같은 prop) | `src/components/table.tsx` |
+| Toggle Item · Toggle Group | `66:3760` · `66:3761` | `<ToggleGroup multiple>` + `<ToggleGroupItem value disabled>` (`pressed` → 현재 값, `content=icon`이면 `aria-label`) | `src/components/toggle-group.tsx` |
+| Accordion Item · Accordion | `66:3792` · `66:3793` | `Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionPanel` (`open` → 현재 값, `title`/`content` → 자식) | `src/components/accordion.tsx` |
 | Icon (32개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

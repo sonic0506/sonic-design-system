@@ -112,7 +112,9 @@ function FileUploads() {
   return (
     <div id="files" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sn-space-10)', alignItems: 'flex-start' }}>
       <div className="sn:flex sn:flex-col sn:gap-2" style={{ width: 400 }}>
-        <FileDropzone id="dz-file" multiple accept=".pdf" maxSize={10_000_000} maxFiles={5} description="PDF, 10MB 이하, 5개까지" onFilesChange={a => docs.start(a)} />
+        <Field label="첨부 파일" description="PDF, 10MB 이하, 5개까지">
+          <FileDropzone multiple accept=".pdf" maxSize={10_000_000} maxFiles={5} onFilesChange={a => docs.start(a)} />
+        </Field>
         <FileList items={docs.items} onRemove={docs.remove} onRetry={docs.retry} />
       </div>
       <div className="sn:flex sn:flex-col sn:gap-2" style={{ width: 400 }}>

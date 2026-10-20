@@ -1,7 +1,20 @@
 import { createRoot } from 'react-dom/client';
 import '@xonic0506/sonic-ui/styles.css';
 import './app.css';
-import { Button, Dialog, DialogTrigger, DialogPopup, DialogTitle, DialogDescription, DialogFooter, DialogClose, Field, Input, Skeleton, EmptyState, ErrorState, Select, Menu, MenuTrigger, MenuPopup, MenuItem, Badge, Progress, ToastProvider, useToast } from '@xonic0506/sonic-ui';
+import { Button, Dialog, DialogTrigger, DialogPopup, DialogTitle, DialogDescription, DialogFooter, DialogClose, Field, Input, Skeleton, EmptyState, ErrorState, Select, Menu, MenuTrigger, MenuPopup, MenuItem, Badge, Progress, ToastProvider, useToast, Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel, FileDropzone, FileList } from '@xonic0506/sonic-ui';
+import { useState } from 'react';
+
+function Upload() {
+  const [items, setItems] = useState([{ id: 's', name: '서버파일.pdf', size: 2516582, status: 'done', url: '#' }]);
+  return (
+    <div style={{ width: 400, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <Field label="첨부 파일" description="PDF, 10MB 이하">
+        <FileDropzone multiple accept=".pdf" maxSize={10000000} onFilesChange={a => setItems(p => [...p, ...a.map(f => ({ id: f.name, name: f.name, size: f.size, status: 'uploading', progress: 30, file: f }))])} />
+      </Field>
+      <FileList items={items} onRemove={id => setItems(p => p.filter(i => i.id !== id))} />
+    </div>
+  );
+}
 
 function ToastButton() {
   const toast = useToast();
@@ -34,6 +47,11 @@ function App() {
       <div style={{ display: 'flex', gap: 8 }}><Badge id="badge-subtle" tone="success">활성</Badge><Badge id="badge-solid" tone="danger" variant="solid">만료됨</Badge></div>
       <div style={{ width: 240 }}><Progress id="progress" value={45} label="내보내는 중" /></div>
       <ToastButton />
+      <Link id="link-ext" href="https://base-ui.com" external>Base UI 문서</Link>
+      <div style={{ width: 400 }}><Table><TableHeader><TableRow><TableHead>이름</TableHead><TableHead align="end">요청 수</TableHead></TableRow></TableHeader><TableBody><TableRow><TableCell>production</TableCell><TableCell align="end">12,480</TableCell></TableRow></TableBody></Table></div>
+      <ToggleGroup defaultValue="list" aria-label="보기 방식"><ToggleGroupItem value="list">목록</ToggleGroupItem><ToggleGroupItem value="card">카드</ToggleGroupItem></ToggleGroup>
+      <div style={{ width: 400 }}><Accordion><AccordionItem value="a"><AccordionTrigger>키는 몇 개까지?</AccordionTrigger><AccordionPanel>10개까지예요.</AccordionPanel></AccordionItem></Accordion></div>
+      <Upload />
       <Dialog>
         <DialogTrigger id="open" render={<Button />}>API 키 만들기</DialogTrigger>
         <DialogPopup id="popup">

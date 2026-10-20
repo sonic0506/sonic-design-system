@@ -5,7 +5,7 @@ import {
   AlertDialog, AlertDialogClose, AlertDialogPopup, AlertDialogTitle, AlertDialogTrigger, Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger,
   Popover, PopoverPopup, PopoverTitle, PopoverTrigger, Separator, Tab, Tabs, TabsList, TabsPanel, Tooltip,
   Checkbox, CheckboxGroup, Radio, RadioGroup, Select, Switch, Textarea,
-  EmptyState, ErrorState, Field, Skeleton,
+  EmptyState, ErrorState, Field, Skeleton, Badge, Progress, ToastProvider, useToast,
   Avatar, Button, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
 } from './index';
 
@@ -469,5 +469,35 @@ describe('Dialog / AlertDialog: 내부 트리거 없이 열기', () => {
     await user.click(screen.getByRole('button', { name: '닫기' }));
     await vi.waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(screen.getByRole('button', { name: '다시 불러오기' })).toHaveFocus();
+  });
+});
+
+describe('피드백: Toast, Badge, Progress', () => {
+  it('useToast().add로 띄운 알림은 제목·설명을 보여 주고 닫기로 사라짐', async () => {
+    const user = userEvent.setup();
+    function Save() {
+      const toast = useToast();
+      return <Button onClick={() => toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한 번만 보여 줘요.', tone: 'success' })}>저장</Button>;
+    }
+    render(<ToastProvider><Save /></ToastProvider>);
+    await user.click(screen.getByRole('button', { name: '저장' }));
+    expect(await screen.findByText('API 키를 만들었어요')).toBeInTheDocument();
+    expect(screen.getByText('키는 지금 한 번만 보여 줘요.')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: '알림' })).toBeInTheDocument();
+    await user.click(screen.getByLabelText('알림 닫기'));
+    await vi.waitFor(() => expect(screen.queryByText('API 키를 만들었어요')).not.toBeInTheDocument());
+  });
+
+  it('Badge는 tone·variant 조합에 맞는 색을 씀', () => {
+    render(<><Badge tone="success">활성</Badge><Badge tone="danger" variant="solid">만료됨</Badge></>);
+    expect(screen.getByText('활성')).toHaveClass('sn:bg-success-subtle', 'sn:text-success');
+    expect(screen.getByText('만료됨')).toHaveClass('sn:bg-danger', 'sn:text-on-danger');
+  });
+
+  it('Progress는 progressbar 역할과 값, 라벨 이름을 가짐', () => {
+    render(<Progress value={45} label="내보내는 중" />);
+    const bar = screen.getByRole('progressbar', { name: '내보내는 중' });
+    expect(bar).toHaveAttribute('aria-valuenow', '45');
+    expect(screen.getByText('45%')).toBeInTheDocument();
   });
 });

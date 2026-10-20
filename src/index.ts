@@ -38,3 +38,6 @@ export { Popover, PopoverTrigger, PopoverPopup, PopoverTitle, PopoverDescription
 export { Tooltip, type TooltipProps } from './components/tooltip';
 export { Tabs, TabsList, Tab, TabsPanel, type TabsProps, type TabsListProps, type TabProps } from './components/tabs';
 export { Separator, type SeparatorProps } from './components/separator';
+export { ToastProvider, useToast, type ToastProviderProps, type ToastOptions, type ToastTone } from './components/toast';
+export { Badge, type BadgeProps } from './components/badge';
+export { Progress, type ProgressProps } from './components/progress';

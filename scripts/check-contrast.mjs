@@ -14,7 +14,7 @@ const PAIRS = [
   ['text/inverse', 'bg/inverse'],
   ['text/on-success', 'bg/success'], ['text/success', 'bg/success-subtle'], ['text/success', 'bg/surface'],
   ['text/on-warning', 'bg/warning'], ['text/warning', 'bg/warning-subtle'], ['text/warning', 'bg/surface'],
-  ['text/danger', 'bg/danger-subtle'],
+  ['text/danger', 'bg/danger-subtle'], ['text/default', 'bg/subtle'],
 ];
 
 const lum = hex => {

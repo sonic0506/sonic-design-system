@@ -407,7 +407,7 @@ const retryRef = useRef<HTMLButtonElement>(null);
 | `description` | 설명 문구 (선택) |
 | `error` | 에러 문구. `invalid`일 때만 보이고, 그때는 **설명 자리를 대신해요** |
 | `invalid`, `disabled` | boolean. 안의 Input에 자동으로 전달돼요 (Base UI Field) |
-| `children` | 입력 컨트롤 (지금은 `Input`) |
+| `children` | 입력 컨트롤 (`Input`, `Textarea`, `Select`, `FileDropzone`) |
 
 간격: 라벨 ↔ 입력 ↔ 설명·에러 `space/2`. 라벨 `label` + `text/default`(invalid여도 그대로), 설명 `caption` + `text/muted`, 에러 `caption` + `text/danger`. **Field 안의 Input에는 `invalid`를 따로 주지 않아요.** 입력 컨트롤과 설명 또는 에러는 `aria-describedby`로 연결돼요.
 
@@ -696,11 +696,12 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 ```tsx
 const [items, setItems] = useState<FileItemData[]>(serverFiles.map(toItem));   // 서버 파일도 같은 모양으로
 
-<FileDropzone
-  multiple accept=".pdf" maxSize={10_000_000} maxFiles={5 - items.length}
-  description="PDF, 10MB 이하, 5개까지"
-  onFilesChange={(accepted, rejected) => { addItems(accepted); upload(accepted); }}   // 업로드는 프로젝트가 해요
-/>
+<Field label="첨부 파일" description="PDF, 10MB 이하, 5개까지" error="파일을 1개 이상 올려 주세요." invalid={submitted && !items.length}>
+  <FileDropzone
+    multiple accept=".pdf" maxSize={10_000_000} maxFiles={5 - items.length}
+    onFilesChange={(accepted, rejected) => { addItems(accepted); upload(accepted); }}   // 업로드는 프로젝트가 해요
+  />
+</Field>
 <FileList items={items} onRemove={remove} onRetry={retry} />
 <FileList layout="grid" items={images} onRemove={remove} />
 ```
@@ -716,10 +717,12 @@ const [items, setItems] = useState<FileItemData[]>(serverFiles.map(toItem));   /
 | `multiple`, `maxFiles` | 여러 개 고르기와 최대 개수. `multiple`이 없으면 한 개만 받아요 |
 | `maxSize` | 파일 하나의 최대 크기(바이트) |
 | `variant` | `file` · `image` (아이콘과 기본 문구) |
-| `title`, `description` | 기본 문구 대신 쓸 문구. 제목이 버튼 이름이 돼요 |
+| `title`, `description` | 영역 안 문구. 기본은 "파일을 끌어다 놓거나 눌러서 고르세요". Field 안에서는 조건을 Field `description`에 쓰고 영역 안 `description`은 비워요 |
 | `invalid`, `disabled` | boolean |
 
-- 영역 전체가 버튼이라 눌러도, Enter·Space를 눌러도 파일 선택 창이 열려요. 파일을 끌어다 놓아도 돼요. Field 없이 단독으로 써요.
+- **다른 폼 항목처럼 Field로 감싸요.** Field의 라벨이 버튼 이름이 되고, 설명·에러·`invalid`·`disabled`가 자동으로 연결돼요(Base UI `Field.Control`). Field 없이 쓰면 영역 안 제목이 버튼 이름이 돼요.
+- 에러는 두 종류예요. 고르는 순간 조건에 맞지 않은 파일은 **영역 안**에 바로 알려 주고, "1개 이상 올려 주세요"처럼 제출할 때 확인하는 규칙은 Field `error`로 **아래**에 보여 줘요.
+- 영역 전체가 버튼이라 눌러도, Enter·Space를 눌러도 파일 선택 창이 열려요. 파일을 끌어다 놓아도 돼요.
 - 조건(형식 `type`, 크기 `size`, 개수 `count`)에 맞지 않는 파일은 `rejected`로 넘기고, 영역 안에 고치는 방법을 기본 문구로 보여 줘요(예: "계약서.pdf: 10MB보다 큰 파일은 올릴 수 없어요"). 문구는 `rejected[].message`로 바꿀 수 있어요.
 - 점선 1px `border/strong` + `bg/surface` + `radius/lg`, 위아래 `space/6`, 좌우 `space/4`, 요소 사이 `space/2`. 아이콘 24(`upload` · `image`, `text/muted`), 제목 `body-strong`, 조건 `caption` + `text/muted`. hover `bg/subtle`, 끌어다 놓는 중 `border/focus` + `bg/subtle`, 거부되면 `border/danger` + 문구 `text/danger`.
 

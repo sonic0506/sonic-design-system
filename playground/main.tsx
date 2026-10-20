@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import '../dist/styles.css';
 import { ChevronDown, Copy, Download, Ellipsis, Inbox, Pencil, Plus, Search, Settings, Trash2 } from 'lucide-react';
@@ -73,6 +74,33 @@ function Forms() {
   );
 }
 
+// 내부 트리거 없이: Menu 항목에서 AlertDialog 열기 (제어 모드)
+function ExternalTriggerExample() {
+  const [confirm, setConfirm] = React.useState(false);
+  return (
+    <>
+      <Menu>
+        <MenuTrigger id="row-menu" render={<Button size="icon-md" variant="ghost" aria-label="행 동작" />}><Ellipsis /></MenuTrigger>
+        <MenuPopup>
+          <MenuItem><Pencil />이름 바꾸기</MenuItem>
+          <MenuSeparator />
+          <MenuItem tone="danger" onClick={() => setConfirm(true)}><Trash2 />삭제</MenuItem>
+        </MenuPopup>
+      </Menu>
+      <AlertDialog open={confirm} onOpenChange={setConfirm}>
+        <AlertDialogPopup>
+          <AlertDialogTitle>API 키를 삭제할까요?</AlertDialogTitle>
+          <AlertDialogDescription>이 키로 보내는 요청이 바로 실패해요. 삭제하면 되돌릴 수 없어요.</AlertDialogDescription>
+          <AlertDialogFooter>
+            <AlertDialogClose render={<Button variant="secondary" />}>취소</AlertDialogClose>
+            <Button variant="danger" onClick={() => setConfirm(false)}>삭제</Button>
+          </AlertDialogFooter>
+        </AlertDialogPopup>
+      </AlertDialog>
+    </>
+  );
+}
+
 function Overlays() {
   const row = { display: 'flex', flexWrap: 'wrap', gap: 'var(--sn-space-4)', alignItems: 'center' } as const;
   return (
@@ -98,6 +126,7 @@ function Overlays() {
             <MenuItem tone="danger"><Trash2 />삭제</MenuItem>
           </MenuPopup>
         </Menu>
+        <ExternalTriggerExample />
         <Popover>
           <PopoverTrigger id="open-popover" render={<Button variant="secondary" />}>공유</PopoverTrigger>
           <PopoverPopup>

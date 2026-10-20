@@ -16,11 +16,11 @@ export const AlertDialogClose = React.forwardRef<HTMLButtonElement, DialogButton
   return <BaseAlertDialog.Close ref={ref} {...props} />;
 });
 
-export const AlertDialogPopup = React.forwardRef<HTMLDivElement, DialogPopupProps>(function AlertDialogPopup({ className, ...props }, ref) {
+export const AlertDialogPopup = React.forwardRef<HTMLDivElement, DialogPopupProps>(function AlertDialogPopup({ className, initialFocus, finalFocus, ...props }, ref) {
   return (
     <BaseAlertDialog.Portal>
       <BaseAlertDialog.Backdrop className={backdropClass} />
-      <BaseAlertDialog.Popup ref={ref} className={cn(dialogPopupClass, className)} {...props} />
+      <BaseAlertDialog.Popup ref={ref} initialFocus={initialFocus} finalFocus={finalFocus} className={cn(dialogPopupClass, className)} {...props} />
     </BaseAlertDialog.Portal>
   );
 });

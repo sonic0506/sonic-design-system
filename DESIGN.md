@@ -359,6 +359,32 @@ radius `radius/full`, 바탕 `bg/subtle`, fallback 글자 `text/muted`. 이미�
 - 열기/닫기: `duration/normal` + `easing/standard`. `[data-starting-style]`과 `[data-ending-style]`에서 opacity 0, scale 0.98. Backdrop은 opacity만 바꿔요.
 - `open`, `onOpenChange`로 제어할 수 있어요. Esc와 바깥 클릭으로 닫혀요.
 
+#### 트리거가 밖에 있을 때 (Dialog, AlertDialog 공통)
+
+`DialogTrigger`를 쓸 수 없으면 **제어 모드**로 열어요. Trigger 없이 `open`과 `onOpenChange`만 넘겨요.
+
+```tsx
+// 1) 다른 곳의 버튼, Menu 항목에서 열기
+const [confirm, setConfirm] = useState(false);
+<Menu>
+  <MenuTrigger render={<Button size="icon-md" variant="ghost" aria-label="더 보기" />}><Ellipsis /></MenuTrigger>
+  <MenuPopup><MenuItem tone="danger" onClick={() => setConfirm(true)}><Trash2 />삭제</MenuItem></MenuPopup>
+</Menu>
+<AlertDialog open={confirm} onOpenChange={setConfirm}>
+  <AlertDialogPopup>…</AlertDialogPopup>
+</AlertDialog>
+
+// 2) 코드로 열기 (예: API 에러 뒤). 닫힌 뒤 포커스가 갈 곳을 finalFocus로 정해요
+const retryRef = useRef<HTMLButtonElement>(null);
+<Dialog open={hasError} onOpenChange={setHasError}>
+  <DialogPopup finalFocus={retryRef}>…</DialogPopup>
+</Dialog>
+```
+
+- 닫히면 포커스는 **열기 전에 포커스가 있던 요소**로 돌아가요(바깥 버튼, Menu 트리거). 사용자 동작 없이 코드로 열었다면 돌아갈 곳이 없으니 `finalFocus`를 꼭 지정해요.
+- 열릴 때 포커스는 팝업 안 첫 포커스 요소예요. 다른 곳이 맞으면 `initialFocus`로 정해요(예: AlertDialog에서 위험한 확인 버튼 대신 취소 버튼).
+- 확인 동작이 끝나면 `onOpenChange(false)` 대신 상태를 직접 `false`로 바꿔 닫아요.
+
 ### Button loading
 
 `<Button loading>저장</Button>`

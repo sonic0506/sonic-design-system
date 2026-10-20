@@ -37,15 +37,21 @@ export const DialogClose = React.forwardRef<HTMLButtonElement, DialogButtonProps
 
 export interface DialogPopupProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'className'> {
   className?: string;
+  /** 열릴 때 포커스할 요소 (기본: 팝업 안 첫 포커스 가능 요소) */
+  initialFocus?: React.RefObject<HTMLElement | null>;
+  /** 닫힌 뒤 포커스할 요소 (기본: 트리거나 열기 전 포커스 요소). 코드로 열었을 때 지정해요 */
+  finalFocus?: React.RefObject<HTMLElement | null>;
 }
 
 // Portal + Backdrop + Popup을 한 번에 그림 (DESIGN.md §10 Dialog)
-export const DialogPopup = React.forwardRef<HTMLDivElement, DialogPopupProps>(function DialogPopup({ className, ...props }, ref) {
+export const DialogPopup = React.forwardRef<HTMLDivElement, DialogPopupProps>(function DialogPopup({ className, initialFocus, finalFocus, ...props }, ref) {
   return (
     <BaseDialog.Portal>
       <BaseDialog.Backdrop className={backdropClass} />
       <BaseDialog.Popup
         ref={ref}
+        initialFocus={initialFocus}
+        finalFocus={finalFocus}
         className={cn(dialogPopupClass, className)}
         {...props}
       />

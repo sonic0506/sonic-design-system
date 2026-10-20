@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
@@ -391,5 +392,82 @@ describe('포커스 링', () => {
     const ringed = [...container.querySelectorAll('[class*="focus-visible:outline-2"]')];
     expect(ringed.length).toBeGreaterThanOrEqual(9);
     for (const el of ringed) expect(el.className).not.toMatch(/(^|\s)sn:outline-none(\s|$)/);
+  });
+});
+
+describe('Dialog / AlertDialog: 내부 트리거 없이 열기', () => {
+  it('바깥 버튼으로 연 Dialog는 Esc로 닫히고 포커스가 그 버튼으로 돌아감', async () => {
+    const user = userEvent.setup();
+    function Page() {
+      const [open, setOpen] = React.useState(false);
+      return (
+        <>
+          <Button onClick={() => setOpen(true)}>키 만들기</Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogPopup><DialogTitle>새 API 키</DialogTitle><DialogClose>닫기</DialogClose></DialogPopup>
+          </Dialog>
+        </>
+      );
+    }
+    render(<Page />);
+    const external = screen.getByRole('button', { name: '키 만들기' });
+    await user.click(external);
+    expect(await screen.findByRole('dialog', { name: '새 API 키' })).toBeInTheDocument();
+    await user.keyboard('{Escape}');
+    await vi.waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(external).toHaveFocus();
+  });
+
+  it('Menu 항목에서 연 AlertDialog는 취소하면 포커스가 Menu 트리거로 돌아감', async () => {
+    const user = userEvent.setup();
+    const onDelete = vi.fn();
+    function Row() {
+      const [confirm, setConfirm] = React.useState(false);
+      return (
+        <>
+          <Menu>
+            <MenuTrigger render={<Button size="icon-md" variant="ghost" aria-label="더 보기" />}>…</MenuTrigger>
+            <MenuPopup><MenuItem tone="danger" onClick={() => setConfirm(true)}>삭제</MenuItem></MenuPopup>
+          </Menu>
+          <AlertDialog open={confirm} onOpenChange={setConfirm}>
+            <AlertDialogPopup>
+              <AlertDialogTitle>API 키를 삭제할까요?</AlertDialogTitle>
+              <AlertDialogClose render={<Button variant="secondary" />}>취소</AlertDialogClose>
+              <Button variant="danger" onClick={() => { onDelete(); setConfirm(false); }}>삭제 확인</Button>
+            </AlertDialogPopup>
+          </AlertDialog>
+        </>
+      );
+    }
+    render(<Row />);
+    const trigger = screen.getByRole('button', { name: '더 보기' });
+    await user.click(trigger);
+    await user.click(await screen.findByRole('menuitem', { name: '삭제' }));
+    expect(await screen.findByRole('alertdialog', { name: 'API 키를 삭제할까요?' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '취소' }));
+    await vi.waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument());
+    expect(onDelete).not.toHaveBeenCalled();
+    expect(trigger).toHaveFocus();
+  });
+
+  it('코드로 연 Dialog는 닫힌 뒤 finalFocus 요소로 포커스가 감', async () => {
+    const user = userEvent.setup();
+    function Page() {
+      const [open, setOpen] = React.useState(true); // 예: API 에러 뒤 바로 열림
+      const retryRef = React.useRef<HTMLButtonElement>(null);
+      return (
+        <>
+          <Button ref={retryRef}>다시 불러오기</Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogPopup finalFocus={retryRef}><DialogTitle>불러오지 못했어요</DialogTitle><DialogClose>닫기</DialogClose></DialogPopup>
+          </Dialog>
+        </>
+      );
+    }
+    render(<Page />);
+    expect(await screen.findByRole('dialog', { name: '불러오지 못했어요' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '닫기' }));
+    await vi.waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByRole('button', { name: '다시 불러오기' })).toHaveFocus();
   });
 });

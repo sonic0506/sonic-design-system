@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
+  AlertDialog, AlertDialogClose, AlertDialogPopup, AlertDialogTitle, AlertDialogTrigger, Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger,
+  Popover, PopoverPopup, PopoverTitle, PopoverTrigger, Separator, Tab, Tabs, TabsList, TabsPanel, Tooltip,
   Checkbox, CheckboxGroup, Radio, RadioGroup, Select, Switch, Textarea,
   EmptyState, ErrorState, Field, Skeleton,
   Avatar, Button, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
@@ -265,5 +267,90 @@ describe('Select', () => {
     // @ts-expect-error multiple이 아니면 value는 배열이 될 수 없음
     const el = <Select options={opts} value={['pro']} />;
     expect(el).toBeTruthy();
+  });
+});
+
+describe('AlertDialog', () => {
+  it('Esc로 닫히고 확인 버튼이 동작함', async () => {
+    const user = userEvent.setup();
+    const onDelete = vi.fn();
+    render(
+      <AlertDialog>
+        <AlertDialogTrigger render={<Button variant="danger" />}>삭제</AlertDialogTrigger>
+        <AlertDialogPopup>
+          <AlertDialogTitle>API 키를 삭제할까요?</AlertDialogTitle>
+          <AlertDialogClose render={<Button variant="secondary" />}>취소</AlertDialogClose>
+          <Button variant="danger" onClick={onDelete}>삭제 확인</Button>
+        </AlertDialogPopup>
+      </AlertDialog>,
+    );
+    await user.click(screen.getByRole('button', { name: '삭제' }));
+    expect(await screen.findByRole('alertdialog', { name: 'API 키를 삭제할까요?' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '삭제 확인' }));
+    expect(onDelete).toHaveBeenCalledOnce();
+    await user.keyboard('{Escape}');
+    await vi.waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument());
+  });
+});
+
+describe('Menu', () => {
+  it('화살표로 이동하고 Enter로 실행한 뒤 닫힘', async () => {
+    const user = userEvent.setup();
+    const onRename = vi.fn(), onDelete = vi.fn();
+    render(
+      <Menu>
+        <MenuTrigger render={<Button size="icon-md" variant="ghost" aria-label="더 보기" />}>…</MenuTrigger>
+        <MenuPopup>
+          <MenuItem onClick={onRename}>이름 바꾸기</MenuItem>
+          <MenuSeparator />
+          <MenuItem tone="danger" onClick={onDelete}>삭제</MenuItem>
+        </MenuPopup>
+      </Menu>,
+    );
+    screen.getByRole('button', { name: '더 보기' }).focus();
+    await user.keyboard('{Enter}');
+    await screen.findByRole('menu');
+    await user.keyboard('{ArrowDown}{Enter}');
+    expect(onDelete).toHaveBeenCalledOnce();
+    expect(onRename).not.toHaveBeenCalled();
+    await vi.waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
+  });
+});
+
+describe('Popover / Tooltip', () => {
+  it('Popover는 눌러서 열리고 제목으로 이름이 붙음', async () => {
+    const user = userEvent.setup();
+    render(<Popover><PopoverTrigger render={<Button variant="secondary" />}>공유</PopoverTrigger><PopoverPopup><PopoverTitle>링크 공유</PopoverTitle></PopoverPopup></Popover>);
+    await user.click(screen.getByRole('button', { name: '공유' }));
+    expect(await screen.findByRole('dialog', { name: '링크 공유' })).toBeInTheDocument();
+  });
+
+  it('Tooltip은 키보드 포커스로 보임', async () => {
+    const user = userEvent.setup();
+    render(<Tooltip content="설정"><Button size="icon-md" variant="ghost" aria-label="설정 열기">⚙</Button></Tooltip>);
+    await user.tab();
+    expect(await screen.findByText('설정')).toBeInTheDocument();
+  });
+});
+
+describe('Tabs / Separator', () => {
+  it('화살표로 탭을 옮기면 패널이 바뀜', async () => {
+    const user = userEvent.setup();
+    render(
+      <Tabs defaultValue="overview">
+        <TabsList><Tab value="overview">개요</Tab><Tab value="usage">사용량</Tab></TabsList>
+        <TabsPanel value="overview">개요 내용</TabsPanel>
+        <TabsPanel value="usage">사용량 내용</TabsPanel>
+      </Tabs>,
+    );
+    screen.getByRole('tab', { name: '개요' }).focus();
+    await user.keyboard('{ArrowRight}{Enter}');
+    expect(screen.getByRole('tab', { name: '사용량' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('사용량 내용');
+  });
+
+  it('Separator는 separator 역할과 방향을 가짐', () => {
+    render(<Separator orientation="vertical" />);
+    expect(screen.getByRole('separator')).toHaveAttribute('aria-orientation', 'vertical');
   });
 });

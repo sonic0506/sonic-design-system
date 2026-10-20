@@ -24,3 +24,17 @@ export {
   type DialogButtonProps,
   type DialogPopupProps,
 } from './components/dialog';
+export {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogPopup,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogClose,
+  AlertDialogFooter,
+} from './components/alert-dialog';
+export { Menu, MenuTrigger, MenuPopup, MenuItem, MenuSeparator, type MenuProps, type MenuTriggerProps, type MenuPopupProps, type MenuItemProps } from './components/menu';
+export { Popover, PopoverTrigger, PopoverPopup, PopoverTitle, PopoverDescription, PopoverClose, type PopoverProps, type PopoverPopupProps } from './components/popover';
+export { Tooltip, type TooltipProps } from './components/tooltip';
+export { Tabs, TabsList, Tab, TabsPanel, type TabsProps, type TabProps } from './components/tabs';
+export { Separator, type SeparatorProps } from './components/separator';

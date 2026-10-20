@@ -203,6 +203,8 @@ Figma에서도 레이어 이름을 이 이름으로 맞춰요. 예: `Dialog / Ba
 | `disabled=true` | `[data-disabled]` / `disabled` prop |
 | `highlighted=true` | `[data-highlighted]` (키보드나 hover로 선택된 항목) |
 | `invalid=true` | `[data-invalid]` (Base UI Field) |
+| `selected=true` | `[data-selected]` (Select 항목) |
+| `checked=indeterminate` | `indeterminate` prop, `[data-indeterminate]` (Checkbox) |
 
 hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 아니라 브라우저가 정하는 상태라서예요.
 
@@ -218,7 +220,7 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 
 | 계층 | 위치 | 기준 | 예 |
 |---|---|---|---|
-| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Text, Card, Avatar, Dialog, Field, Skeleton, EmptyState, ErrorState |
+| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, Field, Skeleton, EmptyState, ErrorState |
 | **Pattern** | sonic-ui `src/patterns/` | Core 조합이고 도메인을 모르지만, **두 프로젝트 이상에서 같은 형태로 복사됨** | (아직 없음) |
 | **Domain** | 각 프로젝트 | 도메인 타입, API, 비즈니스 로직 중 하나라도 앎 | `UserProfileCard`, `ApiKeyList` |
 
@@ -412,6 +414,63 @@ radius `radius/full`, 바탕 `bg/subtle`, fallback 글자 `text/muted`. 이미�
 
 에러 문구는 사과하지 않고, 무엇이 실패했고 어떻게 하면 되는지 써요.
 
+### Textarea
+
+`<Textarea rows={3} invalid disabled />` — Input과 같은 테두리·hover·focus·invalid 규칙이에요. 최소 높이 80(약 3줄), padding `space/3`·`space/2`, 세로로만 크기를 바꿀 수 있어요. Field 안에서 라벨·에러와 함께 써요.
+
+### Checkbox / CheckboxGroup
+
+```tsx
+<Checkbox checked={on} onCheckedChange={setOn}>알림 받기</Checkbox>
+<CheckboxGroup label="알림 채널" value={channels} onValueChange={setChannels}>
+  <Checkbox value="email">이메일</Checkbox>
+  <Checkbox value="push">푸시</Checkbox>
+</CheckboxGroup>
+```
+
+- 여러 개를 고를 수 있을 때 써요. 일부만 선택된 상위 항목은 `indeterminate`예요(화면 낭독기에는 "mixed").
+- 상자 16(`space/4`), `radius/sm`. 해제: `bg/surface` + `border/strong`, 선택: `bg/primary` + check 12(`text/on-primary`). 라벨 `body`, 상자와 간격 `space/2`.
+- 그룹은 `fieldset` + `legend`(`label` 스타일)로 묶고, 항목 사이 `space/2`, legend와 `space/3`이에요.
+
+### RadioGroup
+
+```tsx
+<RadioGroup label="결제 주기" value={cycle} onValueChange={setCycle}>
+  <Radio value="month">월간 결제</Radio>
+  <Radio value="year">연간 결제</Radio>
+</RadioGroup>
+```
+
+하나만 고를 때 써요. 화살표 키로 이동하면 바로 선택돼요. 원 16(`space/4`), 선택 `bg/primary` + 점 8(`space/2`). 항목이 5개를 넘으면 Select를 써요.
+
+### Switch
+
+`<Switch checked={on} onCheckedChange={setOn}>이메일 알림</Switch>` — 누르는 즉시 적용되는 설정에만 써요. 저장 버튼을 눌러야 반영되는 폼에서는 Checkbox를 써요. 트랙 28×16(`space/7`·`space/4`), 손잡이 12(`space/3`), 해제 `bg/subtle` + `border/strong`, 켜짐 `bg/primary`. 손잡이는 `duration/fast`로 움직여요.
+
+### Select
+
+```tsx
+<Select options={plans} value={plan} onValueChange={setPlan} placeholder="요금제 선택" />          // 단일: string | null
+<Select multiple options={tags} value={selected} onValueChange={setSelected} placeholder="태그 선택" />  // 다중: string[]
+```
+
+| prop | 값 |
+|---|---|
+| `options` | `{ value, label, disabled? }[]` |
+| `multiple` | 다중 선택. 켜면 `value`·`onValueChange`가 배열이에요(타입으로 강제) |
+| `placeholder`, `invalid`, `disabled`, `name`, `aria-label` | Field 안에서는 라벨과 invalid가 자동으로 연결돼요 |
+
+| | 단일 | 다중 |
+|---|---|---|
+| 항목 | 선택 시 오른쪽 `check` | 왼쪽 체크박스 상자 |
+| 고른 뒤 | 팝업이 닫혀요 | 열린 채로 여러 개를 골라요 |
+| 트리거 | 고른 항목 이름 | 쉼표로 이어 쓰고, 넘치면 말줄임(…) |
+
+- 트리거는 Input과 같은 크기·테두리예요(높이 32). 오른쪽 `chevron-down` 16(`text/muted`), 열리면 180° 돌고 테두리가 `border/focus`가 돼요.
+- 팝업은 트리거 아래 4px, 트리거 너비 이상이에요. 떠 있는 요소 공통 스타일: `bg/surface` + 1px `border/default` + `radius/lg`, 안쪽 `space/1`, 그림자 없음.
+- 항목은 높이 32, padding `space/2`, 키보드나 마우스로 가리키면(`highlighted`) `bg/subtle`이에요.
+- 고를 항목이 5개 이상이거나 화면이 좁을 때 써요. 그보다 적으면 RadioGroup이 한눈에 보여요.
+
 ## 11. Figma ↔ 코드 매핑 (Code Connect 대체)
 
 Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수 없어요. 아래 표로 대신합니다. Figma 컴포넌트를 코드로 옮길 때는 이 표의 컴포넌트를 그대로 써요.
@@ -429,6 +488,11 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Skeleton | `31:1547` | `<Skeleton shape>` | `src/components/skeleton.tsx` |
 | EmptyState | `31:1548` | `<EmptyState icon title description action>` | `src/components/empty-state.tsx` |
 | ErrorState | `31:1561` | `<ErrorState icon title description onRetry retryLabel>` | `src/components/error-state.tsx` |
+| Textarea | `44:2239` | `<Textarea invalid disabled placeholder>` | `src/components/textarea.tsx` |
+| Checkbox | `44:2266` | `<Checkbox checked indeterminate disabled>` (`checked=indeterminate` → `indeterminate`) | `src/components/checkbox.tsx` |
+| Radio | `44:2281` | `<RadioGroup label>` + `<Radio value disabled>` | `src/components/radio-group.tsx` |
+| Switch | `44:2298` | `<Switch checked disabled>` | `src/components/switch.tsx` |
+| Select Trigger · Item · Popup | `44:2315` · `44:2372` · `44:2373` | `<Select options multiple placeholder invalid disabled>` (Trigger `state=open`은 열린 상태, Item은 `options`에서 자동 생성) | `src/components/select.tsx` |
 | Icon (32개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

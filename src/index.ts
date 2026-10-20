@@ -41,3 +41,7 @@ export { Separator, type SeparatorProps } from './components/separator';
 export { ToastProvider, useToast, type ToastProviderProps, type ToastOptions, type ToastTone } from './components/toast';
 export { Badge, type BadgeProps } from './components/badge';
 export { Progress, type ProgressProps } from './components/progress';
+export { Link, type LinkProps } from './components/link';
+export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './components/table';
+export { ToggleGroup, ToggleGroupItem, type ToggleGroupProps, type ToggleGroupItemProps } from './components/toggle-group';
+export { Accordion, AccordionItem, AccordionTrigger, AccordionPanel, type AccordionProps, type AccordionItemProps } from './components/accordion';

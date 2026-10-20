@@ -6,6 +6,7 @@ import {
   Popover, PopoverPopup, PopoverTitle, PopoverTrigger, Separator, Tab, Tabs, TabsList, TabsPanel, Tooltip,
   Checkbox, CheckboxGroup, Radio, RadioGroup, Select, Switch, Textarea,
   EmptyState, ErrorState, Field, Skeleton, Badge, Progress, ToastProvider, useToast,
+  Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
   Avatar, Button, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
 } from './index';
 
@@ -387,10 +388,13 @@ describe('포커스 링', () => {
         <RadioGroup label="그룹"><Radio value="a">라디오</Radio></RadioGroup>
         <Select aria-label="선택" options={[{ value: 'a', label: 'A' }]} />
         <Tabs defaultValue="a"><TabsList><Tab value="a">탭</Tab></TabsList><TabsPanel value="a">패널</TabsPanel></Tabs>
+        <Link href="/">링크</Link>
+        <ToggleGroup defaultValue="a"><ToggleGroupItem value="a">A</ToggleGroupItem></ToggleGroup>
+        <Accordion><AccordionItem value="a"><AccordionTrigger>제목</AccordionTrigger><AccordionPanel>내용</AccordionPanel></AccordionItem></Accordion>
       </>,
     );
     const ringed = [...container.querySelectorAll('[class*="focus-visible:outline-2"]')];
-    expect(ringed.length).toBeGreaterThanOrEqual(9);
+    expect(ringed.length).toBeGreaterThanOrEqual(12);
     for (const el of ringed) expect(el.className).not.toMatch(/(^|\s)sn:outline-none(\s|$)/);
   });
 });
@@ -499,5 +503,85 @@ describe('피드백: Toast, Badge, Progress', () => {
     const bar = screen.getByRole('progressbar', { name: '내보내는 중' });
     expect(bar).toHaveAttribute('aria-valuenow', '45');
     expect(screen.getByText('45%')).toBeInTheDocument();
+  });
+});
+
+describe('콘텐츠·펼치기: Link, Table, ToggleGroup, Accordion', () => {
+  it('Link: external이면 새 탭으로 열고 화면 낭독기에 알림', () => {
+    render(<><Link href="/docs">문서</Link><Link href="https://base-ui.com" external>Base UI</Link></>);
+    expect(screen.getByRole('link', { name: '문서' })).not.toHaveAttribute('target');
+    const ext = screen.getByRole('link', { name: /Base UI/ });
+    expect(ext).toHaveAttribute('target', '_blank');
+    expect(ext).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(ext).toHaveTextContent('(새 탭에서 열림)');
+  });
+
+  it('Link: render로 다른 링크 컴포넌트를 쓸 수 있음', () => {
+    render(<Link render={<a data-router="" href="/x" />}>이동</Link>);
+    const a = screen.getByRole('link', { name: '이동' });
+    expect(a).toHaveAttribute('data-router');
+    expect(a).toHaveClass('sn:underline');
+  });
+
+  it('Table: 머리글은 columnheader, 숫자 열은 오른쪽 정렬 + mono', () => {
+    render(
+      <Table>
+        <TableHeader><TableRow><TableHead>이름</TableHead><TableHead align="end">요청 수</TableHead></TableRow></TableHeader>
+        <TableBody><TableRow><TableCell>production</TableCell><TableCell align="end">12,480</TableCell></TableRow></TableBody>
+      </Table>,
+    );
+    expect(screen.getAllByRole('columnheader')).toHaveLength(2);
+    expect(screen.getByRole('cell', { name: '12,480' })).toHaveClass('sn:text-right', 'sn:font-mono');
+  });
+
+  it('ToggleGroup 단일: 고르면 string을 넘기고, 눌린 항목을 다시 눌러도 꺼지지 않음', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <ToggleGroup defaultValue="list" onValueChange={onValueChange} aria-label="보기 방식">
+        <ToggleGroupItem value="list">목록</ToggleGroupItem>
+        <ToggleGroupItem value="card">카드</ToggleGroupItem>
+      </ToggleGroup>,
+    );
+    const card = screen.getByRole('button', { name: '카드' });
+    await user.click(card);
+    expect(onValueChange).toHaveBeenLastCalledWith('card');
+    expect(card).toHaveAttribute('aria-pressed', 'true');
+    await user.click(card);
+    expect(card).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '목록' })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('ToggleGroup 다중: 값이 배열, 화살표 키로 이동', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <ToggleGroup multiple onValueChange={onValueChange}>
+        <ToggleGroupItem value="a">A</ToggleGroupItem>
+        <ToggleGroupItem value="b">B</ToggleGroupItem>
+      </ToggleGroup>,
+    );
+    await user.click(screen.getByRole('button', { name: 'A' }));
+    await user.click(screen.getByRole('button', { name: 'B' }));
+    expect(onValueChange).toHaveBeenLastCalledWith(['a', 'b']);
+    await user.keyboard('{ArrowLeft}');
+    expect(screen.getByRole('button', { name: 'A' })).toHaveFocus();
+  });
+
+  it('Accordion: 트리거를 누르면 펼쳐지고 다시 누르면 접힘', async () => {
+    const user = userEvent.setup();
+    render(
+      <Accordion>
+        <AccordionItem value="limit"><AccordionTrigger>키는 몇 개까지?</AccordionTrigger><AccordionPanel>10개까지예요.</AccordionPanel></AccordionItem>
+      </Accordion>,
+    );
+    const trigger = screen.getByRole('button', { name: '키는 몇 개까지?' });
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText('10개까지예요.')).toBeVisible();
+    trigger.focus();
+    await user.keyboard('{Enter}');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
   });
 });

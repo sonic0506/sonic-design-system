@@ -528,7 +528,7 @@ radius `radius/full`, 바탕 `bg/subtle`, fallback 글자 `text/muted`. 이미�
 
 같은 대상의 다른 보기를 오갈 때만 써요(페이지 이동 링크에는 쓰지 않아요). 탭 높이 32, padding `space/3`, `body-strong`. 선택 `text/default`, 나머지 `text/muted`(hover 시 `text/default`). 목록 아래 1px `border/default`, 선택 표시 막대 2px `bg/primary`가 `duration/normal`로 움직여요. 목록과 패널 사이 `space/4`예요.
 
-키보드: 기본은 화살표 키로 이동하면 **바로 탭이 바뀌어요**(`activateOnFocus`, 기본 `true`). 탭을 바꿀 때 무거운 내용을 불러온다면 `<TabsList activateOnFocus={false}>`로 화살표는 이동만, Enter·Space로 전환하게 해요. 끝에서 처음으로 돌아가는 `loopFocus`도 기본 `true`예요. 키보드 조작 자체를 끄는 옵션은 없어요. 포커스 링은 탭끼리 겹치지 않도록 탭 **안쪽**(offset −2px)에 그려요.
+키보드: 기본은 화살표 키로 이동하면 **바로 탭이 바뀌어요**(`activateOnFocus`, 기본 `true`). 탭을 바꿀 때 무거운 내용을 불러온다면 `<TabsList activateOnFocus={false}>`로 화살표는 이동만, Enter·Space로 전환하게 해요. 끝에서 처음으로 돌아가는 `loopFocus`도 기본 `true`예요. 키보드 조작 자체를 끄는 옵션은 없어요. 포커스 링은 탭끼리 겹치지 않도록 탭 **안쪽**(offset −2px)에 그려요. 패널(`TabsPanel`)은 Tab 키로 들어갈 수 있어서(WAI-ARIA Tabs 패턴), 키보드 포커스일 때 패널 **바깥**에 같은 2px 링(offset 2px)을 그려요. 마우스로 누를 때는 보이지 않아요(Figma › 10 Navigation › Tabs › Focus).
 
 ### Separator
 

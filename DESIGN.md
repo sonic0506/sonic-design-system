@@ -220,7 +220,7 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 
 | 계층 | 위치 | 기준 | 예 |
 |---|---|---|---|
-| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, Field, Skeleton, EmptyState, ErrorState |
+| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Field, Skeleton, EmptyState, ErrorState |
 | **Pattern** | sonic-ui `src/patterns/` | Core 조합이고 도메인을 모르지만, **두 프로젝트 이상에서 같은 형태로 복사됨** | (아직 없음) |
 | **Domain** | 각 프로젝트 | 도메인 타입, API, 비즈니스 로직 중 하나라도 앎 | `UserProfileCard`, `ApiKeyList` |
 
@@ -471,6 +471,67 @@ radius `radius/full`, 바탕 `bg/subtle`, fallback 글자 `text/muted`. 이미�
 - 항목은 높이 32, padding `space/2`, 키보드나 마우스로 가리키면(`highlighted`) `bg/subtle`이에요.
 - 고를 항목이 5개 이상이거나 화면이 좁을 때 써요. 그보다 적으면 RadioGroup이 한눈에 보여요.
 
+### AlertDialog
+
+```tsx
+<AlertDialog>
+  <AlertDialogTrigger render={<Button variant="danger" />}>삭제</AlertDialogTrigger>
+  <AlertDialogPopup>
+    <AlertDialogTitle>API 키를 삭제할까요?</AlertDialogTitle>
+    <AlertDialogDescription>이 키로 보내는 요청이 바로 실패해요. 삭제하면 되돌릴 수 없어요.</AlertDialogDescription>
+    <AlertDialogFooter>
+      <AlertDialogClose render={<Button variant="secondary" />}>취소</AlertDialogClose>
+      <Button variant="danger" onClick={remove}>삭제</Button>
+    </AlertDialogFooter>
+  </AlertDialogPopup>
+</AlertDialog>
+```
+
+되돌릴 수 없는 동작 전에만 써요. Dialog와 같은 모양(Backdrop, Popup 440, padding `space/6`)이고, 바깥을 눌러도 닫히지 않아요(Esc는 닫혀요). 제목은 질문, 설명은 결과, 확인 버튼은 동작 이름 그대로(`danger`)예요.
+
+### Menu
+
+```tsx
+<Menu>
+  <MenuTrigger render={<Button size="icon-md" variant="ghost" aria-label="더 보기" />}><Ellipsis /></MenuTrigger>
+  <MenuPopup>
+    <MenuItem onClick={rename}><Pencil />이름 바꾸기</MenuItem>
+    <MenuSeparator />
+    <MenuItem tone="danger" onClick={confirmDelete}><Trash2 />삭제</MenuItem>
+  </MenuPopup>
+</Menu>
+```
+
+행이나 카드에 딸린 동작을 묶어요. 팝업은 떠 있는 요소 공통 스타일(§10 Select와 같음), 트리거 아래 4px·시작 정렬, 최소 너비 192. 항목 높이 32, 아이콘 16, `highlighted`면 `bg/subtle`. 위험한 동작은 맨 아래 구분선 뒤에 `tone="danger"`(`text/danger`)로 두고, 실행 전에 AlertDialog로 확인해요. 화살표로 이동, Enter로 실행하면 닫혀요.
+
+### Popover
+
+`<Popover><PopoverTrigger render={<Button variant="secondary" />}>공유</PopoverTrigger><PopoverPopup><PopoverTitle>…</PopoverTitle><PopoverDescription>…</PopoverDescription>…</PopoverPopup></Popover>`
+
+대상 가까이에 짧은 내용이나 간단한 입력을 띄울 때 써요. 너비 320, padding `space/4`, 영역 사이 `space/3`, 제목 `body-strong`, 설명 `caption` + `text/muted`, 대상에서 8px. 확인이 필요한 결정은 Dialog, 목록형 동작은 Menu를 써요.
+
+### Tooltip
+
+`<Tooltip content="설정"><Button size="icon-md" variant="ghost" aria-label="설정"><Settings /></Button></Tooltip>`
+
+아이콘만 있는 버튼의 이름을 보여 줘요. `bg/inverse` + `text/inverse`, `caption`, padding `space/2`·`space/1`, `radius/md`, 대상에서 4px. 마우스는 600ms 뒤, 키보드 포커스는 바로 보여요. 중요한 정보나 클릭할 요소는 넣지 않아요(Tooltip이 있어도 `aria-label`은 따로 달아요).
+
+### Tabs
+
+```tsx
+<Tabs defaultValue="overview">
+  <TabsList><Tab value="overview">개요</Tab><Tab value="usage">사용량</Tab></TabsList>
+  <TabsPanel value="overview">…</TabsPanel>
+  <TabsPanel value="usage">…</TabsPanel>
+</Tabs>
+```
+
+같은 대상의 다른 보기를 오갈 때만 써요(페이지 이동 링크에는 쓰지 않아요). 탭 높이 32, padding `space/3`, `body-strong`. 선택 `text/default`, 나머지 `text/muted`(hover 시 `text/default`). 목록 아래 1px `border/default`, 선택 표시 막대 2px `bg/primary`가 `duration/normal`로 움직여요. 목록과 패널 사이 `space/4`, 화살표 키로 이동해요.
+
+### Separator
+
+`<Separator orientation="horizontal" />` — 1px `border/default`. 관련 없는 묶음 사이를 나눌 때만 쓰고, 카드 안 영역이나 목록 행은 간격으로 먼저 구분해요.
+
 ## 11. Figma ↔ 코드 매핑 (Code Connect 대체)
 
 Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수 없어요. 아래 표로 대신합니다. Figma 컴포넌트를 코드로 옮길 때는 이 표의 컴포넌트를 그대로 써요.
@@ -493,6 +554,12 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Radio | `44:2281` | `<RadioGroup label>` + `<Radio value disabled>` | `src/components/radio-group.tsx` |
 | Switch | `44:2298` | `<Switch checked disabled>` | `src/components/switch.tsx` |
 | Select Trigger · Item · Popup | `44:2315` · `44:2372` · `44:2373` | `<Select options multiple placeholder invalid disabled>` (Trigger `state=open`은 열린 상태, Item은 `options`에서 자동 생성) | `src/components/select.tsx` |
+| AlertDialog | `49:4264` | `AlertDialog`, `AlertDialogTrigger`, `AlertDialogPopup`, `…Title`, `…Description`, `…Close`, `…Footer` | `src/components/alert-dialog.tsx` |
+| Menu Item · Menu Popup | `49:3092` · `49:3093` | `<MenuItem tone disabled>` (`showIcon`/`icon` → 자식 아이콘), `MenuPopup`, `MenuSeparator` | `src/components/menu.tsx` |
+| Popover | `49:4247` | `Popover`, `PopoverTrigger`, `PopoverPopup`, `PopoverTitle`, `PopoverDescription`, `PopoverClose` | `src/components/popover.tsx` |
+| Tooltip | `49:3040` | `<Tooltip content>` | `src/components/tooltip.tsx` |
+| Tab · Tabs List | `49:3050` · `49:3051` | `Tabs`, `TabsList`, `<Tab value disabled>`, `TabsPanel` (`selected` → 현재 값) | `src/components/tabs.tsx` |
+| Separator | `49:3039` | `<Separator orientation>` | `src/components/separator.tsx` |
 | Icon (32개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

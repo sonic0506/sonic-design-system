@@ -10,7 +10,7 @@ Sonic(`sonic-ui`)의 디자인 규칙이에요. Figma에서 디자인할 때, �
 1. **토큰 밖의 값은 없다.** 색, 간격, radius, 글자 크기는 모두 아래 표에서 고릅니다. 임의의 값(`#3355ff`, `13px`, `p-[7px]`)은 쓰지 않아요.
 2. **강조는 한 곳에만.** 한 화면에서 `primary` 버튼은 하나만 둬요. 나머지는 `secondary`나 `ghost`를 씁니다.
 3. **숫자는 고정폭.** 수치, ID, 키 값은 `mono` 계열 스타일로 써서 자리를 맞춰요.
-4. **그림자 대신 선.** 높낮이는 1px 테두리(`color/border/default`)와 배경 단계(canvas → surface → subtle)로 구분해요. 그림자 토큰은 없어요.
+4. **그림자 대신 선.** 높낮이는 1px 테두리(`color/border/default`)와 배경 단계(canvas → surface → subtle)로 구분해요. Menu, Popover, Select, Toast처럼 떠 있는 요소도 `bg/surface` + 1px 테두리로 구분하고, 그림자 토큰은 없어요.
 5. **움직임은 사용자 행동에 대한 응답만.** 열기, 닫기, hover처럼 사용자가 일으킨 변화에만 모션을 넣고, `prefers-reduced-motion`을 지켜요.
 
 ## 2. 이름 규칙
@@ -57,6 +57,21 @@ Figma Variable 이름이 그대로 CSS 변수가 돼요. `/`는 `-`로 바꾸고
 | `color/border/strong` | gray/400 | gray/600 | hover 테두리 |
 | `color/border/focus` | cobalt/600 | cobalt/400 | 포커스 링 |
 | `color/border/danger` | red/600 | red/400 | 에러 상태 Input |
+| `color/bg/inverse` | gray/950 | gray/100 | Tooltip, neutral Badge(solid) |
+| `color/text/inverse` | gray/0 | gray/950 | inverse 바탕 위 글자 |
+| `color/bg/success` | green/600 `#16804F` | green/400 `#3DB882` | success Badge(solid) |
+| `color/text/on-success` | gray/0 | gray/950 | success 바탕 위 글자 |
+| `color/bg/success-subtle` | green/50 `#EAF7F0` | green/950 `#0B2218` | success Badge(subtle) |
+| `color/text/success` | green/700 `#0F6640` | green/300 `#6BD1A0` | 성공 문구, 아이콘 |
+| `color/border/success` | green/600 | green/400 | 성공 강조 테두리 |
+| `color/bg/warning` | amber/400 `#E3A43A` | amber/400 | warning Badge(solid) |
+| `color/text/on-warning` | gray/950 | gray/950 | warning 바탕 위 글자 (amber 위 흰 글자는 대비 부족) |
+| `color/bg/warning-subtle` | amber/50 `#FCF5E6` | amber/950 `#24190A` | warning Badge(subtle) |
+| `color/text/warning` | amber/700 `#85520A` | amber/300 `#EEC46A` | 주의 문구, 아이콘 |
+| `color/border/warning` | amber/600 | amber/400 | 주의 강조 테두리 |
+| `color/bg/danger-subtle` | red/50 `#FCEDEC` | red/950 `#2B1311` | danger Badge(subtle) |
+
+글자와 바탕 조합은 모두 WCAG 4.5:1 이상이에요. 토큰을 바꾸면 `npm run check:contrast`로 다시 확인해요(배포 전 검사에도 들어 있어요).
 
 ### 3.2 간격 (4px 단위)
 

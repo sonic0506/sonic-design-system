@@ -9,6 +9,7 @@ import {
   AlertDialog, AlertDialogClose, AlertDialogDescription, AlertDialogFooter, AlertDialogPopup, AlertDialogTitle, AlertDialogTrigger,
   Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger, Popover, PopoverDescription, PopoverPopup, PopoverTitle, PopoverTrigger,
   Separator, Tab, Tabs, TabsList, TabsPanel, Tooltip,
+  Badge, Progress, ToastProvider, useToast, type ToastTone,
 } from '../src';
 
 const variants = ['primary', 'secondary', 'ghost', 'danger'] as const;
@@ -18,9 +19,60 @@ const tones = ['default', 'muted', 'danger'] as const;
 const panel = 'sn:flex sn:flex-wrap sn:items-center sn:gap-4 sn:p-6 sn:rounded-lg sn:bg-canvas sn:box-border';
 
 const KEYS = [['HP', 'production', 'sk_live_…a91f · 3분 전 사용'], ['CI', 'github-actions', 'sk_live_…07bd · 2시간 전 사용'], ['LC', 'local-dev', 'sk_test_…c3e2 · 사용 기록 없음']];
+const KEY_STATUS: Record<string, [string, 'success' | 'warning']> = { production: ['활성', 'success'], 'github-actions': ['활성', 'success'], 'local-dev': ['만료 예정', 'warning'] };
 // playground 전용 배치 (라이브러리 CSS에 없는 클래스는 토큰 변수로)
 const row = { display: 'flex', alignItems: 'center', gap: 'var(--sn-space-3)', padding: 'var(--sn-space-3) 0' } as const;
 const grow = { display: 'flex', flex: 1, flexDirection: 'column', gap: 'var(--sn-space-2)' } as const;
+
+// 행 동작 Menu → 결과는 Toast로 알려요
+function KeyMenu({ name }: { name: string }) {
+  const toast = useToast();
+  return (
+    <Menu>
+      <MenuTrigger render={<Button size="sm" variant="ghost" />}>관리</MenuTrigger>
+      <MenuPopup>
+        <MenuItem onClick={() => toast.add({ title: '키를 복사했어요' })}><Copy />키 복사</MenuItem>
+        <MenuSeparator />
+        <MenuItem tone="danger" onClick={() => toast.add({ title: `${name} 키를 삭제하지 못했어요`, description: '네트워크 연결을 확인하고 다시 시도해 주세요.', tone: 'danger' })}><Trash2 />삭제</MenuItem>
+      </MenuPopup>
+    </Menu>
+  );
+}
+
+const TOASTS: [ToastTone, string, string?][] = [
+  ['neutral', '링크를 복사했어요'],
+  ['success', 'API 키를 만들었어요', '키는 지금 한 번만 보여 줘요.'],
+  ['warning', '사용량이 한도의 90%예요', '한도를 넘으면 요청이 거절돼요.'],
+  ['danger', 'API 키를 삭제하지 못했어요', '네트워크 연결을 확인하고 다시 시도해 주세요.'],
+];
+
+function Feedback() {
+  const toast = useToast();
+  const [value, setValue] = React.useState(45);
+  return (
+    <div id="feedback" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sn-space-10)', alignItems: 'flex-start' }}>
+      <div className="sn:flex sn:flex-wrap sn:gap-2" style={{ width: 360 }}>
+        {TOASTS.map(([tone, title, description]) => (
+          <Button key={tone} id={`toast-${tone}`} size="sm" variant="secondary" onClick={() => toast.add({ tone, title, description })}>{tone}</Button>
+        ))}
+        <Button id="toast-sticky" size="sm" variant="ghost" onClick={() => toast.add({ title: '직접 닫을 때까지 남아요', timeout: 0 })}>timeout 0</Button>
+      </div>
+      <div id="badges" className="sn:flex sn:flex-col sn:gap-3">
+        {(['subtle', 'solid'] as const).map(v => (
+          <div key={v} className="sn:flex sn:gap-3">
+            {([['neutral', '초안'], ['success', '활성'], ['warning', '만료 예정'], ['danger', '만료됨']] as const).map(([t, w]) => <Badge key={t} tone={t} variant={v}>{w}</Badge>)}
+          </div>
+        ))}
+      </div>
+      <div id="progress" className="sn:flex sn:flex-col sn:gap-6" style={{ width: 240 }}>
+        <Progress value={value} label="내보내는 중" />
+        <Progress value={100} label="완료" />
+        <Progress value={10} aria-label="업로드" />
+        <Button size="sm" variant="secondary" onClick={() => setValue(v => (v >= 100 ? 0 : v + 15))}>진행</Button>
+      </div>
+    </div>
+  );
+}
 
 function KeyCard({ state }: { state: 'normal' | 'loading' | 'empty' | 'error' }) {
   return (
@@ -30,7 +82,7 @@ function KeyCard({ state }: { state: 'normal' | 'loading' | 'empty' | 'error' })
         <CardHeader style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}><CardTitle>API 키</CardTitle><Button size="sm" variant="secondary">새 키</Button></CardHeader>
         <CardBody style={{ gap: 0 }}>
           {state === 'normal' && KEYS.map(([i, n, m]) => (
-            <div key={n} style={row}><Avatar fallback={i} /><div style={{ ...grow, gap: 0 }}><Text>{n}</Text><Text variant="mono-caption" tone="muted">{m}</Text></div><Button size="sm" variant="ghost">관리</Button></div>
+            <div key={n} style={row}><Avatar fallback={i} /><div style={{ ...grow, gap: 0 }}><div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sn-space-2)' }}><Text>{n}</Text><Badge tone={KEY_STATUS[n][1]}>{KEY_STATUS[n][0]}</Badge></div><Text variant="mono-caption" tone="muted">{m}</Text></div><KeyMenu name={n} /></div>
           ))}
           {state === 'loading' && KEYS.map(([, n]) => (
             <div key={n} style={row}><Skeleton shape="circle" /><div style={grow}><div style={{ width: 120 }}><Skeleton /></div><div style={{ width: 200 }}><Skeleton /></div></div></div>
@@ -180,6 +232,7 @@ function App() {
           {sizes.map(s => <Avatar key={s} size={s} fallback="HP" />)}
         </div>
       </div>
+      <Feedback />
       <Overlays />
       <Forms />
       <div id="states" className="sn:flex sn:flex-wrap sn:items-start sn:gap-6">
@@ -216,4 +269,4 @@ function App() {
     </div>
   );
 }
-createRoot(document.getElementById('root')!).render(<App />);
+createRoot(document.getElementById('root')!).render(<ToastProvider><App /></ToastProvider>);

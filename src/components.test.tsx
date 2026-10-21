@@ -5,7 +5,7 @@ import {
   AlertDialog, AlertDialogClose, AlertDialogPopup, AlertDialogTitle, AlertDialogTrigger, Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger,
   Popover, PopoverPopup, PopoverTitle, PopoverTrigger, Separator, Tab, Tabs, TabsList, TabsPanel, Tooltip,
   Checkbox, CheckboxGroup, Radio, RadioGroup, Select, Switch, Textarea,
-  EmptyState, ErrorState, Field, Skeleton, Badge, Progress, ToastProvider, useToast,
+  EmptyState, ErrorState, ErrorPage, Field, Skeleton, Badge, Progress, ToastProvider, useToast,
   Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
   FileDropzone, FileList, formatBytes, type FileItemData,
   Avatar, Button, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
@@ -188,6 +188,24 @@ describe('EmptyState / ErrorState', () => {
     rerender(<EmptyState icon={<svg data-testid="icon" />} title="API 키가 없어요" />);
     expect(container.querySelector('img')).toBeNull();
     expect(screen.getByTestId('icon')).toBeInTheDocument();
+  });
+});
+
+describe('ErrorPage', () => {
+  it('상태별 기본 문구를 h1과 오류 코드로 보여 주고 그림은 숨김', () => {
+    const { container } = render(<ErrorPage status={404} action={<Button>홈으로 가기</Button>} />);
+    expect(screen.getByRole('heading', { level: 1, name: '페이지를 찾을 수 없어요' })).toBeInTheDocument();
+    expect(screen.getByText('오류 코드 404')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '홈으로 가기' })).toBeInTheDocument();
+    const img = container.querySelector('img')!;
+    expect(img).toHaveAttribute('alt', '');
+    expect(img.getAttribute('src')).toContain('error-404.webp');
+  });
+
+  it('제목과 설명을 바꿀 수 있음', () => {
+    render(<ErrorPage status={500} title="결제 서버에 문제가 생겼어요" description="결제는 진행되지 않았어요." />);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('결제 서버에 문제가 생겼어요');
+    expect(screen.getByText('결제는 진행되지 않았어요.')).toBeInTheDocument();
   });
 });
 

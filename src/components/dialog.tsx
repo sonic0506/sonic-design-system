@@ -6,7 +6,7 @@ import { cn } from '../lib/cn';
 export const backdropClass =
   'sn:fixed sn:inset-0 sn:z-50 sn:bg-overlay sn:transition-opacity sn:duration-(--sn-duration-normal) sn:ease-standard sn:data-starting-style:opacity-0 sn:data-ending-style:opacity-0 sn:motion-reduce:transition-none';
 export const dialogPopupClass =
-  'sn:fixed sn:top-1/2 sn:left-1/2 sn:z-50 sn:box-border sn:flex sn:w-110 sn:max-w-[calc(100vw-2*var(--sn-space-4))] sn:-translate-x-1/2 sn:-translate-y-1/2 sn:flex-col sn:gap-4 sn:rounded-lg sn:border sn:border-default sn:bg-surface sn:p-6 sn:font-sans sn:text-body sn:text-default sn:outline-none sn:transition-[opacity,scale] sn:duration-(--sn-duration-normal) sn:ease-standard sn:data-starting-style:scale-98 sn:data-starting-style:opacity-0 sn:data-ending-style:scale-98 sn:data-ending-style:opacity-0 sn:motion-reduce:transition-none';
+  'sn:fixed sn:top-1/2 sn:left-1/2 sn:z-50 sn:box-border sn:flex sn:w-110 sn:max-w-[calc(100vw-2*var(--sn-space-4))] sn:max-h-[calc(100dvh-2*var(--sn-space-4))] sn:overflow-y-auto sn:-translate-x-1/2 sn:-translate-y-1/2 sn:flex-col sn:gap-4 sn:rounded-lg sn:border sn:border-default sn:bg-surface sn:p-6 sn:font-sans sn:text-body sn:text-default sn:outline-none sn:transition-[opacity,scale] sn:duration-(--sn-duration-normal) sn:ease-standard sn:data-starting-style:scale-98 sn:data-starting-style:opacity-0 sn:data-ending-style:scale-98 sn:data-ending-style:opacity-0 sn:motion-reduce:transition-none';
 export const dialogTitleClass = 'sn:m-0 sn:text-title sn:text-default';
 export const dialogDescriptionClass = 'sn:-mt-3 sn:mb-0 sn:text-caption sn:text-muted';
 
@@ -70,5 +70,6 @@ export const DialogDescription = React.forwardRef<HTMLParagraphElement, TextProp
 });
 
 export const DialogFooter = React.forwardRef<HTMLDivElement, TextProps<HTMLDivElement>>(function DialogFooter({ className, ...props }, ref) {
-  return <div ref={ref} className={cn('sn:mt-2 sn:flex sn:justify-end sn:gap-2', className)} {...props} />;
+  // 좁은 화면에서는 버튼이 같은 너비로 한 줄을 채워요
+  return <div ref={ref} className={cn('sn:mt-2 sn:flex sn:justify-end sn:gap-2 sn:max-sm:*:flex-1', className)} {...props} />;
 });

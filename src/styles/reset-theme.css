@@ -1,4 +1,6 @@
 /* Tailwind 기본 테마(색 팔레트, 폰트 등)를 비움. theme.css보다 먼저 import해야 함 */
 @theme {
   --*: initial;
+  /* 좁은 화면 기준 하나만 둬요 (DESIGN.md §4 좁은 화면: 640 미만) */
+  --breakpoint-sm: 40rem;
 }

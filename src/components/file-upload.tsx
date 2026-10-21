@@ -104,7 +104,15 @@ export function FileDropzone({ onFilesChange, accept, multiple, maxFiles, maxSiz
         )}
       >
         <Icon className="sn:size-6 sn:text-muted sn:group-data-invalid:text-danger sn:group-aria-invalid:text-danger" />
-        <span className="sn:text-body-strong sn:text-default">{title ?? (variant === 'image' ? '이미지를 끌어다 놓거나 눌러서 고르세요' : '파일을 끌어다 놓거나 눌러서 고르세요')}</span>
+        <span className="sn:text-body-strong sn:text-default">
+          {title ?? (
+            // 터치 기기에는 끌어다 놓기가 없어서 문구를 바꿔요
+            <>
+              <span className="sn:pointer-coarse:hidden">{variant === 'image' ? '이미지를 끌어다 놓거나 눌러서 고르세요' : '파일을 끌어다 놓거나 눌러서 고르세요'}</span>
+              <span className="sn:hidden sn:pointer-coarse:inline">{variant === 'image' ? '눌러서 이미지를 고르세요' : '눌러서 파일을 고르세요'}</span>
+            </>
+          )}
+        </span>
         <span id={messageId} aria-live="polite" className={cn('sn:text-caption', rejectMessage ? 'sn:text-danger' : 'sn:text-muted')}>
           {rejectMessage ?? description}
         </span>

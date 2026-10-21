@@ -30,10 +30,13 @@ export interface TabsListProps {
 
 export function TabsList({ activateOnFocus = true, loopFocus = true, className, children }: TabsListProps) {
   return (
-    <BaseTabs.List activateOnFocus={activateOnFocus} loopFocus={loopFocus} className={cn('sn:relative sn:flex sn:border-b sn:border-default', className)}>
-      {children}
-      <BaseTabs.Indicator className="sn:absolute sn:bottom-[-1px] sn:left-0 sn:h-0.5 sn:w-(--active-tab-width) sn:translate-x-(--active-tab-left) sn:bg-primary sn:transition-[translate,width] sn:duration-(--sn-duration-normal) sn:ease-standard sn:motion-reduce:transition-none" />
-    </BaseTabs.List>
+    // 탭이 넘치면 가로 스크롤 (막대는 숨김). pb-px는 목록 아래로 1px 내려오는 표시 막대 자리예요
+    <div className="sn:-mb-px sn:overflow-x-auto sn:pb-px sn:[scrollbar-width:none]">
+      <BaseTabs.List activateOnFocus={activateOnFocus} loopFocus={loopFocus} className={cn('sn:relative sn:flex sn:w-max sn:min-w-full sn:border-b sn:border-default', className)}>
+        {children}
+        <BaseTabs.Indicator className="sn:absolute sn:bottom-[-1px] sn:left-0 sn:h-0.5 sn:w-(--active-tab-width) sn:translate-x-(--active-tab-left) sn:bg-primary sn:transition-[translate,width] sn:duration-(--sn-duration-normal) sn:ease-standard sn:motion-reduce:transition-none" />
+      </BaseTabs.List>
+    </div>
   );
 }
 
@@ -51,7 +54,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab({ 
       value={value}
       disabled={disabled}
       className={cn(
-        'sn:box-border sn:flex sn:h-8 sn:items-center sn:border-0 sn:bg-transparent sn:px-3 sn:font-sans sn:text-body-strong sn:text-muted sn:cursor-pointer sn:focus-visible:outline-2 sn:focus-visible:-outline-offset-2 sn:focus-visible:outline-focus sn:transition-colors sn:duration-(--sn-duration-fast) sn:hover:not-data-disabled:text-default sn:data-active:text-default sn:data-disabled:cursor-not-allowed sn:data-disabled:opacity-(--sn-opacity-disabled)',
+        'sn:box-border sn:flex sn:h-8 sn:shrink-0 sn:items-center sn:whitespace-nowrap sn:border-0 sn:bg-transparent sn:px-3 sn:font-sans sn:text-body-strong sn:text-muted sn:cursor-pointer sn:focus-visible:outline-2 sn:focus-visible:-outline-offset-2 sn:focus-visible:outline-focus sn:transition-colors sn:duration-(--sn-duration-fast) sn:hover:not-data-disabled:text-default sn:data-active:text-default sn:data-disabled:cursor-not-allowed sn:data-disabled:opacity-(--sn-opacity-disabled)',
         className,
       )}
     >

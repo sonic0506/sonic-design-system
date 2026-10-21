@@ -51,14 +51,14 @@ npm i @xonic0506/sonic-ui
 
 ### 글꼴
 
-IBM Plex Sans(400, 500, 600)와 IBM Plex Mono(400)를 프로젝트에서 불러와요. 없으면 시스템 글꼴로 대체돼요.
+IBM Plex Sans KR(400, 500, 600)과 IBM Plex Mono(400)를 프로젝트에서 불러와요. 없으면 시스템 글꼴로 대체돼요. 한글과 영문을 모두 IBM Plex Sans KR로 그려요. Figma 텍스트 스타일과 같은 글꼴이라 줄바꿈 위치가 같아요.
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet" />
 ```
 
 > [!NOTE]
-> 글꼴은 패키지에 들어 있지 않아요. sonic-ui는 글꼴 이름 `"IBM Plex Sans"`, `"IBM Plex Mono"`를 찾기 때문에, 이름을 바꾸는 방식(예: `next/font` 기본 설정)으로 불러오면 적용되지 않아요. 위 링크나 `@fontsource/ibm-plex-sans`처럼 원래 이름을 유지하는 방식을 써요.
+> 글꼴은 패키지에 들어 있지 않아요. sonic-ui는 글꼴 이름 `"IBM Plex Sans KR"`, `"IBM Plex Mono"`를 찾기 때문에, 이름을 바꾸는 방식(예: `next/font` 기본 설정)으로 불러오면 적용되지 않아요. 위 링크나 `@fontsource/ibm-plex-sans-kr`처럼 원래 이름을 유지하는 방식을 써요. 한글 글꼴은 크지만 unicode-range로 나뉘어 있어서, 실제로는 화면에 쓴 글자가 든 조각만 받아요.
 
 ### CSS 연결
 

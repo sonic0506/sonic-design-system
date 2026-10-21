@@ -97,7 +97,9 @@ Figma Variable 이름이 그대로 CSS 변수가 돼요. `/`는 `-`로 바꾸고
 | `stroke/default` | 1 | 모든 테두리 |
 | `stroke/focus` | 2 | 포커스 링 (offset 2px) |
 
-### 3.4 텍스트 스타일 (IBM Plex Sans / IBM Plex Mono)
+### 3.4 텍스트 스타일 (IBM Plex Sans KR / IBM Plex Mono)
+
+한글과 영문을 모두 IBM Plex Sans KR로 그려요. IBM Plex Sans에는 한글이 없어서, 쓰면 Figma와 브라우저가 각자 다른 대체 글꼴로 그려 줄바꿈이 달라져요.
 
 | 스타일 | 크기/행간 | 굵기 | 자간 | 쓰는 곳 |
 |---|---|---|---|---|

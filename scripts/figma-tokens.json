@@ -690,42 +690,42 @@
   },
   "textStyles": {
     "display": {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "IBM Plex Sans KR",
       "fontStyle": "SemiBold",
       "fontSize": 32,
       "lineHeight": 40,
       "letterSpacingPercent": -2
     },
     "title": {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "IBM Plex Sans KR",
       "fontStyle": "SemiBold",
       "fontSize": 20,
       "lineHeight": 28,
       "letterSpacingPercent": -1
     },
     "body": {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "IBM Plex Sans KR",
       "fontStyle": "Regular",
       "fontSize": 14,
       "lineHeight": 20,
       "letterSpacingPercent": 0
     },
     "body-strong": {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "IBM Plex Sans KR",
       "fontStyle": "Medium",
       "fontSize": 14,
       "lineHeight": 20,
       "letterSpacingPercent": 0
     },
     "label": {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "IBM Plex Sans KR",
       "fontStyle": "Medium",
       "fontSize": 13,
       "lineHeight": 16,
       "letterSpacingPercent": 0
     },
     "caption": {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "IBM Plex Sans KR",
       "fontStyle": "Regular",
       "fontSize": 12,
       "lineHeight": 16,

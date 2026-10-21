@@ -846,6 +846,6 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Accordion Item · Accordion | `66:3792` · `66:3793` | `Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionPanel` (`open` → 현재 값, `title`/`content` → 자식) | `src/components/accordion.tsx` |
 | File Dropzone · File Item | `71:4191` · `72:4251` | `<FileDropzone variant accept multiple maxSize maxFiles onFilesChange>` (`state` → 끌어다 놓기·거부·`disabled`), `<FileList layout items onRemove onRetry>` (`status` → `items[].status`) | `src/components/file-upload.tsx` |
 | Illustration (5개) | Foundations `Source illustrations` | 코드에서 직접 쓰지 않음. EmptyState·ErrorState·ErrorPage 안에 들어 있어요(§3.7) | `src/illustrations/*.webp` |
-| Icon (35개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
+| Icon (37개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

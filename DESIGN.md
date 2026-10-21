@@ -475,18 +475,18 @@ export default function NotFound() {
 |---|---|---|
 | `status` | `404` · `403` · `500` (필수) | — |
 | `title`, `description` | 바꿀 문구 | 상태별 문구 (아래) |
-| `action` | 보통 primary Button 하나 | 없음 |
+| `action` | primary Button 하나 (상태별 권장은 아래 표) | 없음 |
 
-| status | 그림 | 제목 | 설명 |
-|---|---|---|---|
-| 404 | `error-404` | 페이지를 찾을 수 없어요 | 주소가 바뀌었거나 삭제된 페이지예요. 주소를 확인해 주세요. |
-| 403 | `error-403` | 이 페이지를 볼 권한이 없어요 | 관리자에게 권한을 요청해 주세요. |
-| 500 | `error-500` | 서버에 문제가 생겼어요 | 잠시 뒤 다시 시도해 주세요. |
+| status | 그림 | 제목 | 설명 | 권장 action |
+|---|---|---|---|---|
+| 404 | `error-404` | 페이지를 찾을 수 없어요 | 주소가 바뀌었거나 삭제된 페이지예요. 주소를 확인해 주세요. | 홈으로 가기 |
+| 403 | `error-403` | 이 페이지를 볼 권한이 없어요 | 관리자에게 권한을 요청해 주세요. | 홈으로 가기 |
+| 500 | `error-500` | 서버에 문제가 생겼어요 | 잠시 뒤 다시 시도해 주세요. | `refresh-cw` + 다시 시도 (페이지 다시 불러오기) |
 
 - 화면 전체를 쓰는 에러예요. 카드 하나가 실패하면 ErrorState, 페이지 자체를 보여 줄 수 없을 때 ErrorPage를 써요.
 - 그림 320(§3.7), 그 아래 오류 코드 `mono-caption` + `text/muted`("오류 코드 404", 문의할 때 쓰도록), 제목 `title`(페이지의 `h1`), 설명 `body` + `text/muted`, 가운데 정렬. 숫자는 그림 안에 있어서 크게 따로 쓰지 않아요.
 - 너비는 부모를 채우고, 위아래 `space/16`, 좌우 `space/6`, 요소 사이 `space/6`(글자 묶음 안 `space/2`).
-- Next.js `error.tsx`는 클라이언트 컴포넌트라 `reset`을 다시 시도 버튼에 연결할 수 있어요: `<ErrorPage status={500} action={<Button onClick={reset}>다시 시도</Button>} />`.
+- 500은 일시적인 실패일 때가 많아서 홈으로 보내지 않고 그 자리에서 다시 불러오게 해요. Next.js `error.tsx`는 클라이언트 컴포넌트라 `reset`을 연결해요: `<ErrorPage status={500} action={<Button onClick={reset}><RefreshCw />다시 시도</Button>} />`. `reset`이 없으면 `location.reload()`를 써요.
 
 ### Textarea
 

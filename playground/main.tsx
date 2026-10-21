@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import '../dist/styles.css';
-import { ChevronDown, Copy, Download, Ellipsis, Inbox, LayoutGrid, List, Pencil, Plus, Search, Settings, Trash2 } from 'lucide-react';
+import { ChevronDown, Copy, Download, Ellipsis, Inbox, LayoutGrid, List, Pencil, Plus, RefreshCw, Search, Settings, Trash2 } from 'lucide-react';
 import {
   Avatar, Button, Card, CardBody, CardDescription, CardFooter, CardHeader, CardTitle,
   Dialog, DialogClose, DialogDescription, DialogFooter, DialogPopup, DialogTitle, DialogTrigger, EmptyState, ErrorPage, ErrorState, Field, Input, Skeleton, Text, type TextVariant,
@@ -333,7 +333,7 @@ function App() {
         <div id="empty-icon" style={{ width: 240 }}><EmptyState icon={<Inbox />} title="검색 결과가 없어요" /></div>
       </div>
       <div id="error-pages" className="sn:flex sn:flex-wrap sn:items-start sn:gap-6">
-        {([404, 403, 500] as const).map(s => <div key={s} style={{ width: 480 }}><ErrorPage status={s} action={<Button>홈으로 가기</Button>} /></div>)}
+        {([404, 403, 500] as const).map(s => <div key={s} style={{ width: 480 }}><ErrorPage status={s} action={s === 500 ? <Button onClick={() => location.reload()}><RefreshCw />다시 시도</Button> : <Button>홈으로 가기</Button>} /></div>)}
       </div>
       <div id="fields" className="sn:flex sn:flex-wrap sn:items-start sn:gap-10">
         <div style={{ width: 320 }}><Field label="이메일" description="로그인할 때 써요."><Input placeholder="Placeholder" /></Field></div>

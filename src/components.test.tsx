@@ -179,6 +179,16 @@ describe('EmptyState / ErrorState', () => {
     await userEvent.click(screen.getByRole('button', { name: '다시 시도' }));
     expect(onRetry).toHaveBeenCalledOnce();
   });
+
+  it('기본은 장식 일러스트, icon을 넘기면 일러스트 대신 아이콘', () => {
+    const { container, rerender } = render(<EmptyState title="API 키가 없어요" />);
+    const img = container.querySelector('img')!;
+    expect(img).toHaveAttribute('alt', '');
+    expect(img.getAttribute('src')).toContain('empty.webp');
+    rerender(<EmptyState icon={<svg data-testid="icon" />} title="API 키가 없어요" />);
+    expect(container.querySelector('img')).toBeNull();
+    expect(screen.getByTestId('icon')).toBeInTheDocument();
+  });
 });
 
 describe('Textarea', () => {

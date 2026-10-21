@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { RefreshCw, TriangleAlert } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { Button } from './button';
+import { illustrations } from './illustration';
 import { StateLayout } from './state-layout';
 
 export interface ErrorStateProps {
-  /** 기본값: triangle-alert */
+  /** 없으면 캐릭터 일러스트(120). 좁은 곳에서는 <TriangleAlert /> 같은 아이콘을 넘겨요 */
   icon?: React.ReactNode;
   title: React.ReactNode;
   description?: React.ReactNode;
@@ -14,9 +15,9 @@ export interface ErrorStateProps {
   className?: string;
 }
 
-export function ErrorState({ icon = <TriangleAlert />, title, description, onRetry, retryLabel = '다시 시도', className }: ErrorStateProps) {
+export function ErrorState({ icon, title, description, onRetry, retryLabel = '다시 시도', className }: ErrorStateProps) {
   return (
-    <StateLayout role="alert" icon={icon} iconClassName="sn:text-danger" title={title} description={description} className={className}>
+    <StateLayout role="alert" icon={icon} iconClassName="sn:text-danger" illustration={illustrations.error} title={title} description={description} className={className}>
       {onRetry && (
         <Button variant="secondary" onClick={onRetry}>
           <RefreshCw />

@@ -70,6 +70,6 @@ export const DialogDescription = React.forwardRef<HTMLParagraphElement, TextProp
 });
 
 export const DialogFooter = React.forwardRef<HTMLDivElement, TextProps<HTMLDivElement>>(function DialogFooter({ className, ...props }, ref) {
-  // 좁은 화면에서는 버튼이 같은 너비로 한 줄을 채워요
-  return <div ref={ref} className={cn('sn:mt-2 sn:flex sn:justify-end sn:gap-2 sn:max-sm:*:flex-1', className)} {...props} />;
+  // 좁은 화면에서는 버튼이 전체 너비로 쌓여요. primary가 위, 취소가 아래 (코드 순서는 그대로)
+  return <div ref={ref} className={cn('sn:mt-2 sn:flex sn:justify-end sn:gap-2 sn:max-sm:flex-col-reverse sn:max-sm:*:w-full', className)} {...props} />;
 });

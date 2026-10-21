@@ -193,7 +193,7 @@ import { Plus } from 'lucide-react';
 
 | 대상 | 규칙 |
 |---|---|
-| Dialog·AlertDialog Footer | 버튼이 같은 너비로 한 줄을 채워요(보조 왼쪽, primary 오른쪽). 컴포넌트가 자동으로 처리해요 |
+| Dialog·AlertDialog Footer | 버튼이 전체 너비로 위아래로 쌓여요. primary가 위, 취소가 아래예요. 엄지가 쉽게 닿는 아래쪽에 취소가 있어서 위험한 동작을 잘못 누르기 어려워요. 컴포넌트가 자동으로 처리해요 |
 | 그 밖의 버튼 묶음 (Card Footer 등) | 자동으로 바꾸지 않아요. 화면을 그릴 때 누르기 쉬운지 보고, 필요하면 버튼을 FILL로 늘려요 |
 | 버튼 크기 | 터치 화면의 주요 동작은 md(32) 이상을 써요. sm·icon-sm(28)과 ToggleGroup 항목(24)은 WCAG 최소 기준(24)은 넘지만, 손가락으로 누르기엔 작아서 보조 자리에만 써요 |
 | Tooltip | 터치 기기에는 hover가 없어서 거의 보이지 않아요. 아이콘 버튼의 이름은 aria-label이 전하고, Tooltip에만 있는 정보를 두지 않아요 |
@@ -388,7 +388,7 @@ radius `radius/full`, 바탕 `bg/subtle`, fallback 글자 `text/muted`. 이미�
 - Backdrop `bg/overlay`. Popup 너비 440(화면이 좁으면 좌우 `space/4`를 뺀 너비, Figma `viewport=mobile` variant), padding `space/6`, 영역 사이 `space/4`, 바탕 `bg/surface`, 테두리 1px, radius `radius/lg`.
 - 열기/닫기: `duration/normal` + `easing/standard`. `[data-starting-style]`과 `[data-ending-style]`에서 opacity 0, scale 0.98. Backdrop은 opacity만 바꿔요.
 - Popup 최대 높이는 화면 높이에서 위아래 `space/4`를 뺀 값이에요. 키보드가 올라오거나 가로 화면이라 넘치면 Popup 안쪽이 스크롤돼요.
-- 좁은 화면(640 미만)에서는 Footer 버튼이 같은 너비로 한 줄을 채워요(Figma `viewport=mobile`).
+- 좁은 화면(640 미만)에서는 Footer 버튼이 전체 너비로 위아래로 쌓여요. primary가 위, 취소가 아래예요(Figma `viewport=mobile`). 코드 순서는 그대로(취소 → primary)라 키보드 이동 순서는 화면과 반대지만, 모바일에서는 영향이 작아요.
 - `open`, `onOpenChange`로 제어할 수 있어요. Esc와 바깥 클릭으로 닫혀요.
 
 #### 트리거가 밖에 있을 때 (Dialog, AlertDialog 공통)

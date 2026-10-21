@@ -4,7 +4,16 @@ import react from '@vitejs/plugin-react';
 
 // 라이브러리 JS 빌드. CSS는 scripts/build-css.mjs가 따로 만듦
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    // 일러스트는 base64로 넣지 않고 dist/illustrations 파일로 둬요(복사는 package.json build:js).
+    // 소스의 @vite-ignore를 빌드 결과에서 지워, 쓰는 쪽 번들러가 new URL을 자산으로 처리하게 해요
+    {
+      name: 'sonic-illustrations',
+      apply: 'build',
+      renderChunk: code => code.replaceAll('/* @vite-ignore */', ''),
+    },
+  ],
   build: {
     outDir: 'dist',
     emptyOutDir: false,

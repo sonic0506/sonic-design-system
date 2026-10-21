@@ -32,7 +32,7 @@
   "scripts": {
     "tokens": "node scripts/build-tokens.mjs",
     "build:css": "node scripts/build-css.mjs",
-    "build:js": "vite build && tsc -p tsconfig.build.json",
+    "build:js": "vite build && cp -R src/illustrations dist/ && tsc -p tsconfig.build.json",
     "build": "rm -rf dist && npm run tokens && npm run build:js && npm run build:css",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

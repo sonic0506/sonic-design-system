@@ -187,6 +187,18 @@ import { Plus } from 'lucide-react';
 - 문구는 한국어 해요체예요. 취소 버튼은 "취소"로 충분해요. 무엇을 취소하는지는 바로 옆 primary 버튼 문구가 알려 줘요.
 - Avatar 이니셜은 이름에서 1~2글자를 써요(한글은 이름 첫 글자, 영문은 이름·성 첫 글자).
 
+### 좁은 화면 (모바일)
+
+좁은 화면은 너비 640 미만(Tailwind `sm` 미만)이에요. Figma에서는 375 프레임으로 그려요.
+
+| 대상 | 규칙 |
+|---|---|
+| Dialog·AlertDialog Footer | 버튼이 같은 너비로 한 줄을 채워요(보조 왼쪽, primary 오른쪽). 컴포넌트가 자동으로 처리해요 |
+| 그 밖의 버튼 묶음 (Card Footer 등) | 자동으로 바꾸지 않아요. 화면을 그릴 때 누르기 쉬운지 보고, 필요하면 버튼을 FILL로 늘려요 |
+| 버튼 크기 | 터치 화면의 주요 동작은 md(32) 이상을 써요. sm·icon-sm(28)과 ToggleGroup 항목(24)은 WCAG 최소 기준(24)은 넘지만, 손가락으로 누르기엔 작아서 보조 자리에만 써요 |
+| Tooltip | 터치 기기에는 hover가 없어서 거의 보이지 않아요. 아이콘 버튼의 이름은 aria-label이 전하고, Tooltip에만 있는 정보를 두지 않아요 |
+| 입력 글자 | Input·Textarea·Select는 iOS가 입력란을 확대하지 않도록 16px로 커져요(높이는 그대로). 코드만의 동작이라 Figma에는 그리지 않아요 |
+
 ## 5. 해야 할 것 / 하지 말아야 할 것
 
 | 해야 할 것 | 하지 말아야 할 것 |
@@ -320,7 +332,7 @@ Figma Core 페이지의 컴포넌트 속성 이름 = React props 이름이에요
 | `disabled` | boolean |
 | 그 외 | 기본 `<input>` 속성 전부 |
 
-높이 `space/8`, 좌우 padding `space/3`, radius `radius/md`, 바탕 `bg/surface`, 테두리 `border/default`(hover `border/strong`, invalid `border/danger`), 입력값 `body` + `text/default`, placeholder `text/muted`, 너비는 부모를 채움.
+높이 `space/8`, 좌우 padding `space/3`, radius `radius/md`, 바탕 `bg/surface`, 테두리 `border/default`(hover `border/strong`, invalid `border/danger`), 입력값 `body` + `text/default`, placeholder `text/muted`, 너비는 부모를 채움. 좁은 화면(640 미만)에서는 입력 글자가 16px이에요(iOS 자동 확대 방지, Textarea·Select 트리거도 같음).
 
 focus 링은 2px, 간격 2px이고, 색은 기본 `border/focus`, invalid일 때 `border/danger`예요. 에러 상태에서 파란 링이 뜨면 상태 신호가 섞이기 때문이에요.
 
@@ -375,6 +387,8 @@ radius `radius/full`, 바탕 `bg/subtle`, fallback 글자 `text/muted`. 이미�
 - `DialogPopup`이 Portal과 Backdrop을 함께 그려요. 쓰는 쪽에서 Backdrop을 따로 넣지 않아요.
 - Backdrop `bg/overlay`. Popup 너비 440(화면이 좁으면 좌우 `space/4`를 뺀 너비, Figma `viewport=mobile` variant), padding `space/6`, 영역 사이 `space/4`, 바탕 `bg/surface`, 테두리 1px, radius `radius/lg`.
 - 열기/닫기: `duration/normal` + `easing/standard`. `[data-starting-style]`과 `[data-ending-style]`에서 opacity 0, scale 0.98. Backdrop은 opacity만 바꿔요.
+- Popup 최대 높이는 화면 높이에서 위아래 `space/4`를 뺀 값이에요. 키보드가 올라오거나 가로 화면이라 넘치면 Popup 안쪽이 스크롤돼요.
+- 좁은 화면(640 미만)에서는 Footer 버튼이 같은 너비로 한 줄을 채워요(Figma `viewport=mobile`).
 - `open`, `onOpenChange`로 제어할 수 있어요. Esc와 바깥 클릭으로 닫혀요.
 
 #### 트리거가 밖에 있을 때 (Dialog, AlertDialog 공통)
@@ -600,7 +614,7 @@ export default function NotFound() {
 </Tabs>
 ```
 
-같은 대상의 다른 보기를 오갈 때만 써요(페이지 이동 링크에는 쓰지 않아요). 탭 높이 32, padding `space/3`, `body-strong`. 선택 `text/default`, 나머지 `text/muted`(hover 시 `text/default`). 목록 아래 1px `border/default`, 선택 표시 막대 2px `bg/primary`가 `duration/normal`로 움직여요. 목록과 패널 사이 `space/4`예요.
+같은 대상의 다른 보기를 오갈 때만 써요(페이지 이동 링크에는 쓰지 않아요). 탭 높이 32, padding `space/3`, `body-strong`. 선택 `text/default`, 나머지 `text/muted`(hover 시 `text/default`). 목록 아래 1px `border/default`, 선택 표시 막대 2px `bg/primary`가 `duration/normal`로 움직여요. 목록과 패널 사이 `space/4`예요. 탭이 많아 넘치면 목록이 가로로 스크롤돼요(스크롤 막대는 숨기고, 탭은 줄지 않아요).
 
 키보드: 기본은 화살표 키로 이동하면 **바로 탭이 바뀌어요**(`activateOnFocus`, 기본 `true`). 탭을 바꿀 때 무거운 내용을 불러온다면 `<TabsList activateOnFocus={false}>`로 화살표는 이동만, Enter·Space로 전환하게 해요. 끝에서 처음으로 돌아가는 `loopFocus`도 기본 `true`예요. 키보드 조작 자체를 끄는 옵션은 없어요. 포커스 링은 탭끼리 겹치지 않도록 탭 **안쪽**(offset −2px)에 그려요. 패널(`TabsPanel`)은 Tab 키로 들어갈 수 있어서(WAI-ARIA Tabs 패턴), 키보드 포커스일 때 패널 **바깥**에 같은 2px 링(offset 2px)을 그려요. 마우스로 누를 때는 보이지 않아요(Figma › 10 Navigation › Tabs › Focus).
 
@@ -770,6 +784,7 @@ const [items, setItems] = useState<FileItemData[]>(serverFiles.map(toItem));   /
 - **다른 폼 항목처럼 Field로 감싸요.** Field의 라벨이 버튼 이름이 되고, 설명·에러·`invalid`·`disabled`가 자동으로 연결돼요(Base UI `Field.Control`). Field 없이 쓰면 영역 안 제목이 버튼 이름이 돼요.
 - 에러는 두 종류예요. 고르는 순간 조건에 맞지 않은 파일은 **영역 안**에 바로 알려 주고, "1개 이상 올려 주세요"처럼 제출할 때 확인하는 규칙은 Field `error`로 **아래**에 보여 줘요.
 - 영역 전체가 버튼이라 눌러도, Enter·Space를 눌러도 파일 선택 창이 열려요. 파일을 끌어다 놓아도 돼요.
+- 터치 기기(`pointer: coarse`)에는 끌어다 놓기가 없어서, 기본 제목이 "눌러서 파일을 고르세요"(image는 "눌러서 이미지를 고르세요")로 바뀌어요. `title`을 넘기면 그 문구를 그대로 써요.
 - 조건(형식 `type`, 크기 `size`, 개수 `count`)에 맞지 않는 파일은 `rejected`로 넘기고, 영역 안에 고치는 방법을 기본 문구로 보여 줘요(예: "계약서.pdf: 10MB보다 큰 파일은 올릴 수 없어요"). 문구는 `rejected[].message`로 바꿀 수 있어요.
 - 점선 1px `border/strong` + `bg/surface` + `radius/lg`, 위아래 `space/6`, 좌우 `space/4`, 요소 사이 `space/2`. 아이콘 24(`upload` · `image`, `text/muted`), 제목 `body-strong`, 조건 `caption` + `text/muted`. hover `bg/subtle`, 끌어다 놓는 중 `border/focus` + `bg/subtle`, 거부되면 `border/danger` + 문구 `text/danger`.
 

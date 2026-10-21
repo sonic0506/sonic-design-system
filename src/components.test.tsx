@@ -8,7 +8,7 @@ import {
   EmptyState, ErrorState, ErrorPage, Field, Skeleton, Badge, Progress, ToastProvider, useToast,
   Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
   FileDropzone, FileList, formatBytes, type FileItemData,
-  Avatar, Button, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
+  Avatar, Button, buttonVariants, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
 } from './index';
 
 describe('Button', () => {
@@ -26,6 +26,11 @@ describe('Button', () => {
     await userEvent.click(btn);
     expect(onClick).not.toHaveBeenCalled();
     expect(btn).toHaveAttribute('data-disabled');
+  });
+
+  it('buttonVariants: 링크에 버튼 모양만 입히고 role은 link로 남음', () => {
+    render(<a href="/" className={buttonVariants({ variant: 'secondary', size: 'lg' })}>홈으로 가기</a>);
+    expect(screen.getByRole('link', { name: '홈으로 가기' })).toHaveClass('sn:h-10', 'sn:border-default');
   });
 });
 

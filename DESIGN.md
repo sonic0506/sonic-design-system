@@ -320,6 +320,8 @@ Figma Core 페이지의 컴포넌트 속성 이름 = React props 이름이에요
 | ghost | 없음 | `text/default` | 없음 | `bg/subtle` |
 | danger | `bg/danger` | `text/on-danger` | 없음 | 없음 (v0.1에는 danger hover 토큰이 없음) |
 
+**페이지 이동은 버튼 모양이어도 링크예요.** `<Button render={<a />}>`는 `<a>`에 `role="button"`이 붙어 화면 낭독기가 버튼으로 읽어요. 링크 요소에 `buttonVariants({ variant, size })` 클래스만 입혀요: `<NextLink href="/" className={buttonVariants({ variant: 'secondary' })}>홈으로 가기</NextLink>`.
+
 공통: radius `radius/md`, 아이콘과 글자 사이 `space/2`, disabled는 `opacity/disabled`(45%), focus는 2px `border/focus` + offset 2px, 색 전환은 `duration/fast`.
 
 ### Input
@@ -481,7 +483,7 @@ const retryRef = useRef<HTMLButtonElement>(null);
 ```tsx
 // Next.js app/not-found.tsx
 export default function NotFound() {
-  return <ErrorPage status={404} action={<Button render={<NextLink href="/" />}>홈으로 가기</Button>} />;
+  return <ErrorPage status={404} action={<NextLink href="/" className={buttonVariants()}>홈으로 가기</NextLink>} />;
 }
 ```
 
@@ -829,7 +831,7 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 
 | Figma 컴포넌트 (Core 페이지) | node id | 코드 | 파일 |
 |---|---|---|---|
-| Button | `5:52` | `<Button variant size disabled>` | `src/components/button.tsx` |
+| Button | `5:52` | `<Button variant size disabled>` (페이지 이동은 링크에 `buttonVariants({ variant, size })`) | `src/components/button.tsx` |
 | Button Icon | `23:2294` | `<Button size="icon-*" variant disabled aria-label>` + 아이콘 자식 | `src/components/button.tsx` |
 | Input | `5:61` | `<Input invalid disabled placeholder>` | `src/components/input.tsx` |
 | Text | `5:110` | `<Text variant tone as>` | `src/components/text.tsx` |

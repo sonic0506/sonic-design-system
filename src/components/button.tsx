@@ -4,7 +4,8 @@ import { cva } from 'class-variance-authority';
 import { LoaderCircle } from 'lucide-react';
 import { cn } from '../lib/cn';
 
-const buttonVariants = cva(
+/** 링크를 버튼 모양으로 그릴 때: <NextLink className={buttonVariants({ variant: 'secondary' })} /> */
+export const buttonVariants = cva(
   'sn:box-border sn:inline-flex sn:items-center sn:justify-center sn:gap-2 sn:whitespace-nowrap sn:rounded-md sn:border sn:border-transparent sn:font-sans sn:cursor-pointer sn:select-none sn:transition-colors sn:duration-(--sn-duration-fast) sn:ease-standard sn:focus-visible:outline-2 sn:focus-visible:outline-offset-2 sn:focus-visible:outline-focus sn:data-disabled:not-data-loading:cursor-not-allowed sn:data-disabled:not-data-loading:opacity-(--sn-opacity-disabled) sn:data-loading:cursor-progress sn:[&_svg]:pointer-events-none sn:[&_svg]:shrink-0',
   {
     variants: {
@@ -31,7 +32,7 @@ const buttonVariants = cva(
 interface ButtonBaseProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   className?: string;
-  /** 다른 요소로 렌더링할 때 (예: render={<a href="/" />}) */
+  /** 다른 요소로 렌더링할 때. 링크는 role="button"이 붙으니 buttonVariants를 쓰세요 */
   render?: React.ReactElement;
   /** 진행 중: 스피너 표시, 클릭 막기, 포커스 유지, aria-busy */
   loading?: boolean;

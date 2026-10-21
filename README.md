@@ -35,7 +35,7 @@ Figma (원본) → DESIGN.md (룰) → @xonic0506/sonic-ui (코드) → 실제 �
 | 폼 | Field, Checkbox, CheckboxGroup, RadioGroup, Switch, Select (단일·다중) |
 | 오버레이 | Dialog, AlertDialog, Menu, Popover, Tooltip |
 | 탐색 | Tabs |
-| 피드백·상태 | Toast, Badge, Progress, Skeleton, EmptyState, ErrorState |
+| 피드백·상태 | Toast, Badge, Progress, Skeleton, EmptyState, ErrorState, ErrorPage |
 
 컴포넌트별 props와 스펙은 [DESIGN.md §10](./DESIGN.md#10-컴포넌트-스펙-core)에 있어요.
 

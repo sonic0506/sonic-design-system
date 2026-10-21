@@ -142,6 +142,23 @@ import { Plus } from 'lucide-react';
 <Button size="icon-md" variant="ghost" aria-label="더 보기"><Ellipsis /></Button>
 ```
 
+### 3.7 일러스트 (캐릭터)
+
+빈 상태, 불러오기 실패, 에러 페이지에는 Sonic 캐릭터 일러스트를 써요. Figma에서는 Foundations › 05 Illustration, `Source illustrations`에 `Illustration / <이름>` 컴포넌트로 있어요.
+
+| 이름 | 표시 크기 | 쓰는 곳 |
+|---|---|---|
+| `empty` | 120 | EmptyState 기본 |
+| `error` | 120 | ErrorState 기본 |
+| `error-404` · `error-403` · `error-500` | 320 | ErrorPage |
+
+- **색 토큰 규칙 밖의 이미지 자산이에요.** 캐릭터의 주황은 화면 강조색이 아니라 그림의 일부라서 §1 "강조는 한 곳에만"과 섞지 않아요. 그래서 위 세 곳 말고는 쓰지 않아요(버튼, 카드 장식, 배너 X).
+- 배경이 투명해서 Light/Dark에 같은 그림을 써요.
+- 장식이라 `alt=""`로 숨겨요. 무엇이 없는지, 무엇이 실패했는지는 제목과 설명이 전해요.
+- 이미지는 패키지에 webp 파일로 들어 있어요(`dist/illustrations`, 표시 크기의 2배). 쓰는 쪽은 설정 없이 Vite와 Next.js가 자산으로 처리해요.
+- Popover, Select 안처럼 좁은 곳에서는 `icon`을 넘겨 아이콘으로 바꿔요(§10 EmptyState).
+- 추가할 때: 같은 캐릭터, 투명 배경, 표시 크기 2배로 만들어 Figma `Source illustrations`와 `src/illustrations`에 함께 넣어요.
+
 ## 4. Auto layout 규칙 (Figma)
 
 - 자식이 둘 이상인 프레임은 모두 auto layout을 씁니다. 절대 좌표 배치는 쓰지 않아요.
@@ -221,11 +238,11 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 
 | 계층 | 위치 | 기준 | 예 |
 |---|---|---|---|
-| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Toast, Badge, Progress, Link, Table, ToggleGroup, Accordion, FileDropzone, FileList, Field, Skeleton, EmptyState, ErrorState |
+| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Toast, Badge, Progress, Link, Table, ToggleGroup, Accordion, FileDropzone, FileList, Field, Skeleton, EmptyState, ErrorState, ErrorPage |
 | **Pattern** | sonic-ui `src/patterns/` | Core 조합이고 도메인을 모르지만, **두 프로젝트 이상에서 같은 형태로 복사됨** | (아직 없음) |
 | **Domain** | 각 프로젝트 | 도메인 타입, API, 비즈니스 로직 중 하나라도 앎 | `UserProfileCard`, `ApiKeyList` |
 
-예외: EmptyState와 ErrorState는 Core 조합이라 원래는 Pattern 후보지만, §8 규칙이 모든 데이터 화면에 요구하는 **시스템 컴포넌트**라서 Core에 둬요.
+예외: EmptyState, ErrorState, ErrorPage는 Core 조합이라 원래는 Pattern 후보지만, §8 규칙과 모든 프로젝트의 에러 화면이 요구하는 **시스템 컴포넌트**라서 Core에 둬요.
 
 판단 순서:
 1. props에 도메인 타입(`User`, `Order`)이 들어가나요? → **Domain**
@@ -428,18 +445,48 @@ const retryRef = useRef<HTMLButtonElement>(null);
 ### EmptyState / ErrorState
 
 ```tsx
-<EmptyState icon={<Inbox />} title="API 키가 없어요" description="키를 만들면 여기에서 사용량을 볼 수 있어요." action={<Button>API 키 만들기</Button>} />
+<EmptyState title="API 키가 없어요" description="키를 만들면 여기에서 사용량을 볼 수 있어요." action={<Button>API 키 만들기</Button>} />
 <ErrorState title="API 키를 불러오지 못했어요" description="네트워크 연결을 확인하고 다시 시도해 주세요." onRetry={refetch} />
+<EmptyState icon={<Inbox />} title="결과가 없어요" />   // 좁은 곳: 아이콘
 ```
 
 | | EmptyState | ErrorState |
 |---|---|---|
-| 아이콘 | `icon` prop (24, `text/muted`, `bg/subtle` 원 `space/12`) | 기본 `triangle-alert` (`text/danger`), `icon`으로 바꿀 수 있음 |
+| 그림 (기본) | 캐릭터 `empty` 120 (§3.7) | 캐릭터 `error` 120 |
+| 아이콘 (`icon`을 넘기면) | 24, `text/muted`, `bg/subtle` 원 `space/12` | 24, `text/danger` (예: `triangle-alert`), 원은 같음 |
 | 제목 / 설명 | `body-strong` / `body` + `text/muted`, 가운데 정렬 | 같음 |
 | 행동 | `action` (보통 primary Button 하나) | `onRetry`가 있으면 secondary Button + `refresh-cw`, 문구 `retryLabel`(기본 "다시 시도") |
 | 간격 | 요소 사이 `space/4`, 위아래 `space/12`, 좌우 `space/6` | 같음 |
 
 에러 문구는 사과하지 않고, 무엇이 실패했고 어떻게 하면 되는지 써요.
+
+그림(120)은 카드나 표 안의 빈 상태·에러에 써요. Popover, Select, 좁은 사이드 패널처럼 공간이 작으면 `icon`을 넘겨요. 그림이 있으면 정상 화면보다 높이가 커질 수 있으니, 4가지 상태를 그릴 때 영역 높이를 함께 확인해요.
+
+### ErrorPage
+
+```tsx
+// Next.js app/not-found.tsx
+export default function NotFound() {
+  return <ErrorPage status={404} action={<Button render={<NextLink href="/" />}>홈으로 가기</Button>} />;
+}
+```
+
+| prop | 값 | 기본값 |
+|---|---|---|
+| `status` | `404` · `403` · `500` (필수) | — |
+| `title`, `description` | 바꿀 문구 | 상태별 문구 (아래) |
+| `action` | 보통 primary Button 하나 | 없음 |
+
+| status | 그림 | 제목 | 설명 |
+|---|---|---|---|
+| 404 | `error-404` | 페이지를 찾을 수 없어요 | 주소가 바뀌었거나 삭제된 페이지예요. 주소를 확인해 주세요. |
+| 403 | `error-403` | 이 페이지를 볼 권한이 없어요 | 관리자에게 권한을 요청해 주세요. |
+| 500 | `error-500` | 서버에 문제가 생겼어요 | 잠시 뒤 다시 시도해 주세요. |
+
+- 화면 전체를 쓰는 에러예요. 카드 하나가 실패하면 ErrorState, 페이지 자체를 보여 줄 수 없을 때 ErrorPage를 써요.
+- 그림 320(§3.7), 그 아래 오류 코드 `mono-caption` + `text/muted`("오류 코드 404", 문의할 때 쓰도록), 제목 `title`(페이지의 `h1`), 설명 `body` + `text/muted`, 가운데 정렬. 숫자는 그림 안에 있어서 크게 따로 쓰지 않아요.
+- 너비는 부모를 채우고, 위아래 `space/16`, 좌우 `space/6`, 요소 사이 `space/6`(글자 묶음 안 `space/2`).
+- Next.js `error.tsx`는 클라이언트 컴포넌트라 `reset`을 다시 시도 버튼에 연결할 수 있어요: `<ErrorPage status={500} action={<Button onClick={reset}>다시 시도</Button>} />`.
 
 ### Textarea
 
@@ -776,8 +823,9 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Dialog | `6:13` | `Dialog`, `DialogTrigger`, `DialogPopup`, `DialogTitle`, `DialogDescription`, `DialogClose`, `DialogFooter` | `src/components/dialog.tsx` |
 | Field | `31:1543` | `<Field label description error invalid disabled>` + `<Input />` | `src/components/field.tsx` |
 | Skeleton | `31:1547` | `<Skeleton shape>` | `src/components/skeleton.tsx` |
-| EmptyState | `31:1548` | `<EmptyState icon title description action>` | `src/components/empty-state.tsx` |
-| ErrorState | `31:1561` | `<ErrorState icon title description onRetry retryLabel>` | `src/components/error-state.tsx` |
+| EmptyState | `92:5905` | `<EmptyState icon title description action>` (`media=illustration`이 기본, `media=icon` → `icon` prop) | `src/components/empty-state.tsx` |
+| ErrorState | `92:5919` | `<ErrorState icon title description onRetry retryLabel>` (`media`는 EmptyState와 같음) | `src/components/error-state.tsx` |
+| ErrorPage | `92:5953` | `<ErrorPage status title description action>` (`status` → 같은 prop, `action` → 넘길지) | `src/components/error-page.tsx` |
 | Textarea | `44:2239` | `<Textarea invalid disabled placeholder>` | `src/components/textarea.tsx` |
 | Checkbox | `44:2266` | `<Checkbox checked indeterminate disabled>` (`checked=indeterminate` → `indeterminate`) | `src/components/checkbox.tsx` |
 | Radio | `44:2281` | `<RadioGroup label>` + `<Radio value disabled>` | `src/components/radio-group.tsx` |
@@ -797,6 +845,7 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Toggle Item · Toggle Group | `66:3760` · `66:3761` | `<ToggleGroup multiple>` + `<ToggleGroupItem value disabled>` (`pressed` → 현재 값, `content=icon`이면 `aria-label`) | `src/components/toggle-group.tsx` |
 | Accordion Item · Accordion | `66:3792` · `66:3793` | `Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionPanel` (`open` → 현재 값, `title`/`content` → 자식) | `src/components/accordion.tsx` |
 | File Dropzone · File Item | `71:4191` · `72:4251` | `<FileDropzone variant accept multiple maxSize maxFiles onFilesChange>` (`state` → 끌어다 놓기·거부·`disabled`), `<FileList layout items onRemove onRetry>` (`status` → `items[].status`) | `src/components/file-upload.tsx` |
+| Illustration (5개) | Foundations `Source illustrations` | 코드에서 직접 쓰지 않음. EmptyState·ErrorState·ErrorPage 안에 들어 있어요(§3.7) | `src/illustrations/*.webp` |
 | Icon (35개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

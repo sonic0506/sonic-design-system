@@ -14,6 +14,7 @@ export { Skeleton, type SkeletonProps } from './components/skeleton';
 export { EmptyState, type EmptyStateProps } from './components/empty-state';
 export { ErrorState, type ErrorStateProps } from './components/error-state';
 export { ErrorPage, type ErrorPageProps, type ErrorPageStatus } from './components/error-page';
+export { illustrations } from './components/illustration';
 export {
   Dialog,
   DialogTrigger,

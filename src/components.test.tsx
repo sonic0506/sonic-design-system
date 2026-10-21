@@ -5,7 +5,7 @@ import {
   AlertDialog, AlertDialogClose, AlertDialogPopup, AlertDialogTitle, AlertDialogTrigger, Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger,
   Popover, PopoverPopup, PopoverTitle, PopoverTrigger, Separator, Tab, Tabs, TabsList, TabsPanel, Tooltip,
   Checkbox, CheckboxGroup, Radio, RadioGroup, Select, Switch, Textarea,
-  EmptyState, ErrorState, ErrorPage, Field, Skeleton, Badge, Progress, ToastProvider, useToast,
+  EmptyState, ErrorState, ErrorPage, illustrations, Field, Skeleton, Badge, Progress, ToastProvider, useToast,
   Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
   FileDropzone, FileList, formatBytes, type FileItemData,
   Avatar, Button, buttonVariants, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
@@ -211,6 +211,13 @@ describe('ErrorPage', () => {
     render(<ErrorPage status={500} title="결제 서버에 문제가 생겼어요" description="결제는 진행되지 않았어요." />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('결제 서버에 문제가 생겼어요');
     expect(screen.getByText('결제는 진행되지 않았어요.')).toBeInTheDocument();
+  });
+});
+
+describe('illustrations', () => {
+  it('Figma 이름으로 5개 그림 URL을 공개함', () => {
+    expect(Object.keys(illustrations)).toEqual(['empty', 'error', 'error-404', 'error-403', 'error-500']);
+    for (const [name, url] of Object.entries(illustrations)) expect(url).toContain(`${name}.webp`);
   });
 });
 

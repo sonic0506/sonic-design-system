@@ -153,9 +153,11 @@ import { Plus } from 'lucide-react';
 | `error-404` · `error-403` · `error-500` | 320 | ErrorPage |
 
 - **색 토큰 규칙 밖의 이미지 자산이에요.** 캐릭터의 주황은 화면 강조색이 아니라 그림의 일부라서 §1 "강조는 한 곳에만"과 섞지 않아요. 그래서 위 세 곳 말고는 쓰지 않아요(버튼, 카드 장식, 배너 X).
+- 예외: 디자인 시스템 문서·소개 화면에서 그림 자체를 보여 줄 때는 `illustrations`(아래)로 URL을 받아 써요. 제품 화면에서는 위 세 컴포넌트를 써요.
 - 배경이 투명해서 Light/Dark에 같은 그림을 써요.
 - 장식이라 `alt=""`로 숨겨요. 무엇이 없는지, 무엇이 실패했는지는 제목과 설명이 전해요.
 - 이미지는 패키지에 webp 파일로 들어 있어요(`dist/illustrations`, 표시 크기의 2배). 쓰는 쪽은 설정 없이 Vite와 Next.js가 자산으로 처리해요.
+- URL은 `illustrations['<이름>']`으로 받아요(`import { illustrations } from '@xonic0506/sonic-ui'`, 서버 컴포넌트에서도 쓸 수 있어요). 이름은 위 표와 같아요. 장식이 아니라 그림이 주인공인 문서 화면이면 `alt`에 이름을 써요.
 - Popover, Select 안처럼 좁은 곳에서는 `icon`을 넘겨 아이콘으로 바꿔요(§10 EmptyState).
 - 추가할 때: 같은 캐릭터, 투명 배경, 표시 크기 2배로 만들어 Figma `Source illustrations`와 `src/illustrations`에 함께 넣어요.
 
@@ -862,7 +864,7 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Toggle Item · Toggle Group | `66:3760` · `66:3761` | `<ToggleGroup multiple>` + `<ToggleGroupItem value disabled>` (`pressed` → 현재 값, `content=icon`이면 `aria-label`) | `src/components/toggle-group.tsx` |
 | Accordion Item · Accordion | `66:3792` · `66:3793` | `Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionPanel` (`open` → 현재 값, `title`/`content` → 자식) | `src/components/accordion.tsx` |
 | File Dropzone · File Item | `71:4191` · `72:4251` | `<FileDropzone variant accept multiple maxSize maxFiles onFilesChange>` (`state` → 끌어다 놓기·거부·`disabled`), `<FileList layout items onRemove onRetry>` (`status` → `items[].status`) | `src/components/file-upload.tsx` |
-| Illustration (5개) | Foundations `Source illustrations` | 코드에서 직접 쓰지 않음. EmptyState·ErrorState·ErrorPage 안에 들어 있어요(§3.7) | `src/illustrations/*.webp` |
+| Illustration (5개) | Foundations `Source illustrations` | 제품 화면은 EmptyState·ErrorState·ErrorPage 안에서 써요. 문서 화면은 `illustrations['error-404']`로 URL(§3.7) | `src/illustrations/*.webp` |
 | Icon (37개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

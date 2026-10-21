@@ -373,7 +373,7 @@ radius `radius/full`, 바탕 `bg/subtle`, fallback 글자 `text/muted`. 이미�
 ```
 
 - `DialogPopup`이 Portal과 Backdrop을 함께 그려요. 쓰는 쪽에서 Backdrop을 따로 넣지 않아요.
-- Backdrop `bg/overlay`. Popup 너비 440(화면이 좁으면 좌우 `space/4`를 뺀 너비), padding `space/6`, 영역 사이 `space/4`, 바탕 `bg/surface`, 테두리 1px, radius `radius/lg`.
+- Backdrop `bg/overlay`. Popup 너비 440(화면이 좁으면 좌우 `space/4`를 뺀 너비, Figma `viewport=mobile` variant), padding `space/6`, 영역 사이 `space/4`, 바탕 `bg/surface`, 테두리 1px, radius `radius/lg`.
 - 열기/닫기: `duration/normal` + `easing/standard`. `[data-starting-style]`과 `[data-ending-style]`에서 opacity 0, scale 0.98. Backdrop은 opacity만 바꿔요.
 - `open`, `onOpenChange`로 제어할 수 있어요. Esc와 바깥 클릭으로 닫혀요.
 
@@ -820,7 +820,7 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Text | `5:110` | `<Text variant tone as>` | `src/components/text.tsx` |
 | Avatar | `5:117` | `<Avatar size src alt fallback>` | `src/components/avatar.tsx` |
 | Card | `6:2` | `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardBody`, `CardFooter` | `src/components/card.tsx` |
-| Dialog | `6:13` | `Dialog`, `DialogTrigger`, `DialogPopup`, `DialogTitle`, `DialogDescription`, `DialogClose`, `DialogFooter` | `src/components/dialog.tsx` |
+| Dialog | `106:4859` | (`viewport` → prop 아님. 좁은 화면은 코드가 자동 처리) `Dialog`, `DialogTrigger`, `DialogPopup`, `DialogTitle`, `DialogDescription`, `DialogClose`, `DialogFooter` | `src/components/dialog.tsx` |
 | Field | `31:1543` | `<Field label description error invalid disabled>` + `<Input />` | `src/components/field.tsx` |
 | Skeleton | `31:1547` | `<Skeleton shape>` | `src/components/skeleton.tsx` |
 | EmptyState | `92:5905` | `<EmptyState icon title description action>` (`media=illustration`이 기본, `media=icon` → `icon` prop) | `src/components/empty-state.tsx` |
@@ -831,7 +831,7 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Radio | `44:2281` | `<RadioGroup label>` + `<Radio value disabled>` | `src/components/radio-group.tsx` |
 | Switch | `44:2298` | `<Switch checked disabled>` | `src/components/switch.tsx` |
 | Select Trigger · Item · Popup | `44:2315` · `44:2372` · `44:2373` | `<Select options multiple placeholder invalid disabled>` (Trigger `state=open`은 열린 상태, Item은 `options`에서 자동 생성) | `src/components/select.tsx` |
-| AlertDialog | `49:4264` | `AlertDialog`, `AlertDialogTrigger`, `AlertDialogPopup`, `…Title`, `…Description`, `…Close`, `…Footer` | `src/components/alert-dialog.tsx` |
+| AlertDialog | `106:4869` | (`viewport`는 Dialog와 같음) `AlertDialog`, `AlertDialogTrigger`, `AlertDialogPopup`, `…Title`, `…Description`, `…Close`, `…Footer` | `src/components/alert-dialog.tsx` |
 | Menu Item · Menu Popup | `49:3092` · `49:3093` | `<MenuItem tone disabled>` (`showIcon`/`icon` → 자식 아이콘), `MenuPopup`, `MenuSeparator` | `src/components/menu.tsx` |
 | Popover | `49:4247` | `Popover`, `PopoverTrigger`, `PopoverPopup`, `PopoverTitle`, `PopoverDescription`, `PopoverClose` | `src/components/popover.tsx` |
 | Tooltip | `49:3040` | `<Tooltip content>` | `src/components/tooltip.tsx` |

@@ -1,6 +1,6 @@
 # sonic-ui 저장소 운영 규칙
 
-이 저장소는 디자인 규칙과 컴포넌트만 담당해요. Claude Code hooks, 쓰는 쪽 ESLint/Prettier 설정, API 계층 규칙은 별도 코딩 하네스 저장소에서 다뤄요. 여기서 만들지 않아요.
+이 저장소는 디자인 규칙과 컴포넌트만 담당해요. Claude Code hooks, 쓰는 쪽 ESLint/Prettier 설정, API 계층 규칙은 별도 코딩 하네스 저장소에서 다뤄요. 여기서 만들지 않아요. 디자인 시스템 소개 사이트(코드와 Figma 파일 Sonic UI Site)는 별도 저장소 [sonic-ui-site](https://github.com/sonic0506/sonic-ui-site)에서 다뤄요.
 
 @DESIGN.md
 

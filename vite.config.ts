@@ -24,8 +24,9 @@ export default defineConfig({
         preserveModules: true,
         preserveModulesRoot: 'src',
         entryFileNames: '[name].js',
-        // 모든 컴포넌트가 클라이언트 컴포넌트라 파일마다 붙임 (Next.js App Router용)
-        banner: '"use client";',
+        // 컴포넌트(.tsx)는 클라이언트 컴포넌트라 붙임 (Next.js App Router용).
+        // index와 .ts(buttonVariants, cn 등)에는 붙이지 않아야 서버 컴포넌트에서 함수를 호출할 수 있어요
+        banner: chunk => (chunk.facadeModuleId?.endsWith('.tsx') ? '"use client";' : ''),
       },
     },
   },

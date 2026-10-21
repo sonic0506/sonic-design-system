@@ -4,7 +4,7 @@ import '../dist/styles.css';
 import { ChevronDown, Copy, Download, Ellipsis, Inbox, LayoutGrid, List, Pencil, Plus, Search, Settings, Trash2 } from 'lucide-react';
 import {
   Avatar, Button, Card, CardBody, CardDescription, CardFooter, CardHeader, CardTitle,
-  Dialog, DialogClose, DialogDescription, DialogFooter, DialogPopup, DialogTitle, DialogTrigger, EmptyState, ErrorState, Field, Input, Skeleton, Text, type TextVariant,
+  Dialog, DialogClose, DialogDescription, DialogFooter, DialogPopup, DialogTitle, DialogTrigger, EmptyState, ErrorPage, ErrorState, Field, Input, Skeleton, Text, type TextVariant,
   Checkbox, CheckboxGroup, Radio, RadioGroup, Select, Switch, Textarea,
   AlertDialog, AlertDialogClose, AlertDialogDescription, AlertDialogFooter, AlertDialogPopup, AlertDialogTitle, AlertDialogTrigger,
   Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger, Popover, PopoverDescription, PopoverPopup, PopoverTitle, PopoverTrigger,
@@ -178,7 +178,7 @@ function KeyCard({ state }: { state: 'normal' | 'loading' | 'empty' | 'error' })
           {state === 'loading' && KEYS.map(([, n]) => (
             <div key={n} style={row}><Skeleton shape="circle" /><div style={grow}><div style={{ width: 120 }}><Skeleton /></div><div style={{ width: 200 }}><Skeleton /></div></div></div>
           ))}
-          {state === 'empty' && <EmptyState icon={<Inbox />} title="API 키가 없어요" description="키를 만들면 여기에서 사용량을 볼 수 있어요." action={<Button>API 키 만들기</Button>} />}
+          {state === 'empty' && <EmptyState title="API 키가 없어요" description="키를 만들면 여기에서 사용량을 볼 수 있어요." action={<Button>API 키 만들기</Button>} />}
           {state === 'error' && <ErrorState title="API 키를 불러오지 못했어요" description="네트워크 연결을 확인하고 다시 시도해 주세요." onRetry={() => {}} />}
         </CardBody>
       </Card>
@@ -330,6 +330,10 @@ function App() {
       <Forms />
       <div id="states" className="sn:flex sn:flex-wrap sn:items-start sn:gap-6">
         {(['normal', 'loading', 'empty', 'error'] as const).map(s => <KeyCard key={s} state={s} />)}
+        <div id="empty-icon" style={{ width: 240 }}><EmptyState icon={<Inbox />} title="검색 결과가 없어요" /></div>
+      </div>
+      <div id="error-pages" className="sn:flex sn:flex-wrap sn:items-start sn:gap-6">
+        {([404, 403, 500] as const).map(s => <div key={s} style={{ width: 480 }}><ErrorPage status={s} action={<Button>홈으로 가기</Button>} /></div>)}
       </div>
       <div id="fields" className="sn:flex sn:flex-wrap sn:items-start sn:gap-10">
         <div style={{ width: 320 }}><Field label="이메일" description="로그인할 때 써요."><Input placeholder="Placeholder" /></Field></div>

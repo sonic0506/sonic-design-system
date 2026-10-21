@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import '@xonic0506/sonic-ui/styles.css';
 import './app.css';
-import { Button, Dialog, DialogTrigger, DialogPopup, DialogTitle, DialogDescription, DialogFooter, DialogClose, Field, Input, Skeleton, EmptyState, ErrorState, Select, Menu, MenuTrigger, MenuPopup, MenuItem, Badge, Progress, ToastProvider, useToast, Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel, FileDropzone, FileList } from '@xonic0506/sonic-ui';
+import { Button, Dialog, DialogTrigger, DialogPopup, DialogTitle, DialogDescription, DialogFooter, DialogClose, Field, Input, Skeleton, EmptyState, ErrorState, ErrorPage, Select, Menu, MenuTrigger, MenuPopup, MenuItem, Badge, Progress, ToastProvider, useToast, Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel, FileDropzone, FileList } from '@xonic0506/sonic-ui';
 import { useState } from 'react';
 
 function Upload() {
@@ -38,6 +38,7 @@ function App() {
       <div style={{ width: 200 }}><Skeleton /></div>
       <EmptyState title="API 키가 없어요" action={<Button>API 키 만들기</Button>} />
       <ErrorState title="불러오지 못했어요" onRetry={() => { document.body.dataset.retried = '1'; }} />
+      <ErrorPage status={404} action={<Button>홈으로 가기</Button>} />
       <Button id="b-loading" loading>저장 중</Button>
       <div style={{ width: 240 }}><Select id="f-select" aria-label="요금제" placeholder="요금제 선택" options={[{ value: 'free', label: 'Free' }, { value: 'pro', label: 'Pro' }]} /></div>
       <Menu>

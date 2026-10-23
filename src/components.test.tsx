@@ -755,6 +755,51 @@ describe('DataGrid', () => {
   ];
   const names = () => screen.getAllByRole('row').slice(1).map(r => r.querySelectorAll('td')[0]?.textContent);
 
+  describe('다시 불러오는 중 (refreshing)', () => {
+    const grid = (props: { refreshing?: boolean; loading?: boolean }) => (
+      <DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} {...props} />
+    );
+    const tick = (ms: number) => React.act(() => { vi.advanceTimersByTime(ms); });
+    beforeEach(() => { vi.useFakeTimers(); });
+    afterEach(() => { vi.useRealTimers(); });
+
+    it('바로 aria-busy를 달고, 300ms 뒤 안내와 막을 보여 주고 행은 그대로 둬요', () => {
+      render(grid({ refreshing: true }));
+      expect(screen.getByRole('table', { name: 'API 키' })).toHaveAttribute('aria-busy', 'true');
+      expect(screen.queryByText('불러오는 중이에요')).toBeNull();
+      tick(300);
+      expect(screen.getByText('불러오는 중이에요')).toBeInTheDocument();
+      expect(screen.getByText('production')).toBeInTheDocument();
+    });
+
+    it('300ms 안에 끝나면 막을 보여 주지 않아요', () => {
+      const { rerender } = render(grid({ refreshing: true }));
+      tick(200);
+      rerender(grid({ refreshing: false }));
+      tick(500);
+      expect(screen.queryByText('불러오는 중이에요')).toBeNull();
+      expect(screen.getByRole('table', { name: 'API 키' })).not.toHaveAttribute('aria-busy');
+    });
+
+    it('한 번 보이면 끝나도 최소 300ms는 유지해요', () => {
+      const { rerender } = render(grid({ refreshing: true }));
+      tick(300);
+      tick(50);
+      rerender(grid({ refreshing: false }));
+      tick(200);
+      expect(screen.getByText('불러오는 중이에요')).toBeInTheDocument();
+      tick(100);
+      expect(screen.queryByText('불러오는 중이에요')).toBeNull();
+    });
+
+    it('loading과 함께면 막 대신 Skeleton을 보여 줘요', () => {
+      render(grid({ refreshing: true, loading: true }));
+      tick(300);
+      expect(screen.queryByText('불러오는 중이에요')).toBeNull();
+      expect(screen.queryByText('production')).toBeNull();
+    });
+  });
+
   it('서버에서 그린 HTML을 hydration해도 속성이 어긋나지 않음 (dnd-kit id)', async () => {
     const { renderToString } = await import('react-dom/server');
     const { hydrateRoot } = await import('react-dom/client');

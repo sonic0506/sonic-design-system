@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import '@xonic0506/sonic-ui/styles.css';
 import './app.css';
-import { Button, Dialog, DialogTrigger, DialogPopup, DialogTitle, DialogDescription, DialogFooter, DialogClose, Field, Input, Skeleton, EmptyState, ErrorState, ErrorPage, Select, Menu, MenuTrigger, MenuPopup, MenuItem, Badge, Progress, ToastProvider, useToast, Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel, FileDropzone, FileList } from '@xonic0506/sonic-ui';
+import { Button, Dialog, DialogTrigger, DialogPopup, DialogTitle, DialogDescription, DialogFooter, DialogClose, Field, Input, Skeleton, EmptyState, ErrorState, ErrorPage, Select, Menu, MenuTrigger, MenuPopup, MenuItem, Badge, Progress, ToastProvider, useToast, Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel, FileDropzone, FileList, DataGrid, Pagination } from '@xonic0506/sonic-ui';
 import { useState } from 'react';
 
 function Upload() {
@@ -19,6 +19,19 @@ function Upload() {
 function ToastButton() {
   const toast = useToast();
   return <Button id="b-toast" variant="secondary" onClick={() => toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한 번만 보여 줘요.', tone: 'success' })}>알림 띄우기</Button>;
+}
+
+const KEYS = Array.from({ length: 25 }, (_, i) => ({ id: `k${i + 1}`, name: `key-${i + 1}`, requests: (i * 7919) % 20000 }));
+
+function Grid() {
+  const [page, setPage] = useState(1);
+  return (
+    <div style={{ width: 600, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <DataGrid id="grid" aria-label="API 키" rows={KEYS} getRowId={r => r.id} onSelectionChange={() => {}} pagination={{ defaultPageSize: 10 }}
+        columns={[{ field: 'name', header: '이름', type: 'text', sortable: true }, { field: 'requests', header: '요청 수', type: 'number', sortable: true }]} />
+      <Pagination page={page} pageCount={20} onPageChange={setPage} />
+    </div>
+  );
 }
 
 function App() {
@@ -52,6 +65,7 @@ function App() {
       <div style={{ width: 400 }}><Table><TableHeader><TableRow><TableHead>이름</TableHead><TableHead align="end">요청 수</TableHead></TableRow></TableHeader><TableBody><TableRow><TableCell>production</TableCell><TableCell align="end">12,480</TableCell></TableRow></TableBody></Table></div>
       <ToggleGroup defaultValue="list" aria-label="보기 방식"><ToggleGroupItem value="list">목록</ToggleGroupItem><ToggleGroupItem value="card">카드</ToggleGroupItem></ToggleGroup>
       <div style={{ width: 400 }}><Accordion><AccordionItem value="a"><AccordionTrigger>키는 몇 개까지?</AccordionTrigger><AccordionPanel>10개까지예요.</AccordionPanel></AccordionItem></Accordion></div>
+      <Grid />
       <Upload />
       <Dialog>
         <DialogTrigger id="open" render={<Button />}>API 키 만들기</DialogTrigger>

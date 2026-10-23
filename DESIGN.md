@@ -780,7 +780,10 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 | `switch` | Switch, 누르면 바로 적용 | `onChange(row, checked)` (필수) |
 | `actions` | 1개면 ghost `icon-sm` 버튼, 2개 이상이면 `ellipsis` Menu | `actions: { label, icon?, tone?, onClick(row) }[]` (필수) |
 
-공통 열 속성: `header`, `width`(px), `pinned`(`left` · `right`), `sortable`. 고정 열에는 `width`를 꼭 줘요(다음 고정 열 위치 계산에 써요). `select`·`handle` 열은 너비 40이고, 있으면 항상 왼쪽에 고정돼요.
+공통 열 속성: `header`, `width`(px), `minWidth`(px), `pinned`(`left` · `right`), `sortable`. 고정 열에는 `width`를 꼭 줘요(다음 고정 열 위치 계산에 써요). `select`·`handle` 열은 너비 40이고, 있으면 항상 왼쪽에 고정돼요.
+
+- `width`가 없는 열은 남은 너비를 써요. 좁은 화면에서 글자가 여러 줄로 감기지 않게 `minWidth`를 줘요. 그보다 좁아지면 표가 줄지 않고 가로로 스크롤돼요(예: 제목 열 `minWidth: 276`이면 4열 표가 640부터 스크롤). `width`를 주면 넓은 화면에서도 그 너비로 고정되니, 남은 너비를 써야 하는 열에는 `minWidth`만 써요.
+- 빈 상태·에러·다시 불러오는 중 스피너는 표가 가로로 스크롤돼도 보이는 너비의 가운데에 있어요.
 
 - 행 hover `bg/subtle`, 선택 `bg/selected`. 고정 열 경계는 1px `border/default`이고 그림자는 쓰지 않아요(§1 원칙 4).
 - 컬럼 이동 중인 머리글은 `bg/subtle`, 행 이동 중인 행은 `bg/surface` + 1px `border/default` + `radius/md`. 놓을 위치는 2px `border/focus` 선이에요.
@@ -790,8 +793,8 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
   - 본문 행 위에 `bg/scrim-subtle` 막을 깔고, 가운데에 `loader-circle` 24(`text/muted`)가 `duration/loop`로 돌아요. `prefers-reduced-motion`이면 회전을 멈춰요.
   - 머리글과 Pagination은 덮지 않아요. 어떤 조건으로 불러오는지 보이게 해요.
   - 막은 마우스 클릭만 막아요. 키보드 포커스는 그대로 둬요(`inert`를 쓰지 않아요).
-  - 300ms가 넘게 걸릴 때만 보이고, 한 번 보이면 최소 300ms는 유지해서 깜빡이지 않게 해요.
-  - 표에 `aria-busy`를 바로 달고, 막이 보이면 화면 낭독기에 "불러오는 중이에요"를 알려요.
+  - 누르자마자 보이고 막은 `duration/fast`로 나타나요(움직임 줄이기면 바로). 데이터가 오면 바로 걷혀요. 응답이 빠르면 살짝 흐려졌다 돌아오는 정도예요.
+  - 표에 `aria-busy`를 달고, 화면 낭독기에 "불러오는 중이에요"를 알려요.
   - `loading`과 `refreshing`이 둘 다 켜지면 `loading`(Skeleton)이 먼저예요.
 - 행이 많으면(100개 초과) 보이는 행만 그려요. 이때는 `className`으로 높이를 정해 주세요(예: `h-96`). 그 안에서 세로로 스크롤돼요.
 - Next.js: `columns`에 함수가 들어 있어서 서버 컴포넌트에서 넘길 수 없어요. DataGrid는 클라이언트 컴포넌트 안에서 정의해요.

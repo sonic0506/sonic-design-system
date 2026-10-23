@@ -214,7 +214,7 @@ type Todo = { userId: number; id: number; title: string; completed: boolean };
 const TODO_COLUMNS: DataGridColumn<Todo>[] = [
   { field: 'id', header: 'ID', type: 'number', width: 80, sortable: true },
   { field: 'userId', header: '사용자', type: 'number', width: 100, sortable: true },
-  { field: 'title', header: '할 일', type: 'text', sortable: true },
+  { field: 'title', header: '할 일', type: 'text', sortable: true, minWidth: 276 },
   { field: 'completed', header: '상태', type: 'badge', width: 120, sortable: true, tones: { true: 'success', false: 'neutral' }, labels: { true: '완료', false: '진행 중' } },
 ];
 
@@ -236,7 +236,7 @@ function ServerGridDemo() {
     if (sort) { q.set('_sort', sort.id); q.set('_order', sort.desc ? 'desc' : 'asc'); }
     setLoading(true);
     setFailed(false);
-    // 확인용: 다시 불러오는 중 표시가 보이도록 일부러 600ms 늦춰요
+    // 확인용: 느린 API처럼 다시 불러오는 중 표시가 보이도록 일부러 600ms 늦춰요
     new Promise(resolve => setTimeout(resolve, 600))
       .then(() => fetch(`https://jsonplaceholder.typicode.com/todos?${q}`, { signal: ctrl.signal }))
       .then(res => {

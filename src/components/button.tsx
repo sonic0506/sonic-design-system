@@ -11,6 +11,8 @@ interface ButtonBaseProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElem
   render?: React.ReactElement;
   /** 진행 중: 스피너 표시, 클릭 막기, 포커스 유지, aria-busy */
   loading?: boolean;
+  /** 비활성이 돼도 포커스를 잃지 않아요. 누른 뒤 비활성이 되는 버튼에 써요 (예: 마지막 페이지) */
+  focusableWhenDisabled?: boolean;
 }
 
 /** 아이콘만 있는 버튼은 읽을 글자가 없어서 aria-label이 필수예요 */
@@ -18,7 +20,7 @@ export type ButtonProps = ButtonBaseProps &
   ({ size?: 'sm' | 'md' | 'lg' } | { size: 'icon-sm' | 'icon-md' | 'icon-lg'; 'aria-label': string });
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant, size, className, render, loading, disabled, children, ...props },
+  { variant, size, className, render, loading, disabled, focusableWhenDisabled, children, ...props },
   ref,
 ) {
   const spinner = <LoaderCircle className="sn:animate-[sn-spin_var(--sn-duration-loop)_linear_infinite] sn:motion-reduce:animate-none" />;
@@ -28,7 +30,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
       render={render}
       nativeButton={!render || render.type === 'button'}
       disabled={disabled || loading}
-      focusableWhenDisabled={loading}
+      focusableWhenDisabled={loading || focusableWhenDisabled}
       aria-busy={loading || undefined}
       data-loading={loading ? '' : undefined}
       className={cn(buttonVariants({ variant, size }), className)}

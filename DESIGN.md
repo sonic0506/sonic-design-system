@@ -255,7 +255,7 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 
 | 계층 | 위치 | 기준 | 예 |
 |---|---|---|---|
-| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Toast, Badge, Progress, Link, Table, DataGrid, ToggleGroup, Accordion, FileDropzone, FileList, Field, Skeleton, EmptyState, ErrorState, ErrorPage |
+| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Toast, Badge, Progress, Link, Table, DataGrid, Pagination, ToggleGroup, Accordion, FileDropzone, FileList, Field, Skeleton, EmptyState, ErrorState, ErrorPage |
 | **Pattern** | sonic-ui `src/patterns/` | Core 조합이고 도메인을 모르지만, **두 프로젝트 이상에서 같은 형태로 복사됨** | (아직 없음) |
 | **Domain** | 각 프로젝트 | 도메인 타입, API, 비즈니스 로직 중 하나라도 앎 | `UserProfileCard`, `ApiKeyList` |
 
@@ -303,6 +303,7 @@ Figma Core 페이지의 컴포넌트 속성 이름 = React props 이름이에요
 | `disabled` | boolean | `false` |
 | `children` | 버튼 문구. 아이콘은 문구 앞뒤에 lucide 컴포넌트로 넣음 | — |
 | `loading` | boolean. 스피너 + 클릭 막기 + `aria-busy` | `false` |
+| `focusableWhenDisabled` | boolean. 비활성이 돼도 포커스를 유지해요(`aria-disabled`). 누른 뒤 비활성이 되는 버튼에 써요(Pagination의 처음·마지막) | `false` |
 | `aria-label` | icon 크기일 때 **필수** (타입으로 강제) | — |
 
 | | sm | md | lg |
@@ -764,6 +765,7 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 | `onRowOrderChange` | `(ids) => void`. 넘기면 핸들 열이 생겨요. 정렬 중에는 핸들을 숨겨요 |
 | `loading` | Skeleton 행 5개 + `aria-busy` |
 | `emptyState`, `errorState` | 행이 없을 때, 불러오기 실패했을 때 본문 자리에 보여 줄 EmptyState·ErrorState |
+| `pagination` | 넘기면 표 아래에 Pagination이 붙어요. `{ page, defaultPage, onPageChange, pageSize, defaultPageSize, onPageSizeChange, pageSizeOptions, showFirstLast, rowCount }` (모두 선택, 페이지는 1부터) |
 
 | `type` | 보여 주는 것 | 추가 속성 |
 |---|---|---|
@@ -782,6 +784,44 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 - 위험한 actions는 바로 실행하지 말고 `onClick`에서 AlertDialog를 열어요(§10 Menu).
 - 행이 많으면(100개 초과) 보이는 행만 그려요. 이때는 `className`으로 높이를 정해 주세요(예: `h-96`). 그 안에서 세로로 스크롤돼요.
 - Next.js: `columns`에 함수가 들어 있어서 서버 컴포넌트에서 넘길 수 없어요. DataGrid는 클라이언트 컴포넌트 안에서 정의해요.
+
+**페이지로 나누기**
+
+```tsx
+<DataGrid rows={allKeys} pagination={{ defaultPageSize: 20 }} … />                       // 클라이언트: rows 전체를 DataGrid가 나눠요
+<DataGrid rows={pageRows} pagination={{ page, onPageChange: setPage, pageSize, onPageSizeChange: setPageSize, rowCount: total }}
+  sorting={sort} onSortingChange={setSort} … />                                          // 서버: 현재 페이지 rows + 전체 개수
+```
+
+- `rowCount`가 없으면 클라이언트 모드예요. 정렬하거나 페이지당 행 수를 바꾸면 1페이지로 돌아가요.
+- `rowCount`를 넘기면 서버 모드예요. 받은 `rows`를 그대로 보여 주고, 정렬도 서버가 해요(`onSortingChange`로 받아 다시 불러와요). 한 페이지만 정렬하면 결과가 틀리기 때문이에요.
+- 전체 선택 체크박스는 **현재 페이지** 행만 골라요. 다른 페이지에서 고른 행은 그대로 남아요.
+- 행 이동은 현재 페이지 안에서만 돼요. 페이지네이션을 켜면 가상 스크롤은 쓰지 않아요.
+- 행이 없거나 불러오기 실패면 Pagination을 숨겨요.
+
+### Pagination
+
+```tsx
+<Pagination page={page} pageCount={20} onPageChange={setPage} />
+<Pagination page={page} pageCount={20} onPageChange={setPage} pageSize={pageSize} onPageSizeChange={setPageSize} showFirstLast={false} />
+```
+
+| prop | 값 | 기본값 |
+|---|---|---|
+| `page`, `onPageChange` | 현재 페이지(1부터)와 바뀔 때 | (필수) |
+| `pageCount` | 전체 페이지 수 | (필수) |
+| `pageSize`, `onPageSizeChange` | 넘기면 왼쪽에 "페이지당 행" Select가 생겨요 | — |
+| `pageSizeOptions` | 페이지당 행 수 목록 | `[10, 20, 50]` |
+| `showFirstLast` | 처음·마지막 버튼 | `true` |
+| `aria-label` | 페이지 이동 영역 이름 | "페이지" |
+
+목록을 페이지로 나눌 때 써요. Table이나 카드 목록과 함께 쓰고, DataGrid는 `pagination` prop으로 붙여요.
+
+- 왼쪽에 페이지당 행 수(라벨 `label` + `text/muted`, Select는 글자 너비에 맞춰요, 라벨과 `space/2`), 오른쪽에 `« ‹ 1 … 4 5 6 … 20 › »`. 둘 사이 `space/4`, 버튼 사이 `space/1`.
+- 번호 칸 28×28(`space/7`), `radius/md`, `mono`. 현재 페이지는 `bg/subtle` + `text/default` + `aria-current="page"`이고 강조색은 쓰지 않아요(§1 원칙 2). 다른 번호는 `text/muted`, hover `bg/subtle` + `text/default`. 포커스 링은 바깥 2px(offset 2px).
+- 번호는 처음·마지막과 현재 양옆 1개만 보이고, 나머지는 `…`로 줄여요. 항상 최대 7칸이라 너비가 흔들리지 않아요.
+- 처음·이전·다음·마지막은 ghost `icon-sm`(`chevrons-left`, `chevron-left`, `chevron-right`, `chevrons-right`)이고, 첫 페이지에서는 처음·이전이, 마지막 페이지에서는 다음·마지막이 비활성이에요.
+- 좁은 화면(640 미만)에서는 번호 대신 `4 / 20`(`mono-caption` + `text/muted`)만 보이고, 행 수 라벨도 숨겨요(Select 이름은 `aria-label`로 남아요). Figma `viewport=mobile`.
 
 ### ToggleGroup
 
@@ -927,11 +967,12 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Progress | `58:5093` | `<Progress value max label>` (`value` variant는 채움 미리보기, `value text`는 코드가 자동 표시) | `src/components/progress.tsx` |
 | Link | `65:3733` | `<Link href external>` (`children` → 자식 문구) | `src/components/link.tsx` |
 | Table Cell · Table | `65:3742` · `65:3743` | `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell` (`type=header` → `TableHead`, `align`·`sort`·`pinned` → 같은 prop, `state=hover·selected` → `TableRow`의 `interactive`·`selected`) | `src/components/table.tsx` |
+| Pagination Item · Pagination | `138:5684` · `138:5747` | `<Pagination page pageCount onPageChange pageSize onPageSizeChange showFirstLast>` (`state=current` → 현재 `page`, `viewport` → prop 아님, 좁은 화면은 코드가 자동 처리) | `src/components/pagination.tsx` |
 | Data Grid Cell | `130:6234` | `<DataGrid columns>`의 `columns[].type` (`type` 값이 같음. `select`·`handle`은 `onSelectionChange`·`onRowOrderChange`로 생기는 열) | `src/components/data-grid.tsx` |
 | Toggle Item · Toggle Group | `66:3760` · `66:3761` | `<ToggleGroup multiple>` + `<ToggleGroupItem value disabled>` (`pressed` → 현재 값, `content=icon`이면 `aria-label`) | `src/components/toggle-group.tsx` |
 | Accordion Item · Accordion | `66:3792` · `66:3793` | `Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionPanel` (`open` → 현재 값, `title`/`content` → 자식) | `src/components/accordion.tsx` |
 | File Dropzone · File Item | `71:4191` · `72:4251` | `<FileDropzone variant accept multiple maxSize maxFiles onFilesChange>` (`state` → 끌어다 놓기·거부·`disabled`), `<FileList layout items onRemove onRetry>` (`status` → `items[].status`) | `src/components/file-upload.tsx` |
 | Illustration (5개) | Foundations `Source illustrations` | 제품 화면은 EmptyState·ErrorState·ErrorPage 안에서 써요. 문서 화면은 `illustrations['error-404']`로 URL(§3.7) | `src/illustrations/*.webp` |
-| Icon (40개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
+| Icon (42개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

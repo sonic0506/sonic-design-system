@@ -3,7 +3,9 @@ import {
   columnOrderingFeature,
   columnPinningFeature,
   columnSizingFeature,
+  createPaginatedRowModel,
   createSortedRowModel,
+  rowPaginationFeature,
   rowSortingFeature,
   tableFeatures,
   useTable,
@@ -23,6 +25,7 @@ import { Button } from './button';
 import { Checkbox } from './checkbox';
 import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from './menu';
 import { Skeleton } from './skeleton';
+import { Pagination } from './pagination';
 import { Switch } from './switch';
 import { TableBody, TableCell, TableHead, TableHeader, TableRow, tableClass } from './table';
 
@@ -62,6 +65,21 @@ export interface DataGridSort {
   desc: boolean;
 }
 
+export interface DataGridPagination {
+  /** 현재 페이지 (1부터) */
+  page?: number;
+  defaultPage?: number;
+  onPageChange?: (page: number) => void;
+  pageSize?: number;
+  /** 기본 20 */
+  defaultPageSize?: number;
+  onPageSizeChange?: (pageSize: number) => void;
+  pageSizeOptions?: number[];
+  showFirstLast?: boolean;
+  /** 서버에서 나눌 때 전체 행 수 */
+  rowCount?: number;
+}
+
 export interface DataGridProps<Row> {
   /** 원본 값을 넣어요 (숫자는 number, 날짜는 ISO 문자열) */
   rows: Row[];
@@ -82,6 +100,8 @@ export interface DataGridProps<Row> {
   loading?: boolean;
   emptyState?: React.ReactNode;
   errorState?: React.ReactNode;
+  /** 넘기면 표 아래에 Pagination이 붙어요. rowCount를 넘기면 서버 모드(받은 rows를 그대로, 정렬도 서버) */
+  pagination?: DataGridPagination;
   /** 행이 많으면 보이는 행만 그려요. 이때 높이를 정해 주세요 (예: h-96) */
   className?: string;
 }
@@ -96,6 +116,8 @@ const VIRTUAL_FROM = 100;
 const features = tableFeatures({
   rowSortingFeature,
   sortedRowModel: createSortedRowModel(),
+  rowPaginationFeature,
+  paginatedRowModel: createPaginatedRowModel(),
   columnOrderingFeature,
   columnSizingFeature,
   columnPinningFeature,
@@ -278,6 +300,7 @@ export function DataGrid<Row extends RowData>({
   loading,
   emptyState,
   errorState,
+  pagination,
   className,
 }: DataGridProps<Row>) {
   const selectable = selection !== undefined || onSelectionChange !== undefined;
@@ -287,6 +310,11 @@ export function DataGrid<Row extends RowData>({
   const [sort, setSort] = useControlled(sorting, defaultSorting, onSortingChange);
   const [selected, setSelected] = useControlled(selection, [] as string[], onSelectionChange);
   const [order, setOrder] = useControlled(columnOrder, columns.map(colId), onColumnOrderChange);
+  const [pageState, setPage] = useControlled(pagination?.page, pagination?.defaultPage ?? 1, pagination?.onPageChange);
+  const [pageSize, setPageSize] = useControlled(pagination?.pageSize, pagination?.defaultPageSize ?? 20, pagination?.onPageSizeChange);
+  const server = pagination?.rowCount !== undefined;
+  const pageCount = pagination ? Math.max(1, Math.ceil((server ? pagination.rowCount! : rows.length) / pageSize)) : 1;
+  const page = Math.min(pageState, pageCount);
 
   const byId = React.useMemo(() => new Map(columns.map(c => [colId(c), c])), [columns]);
   const defs = React.useMemo(() => {
@@ -317,17 +345,26 @@ export function DataGrid<Row extends RowData>({
     columns: defs,
     data: rows,
     getRowId: (r: Row) => getRowId(r),
-    state: { sorting: sort ? [sort] : [], columnOrder: order, columnPinning: pinning },
+    state: {
+      sorting: sort ? [sort] : [],
+      columnOrder: order,
+      columnPinning: pinning,
+      pagination: { pageIndex: page - 1, pageSize: pagination ? pageSize : rows.length },
+    },
+    // 페이지네이션이 없거나 서버가 나눈 rows면 그대로 보여 줘요. 서버 모드는 정렬도 서버가 해요
+    manualPagination: !pagination || server,
+    manualSorting: server,
   });
 
   const headers = [...table.getStartFlatHeaders(), ...table.getCenterFlatHeaders(), ...table.getEndFlatHeaders()];
   const model = table.getRowModel().rows;
   const rowIds = rows.map(getRowId);
+  const pageIds = model.map(r => r.id);
   const centerIds = table.getCenterFlatHeaders().map(h => h.column.id);
   const canDragRows = reorderRows && !sort;
 
   const scrollRef = React.useRef<HTMLDivElement>(null);
-  const virtual = model.length > VIRTUAL_FROM;
+  const virtual = !pagination && model.length > VIRTUAL_FROM;
   const virtualizer = useVirtualizer({ count: virtual ? model.length : 0, getScrollElement: () => scrollRef.current, estimateSize: () => 40, overscan: 8 });
   const items = virtual ? virtualizer.getVirtualItems() : null;
   const visible = items ? items.map(v => model[v.index]) : model;
@@ -340,9 +377,14 @@ export function DataGrid<Row extends RowData>({
   const rowDrop = useDrop(rowIds, ids => onRowOrderChange?.(ids));
   const colDrop = useDrop(centerIds, ids => setOrder([...order.filter(id => !ids.includes(id)), ...ids]));
 
-  const toggleSort = (id: string) => setSort(sort?.id !== id ? { id, desc: false } : sort.desc ? null : { id, desc: true });
-  const allSelected = rows.length > 0 && rowIds.every(id => selected.includes(id));
-  const someSelected = !allSelected && rowIds.some(id => selected.includes(id));
+  const toggleSort = (id: string) => {
+    setSort(sort?.id !== id ? { id, desc: false } : sort.desc ? null : { id, desc: true });
+    if (pagination && page !== 1) setPage(1);
+  };
+  // 전체 선택은 보이는 페이지의 행만. 다른 페이지에서 고른 행은 남겨요
+  const allSelected = pageIds.length > 0 && pageIds.every(id => selected.includes(id));
+  const someSelected = !allSelected && pageIds.some(id => selected.includes(id));
+  const toggleAll = (on: boolean) => setSelected([...selected.filter(id => !pageIds.includes(id)), ...(on ? pageIds : [])]);
 
   const headCell = (header: (typeof headers)[number]) => {
     const { column } = header;
@@ -357,7 +399,7 @@ export function DataGrid<Row extends RowData>({
     if (id === SELECT)
       return (
         <TableHead key={id} {...base}>
-          <Checkbox checked={allSelected} indeterminate={someSelected} onCheckedChange={on => setSelected(on ? rowIds : [])}>
+          <Checkbox checked={allSelected} indeterminate={someSelected} onCheckedChange={toggleAll}>
             <span className="sn:sr-only">모든 행 선택</span>
           </Checkbox>
         </TableHead>
@@ -448,35 +490,51 @@ export function DataGrid<Row extends RowData>({
     );
 
   return (
-    <div ref={scrollRef} className={cn('sn:w-full sn:overflow-auto', className)}>
-      <table aria-label={ariaLabel} aria-busy={loading || undefined} aria-rowcount={virtual ? model.length + 1 : undefined} className={cn(tableClass, 'sn:bg-surface')}>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          accessibility={{ container: a11yContainer, announcements: announcements('열', () => centerIds), screenReaderInstructions: instructions }}
-          onDragOver={colDrop.onDragOver}
-          onDragEnd={colDrop.onDragEnd}
-          onDragCancel={colDrop.onDragCancel}
-        >
-          <TableHeader>
-            <SortableContext items={reorderColumns ? centerIds : []} strategy={horizontalListSortingStrategy}>
-              <TableRow>{headers.map(headCell)}</TableRow>
+    <div className={cn('sn:flex sn:w-full sn:flex-col sn:gap-4', className)}>
+      <div ref={scrollRef} className="sn:min-h-0 sn:w-full sn:flex-1 sn:overflow-auto">
+        <table aria-label={ariaLabel} aria-busy={loading || undefined} aria-rowcount={virtual ? model.length + 1 : undefined} className={cn(tableClass, 'sn:bg-surface')}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            accessibility={{ container: a11yContainer, announcements: announcements('열', () => centerIds), screenReaderInstructions: instructions }}
+            onDragOver={colDrop.onDragOver}
+            onDragEnd={colDrop.onDragEnd}
+            onDragCancel={colDrop.onDragCancel}
+          >
+            <TableHeader>
+              <SortableContext items={reorderColumns ? centerIds : []} strategy={horizontalListSortingStrategy}>
+                <TableRow>{headers.map(headCell)}</TableRow>
+              </SortableContext>
+            </TableHeader>
+          </DndContext>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            accessibility={{ container: a11yContainer, announcements: announcements('행', () => pageIds), screenReaderInstructions: instructions }}
+            onDragOver={rowDrop.onDragOver}
+            onDragEnd={rowDrop.onDragEnd}
+            onDragCancel={rowDrop.onDragCancel}
+          >
+            <SortableContext items={canDragRows ? pageIds : []} strategy={verticalListSortingStrategy}>
+              <TableBody>{body}</TableBody>
             </SortableContext>
-          </TableHeader>
-        </DndContext>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          accessibility={{ container: a11yContainer, announcements: announcements('행', () => rowIds), screenReaderInstructions: instructions }}
-          onDragOver={rowDrop.onDragOver}
-          onDragEnd={rowDrop.onDragEnd}
-          onDragCancel={rowDrop.onDragCancel}
-        >
-          <SortableContext items={canDragRows ? rowIds : []} strategy={verticalListSortingStrategy}>
-            <TableBody>{body}</TableBody>
-          </SortableContext>
-        </DndContext>
-      </table>
+          </DndContext>
+        </table>
+      </div>
+      {pagination && !errorState && (loading || model.length > 0) && (
+        <Pagination
+          page={page}
+          pageCount={pageCount}
+          onPageChange={setPage}
+          pageSize={pageSize}
+          onPageSizeChange={size => {
+            setPageSize(size);
+            if (page !== 1) setPage(1);
+          }}
+          pageSizeOptions={pagination.pageSizeOptions}
+          showFirstLast={pagination.showFirstLast}
+        />
+      )}
     </div>
   );
 }

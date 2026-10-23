@@ -11,7 +11,7 @@ import {
   Separator, Tab, Tabs, TabsList, TabsPanel, Tooltip,
   Badge, Progress, ToastProvider, useToast, type ToastTone,
   Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
-  FileDropzone, FileList, type FileItemData, DataGrid, type DataGridColumn,
+  FileDropzone, FileList, type FileItemData, DataGrid, type DataGridColumn, type DataGridSort,
 } from '../src';
 
 const variants = ['primary', 'secondary', 'ghost', 'danger'] as const;
@@ -209,6 +209,61 @@ function DataGridDemo() {
   );
 }
 
+// 서버 모드: 정렬·페이지를 서버(JSONPlaceholder, json-server 규칙)에 맡겨요. 전체 개수는 X-Total-Count 헤더
+type Todo = { userId: number; id: number; title: string; completed: boolean };
+const TODO_COLUMNS: DataGridColumn<Todo>[] = [
+  { field: 'id', header: 'ID', type: 'number', width: 80, sortable: true },
+  { field: 'userId', header: '사용자', type: 'number', width: 100, sortable: true },
+  { field: 'title', header: '할 일', type: 'text', sortable: true },
+  { field: 'completed', header: '상태', type: 'badge', width: 120, sortable: true, tones: { true: 'success', false: 'neutral' }, labels: { true: '완료', false: '진행 중' } },
+];
+
+function ServerGridDemo() {
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(10);
+  const [sort, setSort] = React.useState<DataGridSort | null>(null);
+  const [rows, setRows] = React.useState<Todo[]>([]);
+  const [total, setTotal] = React.useState(0);
+  const [loading, setLoading] = React.useState(true);
+  const [failed, setFailed] = React.useState(false);
+  const [retry, setRetry] = React.useState(0);
+
+  React.useEffect(() => {
+    const ctrl = new AbortController();
+    const q = new URLSearchParams({ _page: String(page), _limit: String(pageSize) });
+    if (sort) { q.set('_sort', sort.id); q.set('_order', sort.desc ? 'desc' : 'asc'); }
+    setLoading(true);
+    setFailed(false);
+    fetch(`https://jsonplaceholder.typicode.com/todos?${q}`, { signal: ctrl.signal })
+      .then(res => {
+        if (!res.ok) throw new Error(String(res.status));
+        setTotal(Number(res.headers.get('X-Total-Count') ?? 0));
+        return res.json() as Promise<Todo[]>;
+      })
+      .then(data => { setRows(data); setLoading(false); })
+      .catch(err => { if (err.name !== 'AbortError') { setFailed(true); setLoading(false); } });
+    return () => ctrl.abort();
+  }, [page, pageSize, sort, retry]);
+
+  return (
+    <div id="server-grid" className="sn:flex sn:flex-col sn:gap-3" style={{ maxWidth: 800 }}>
+      <Text variant="label">서버 정렬·페이지 (jsonplaceholder.typicode.com/todos)</Text>
+      <DataGrid
+        aria-label="할 일"
+        rows={loading ? [] : rows}
+        getRowId={r => String(r.id)}
+        columns={TODO_COLUMNS}
+        loading={loading}
+        sorting={sort}
+        onSortingChange={next => { setSort(next); setPage(1); }}
+        errorState={failed && <ErrorState title="할 일을 불러오지 못했어요" description="네트워크 연결을 확인하고 다시 시도해 주세요." onRetry={() => setRetry(n => n + 1)} />}
+        emptyState={<EmptyState title="할 일이 없어요" />}
+        pagination={{ page, onPageChange: setPage, pageSize, onPageSizeChange: size => { setPageSize(size); setPage(1); }, rowCount: total }}
+      />
+    </div>
+  );
+}
+
 // empty·error는 기본(일러스트)과 icon 버전을 함께 보여 줌
 type KeyState = 'normal' | 'loading' | 'empty' | 'error' | 'empty-icon' | 'error-icon';
 
@@ -347,6 +402,7 @@ function App() {
         <Button size="sm" variant="secondary" onClick={() => { const h = document.documentElement; h.dataset.theme = h.dataset.theme === 'dark' ? 'light' : 'dark'; }}>테마 전환</Button>
       </div>
       <DataGridDemo />
+      <ServerGridDemo />
       <div className="sn:flex sn:flex-wrap sn:items-start sn:gap-10">
         <div id="buttons" className={panel} style={{ width: 400 }}>
           {variants.flatMap(v => [false, true].flatMap(d => sizes.map(s => <Button key={v + d + s} variant={v} size={s} disabled={d}>Button</Button>)))}

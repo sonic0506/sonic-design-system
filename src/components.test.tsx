@@ -755,6 +755,20 @@ describe('DataGrid', () => {
   ];
   const names = () => screen.getAllByRole('row').slice(1).map(r => r.querySelectorAll('td')[0]?.textContent);
 
+  it('서버에서 그린 HTML을 hydration해도 속성이 어긋나지 않음 (dnd-kit id)', async () => {
+    const { renderToString } = await import('react-dom/server');
+    const { hydrateRoot } = await import('react-dom/client');
+    const grid = <DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} onRowOrderChange={() => {}} onColumnOrderChange={() => {}} />;
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(grid);
+    document.body.appendChild(container);
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    await React.act(async () => { hydrateRoot(container, grid); });
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
+    container.remove();
+  });
+
   it('형식 함수: 천 단위 쉼표, YYYY-MM-DD, YYYY-MM-DD HH:mm:ss', () => {
     expect(formatNumber(12480)).toBe('12,480');
     expect(formatNumber(null)).toBe('');

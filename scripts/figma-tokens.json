@@ -191,6 +191,18 @@
           "values": {
             "Value": "#2B1311"
           }
+        },
+        "cobalt/50": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#EEF1FF"
+          }
+        },
+        "cobalt/950": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#18214D"
+          }
         }
       }
     },
@@ -518,6 +530,17 @@
               "alias": "amber/400"
             }
           }
+        },
+        "color/bg/selected": {
+          "type": "COLOR",
+          "values": {
+            "Light": {
+              "alias": "cobalt/50"
+            },
+            "Dark": {
+              "alias": "cobalt/950"
+            }
+          }
         }
       }
     },
@@ -744,6 +767,21 @@
       "fontSize": 12,
       "lineHeight": 16,
       "letterSpacingPercent": 0
+    }
+  },
+  "components": {
+    "Data Grid Cell": {
+      "type": [
+        "text",
+        "number",
+        "date",
+        "datetime",
+        "badge",
+        "switch",
+        "actions",
+        "select",
+        "handle"
+      ]
     }
   }
 }

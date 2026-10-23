@@ -69,4 +69,5 @@
   --outline-color-success: var(--sn-color-border-success);
   --border-color-warning: var(--sn-color-border-warning);
   --outline-color-warning: var(--sn-color-border-warning);
+  --background-color-selected: var(--sn-color-bg-selected);
 }

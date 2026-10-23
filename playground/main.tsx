@@ -11,7 +11,7 @@ import {
   Separator, Tab, Tabs, TabsList, TabsPanel, Tooltip,
   Badge, Progress, ToastProvider, useToast, type ToastTone,
   Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
-  FileDropzone, FileList, type FileItemData,
+  FileDropzone, FileList, type FileItemData, DataGrid, type DataGridColumn,
 } from '../src';
 
 const variants = ['primary', 'secondary', 'ghost', 'danger'] as const;
@@ -165,6 +165,45 @@ function ContentDisclosure() {
   );
 }
 
+type GridKey = { id: string; name: string; requests: number; status: string; createdAt: string; enabled: boolean };
+const GRID_KEYS: GridKey[] = [
+  { id: 'a', name: 'production', requests: 12480, status: 'active', createdAt: '2026-10-21', enabled: true },
+  { id: 'b', name: 'staging', requests: 3201, status: 'active', createdAt: '2026-10-18', enabled: true },
+  { id: 'c', name: 'ci-runner', requests: 845, status: 'paused', createdAt: '2026-10-02', enabled: false },
+  { id: 'd', name: 'legacy', requests: 0, status: 'revoked', createdAt: '2026-09-12', enabled: false },
+];
+const MANY_KEYS: GridKey[] = Array.from({ length: 1000 }, (_, i) => ({ ...GRID_KEYS[i % 4], id: `k${i}`, name: `key-${i + 1}`, requests: (i * 7919) % 20000 }));
+
+function DataGridDemo() {
+  const [rows, setRows] = React.useState(GRID_KEYS);
+  const [selected, setSelected] = React.useState<string[]>(['c']);
+  const [many, setMany] = React.useState(false);
+  const columns: DataGridColumn<GridKey>[] = [
+    { field: 'name', header: '이름', type: 'text', pinned: 'left', width: 160, sortable: true },
+    { field: 'requests', header: '요청 수', type: 'number', width: 120, sortable: true },
+    { field: 'status', header: '상태', type: 'badge', width: 120, tones: { active: 'success', paused: 'warning', revoked: 'danger' }, labels: { active: '활성', paused: '일시 정지', revoked: '폐기됨' } },
+    { field: 'createdAt', header: '만든 날', type: 'date', width: 140, sortable: true },
+    { field: 'enabled', header: '사용', type: 'switch', width: 80, onChange: (row, on) => setRows(rs => rs.map(r => (r.id === row.id ? { ...r, enabled: on } : r))) },
+    { id: 'actions', type: 'actions', pinned: 'right', actions: [{ label: '이름 바꾸기', icon: Pencil, onClick: () => {} }, { label: '삭제', icon: Trash2, tone: 'danger', onClick: () => {} }] },
+  ];
+  return (
+    <div id="data-grid" className="sn:flex sn:flex-col sn:gap-3" style={{ maxWidth: 800 }}>
+      <Checkbox checked={many} onCheckedChange={on => { setMany(on); setRows(on ? MANY_KEYS : GRID_KEYS); }}>행 1,000개 (가상 스크롤)</Checkbox>
+      <DataGrid
+        aria-label="API 키"
+        className={many ? 'sn:h-96' : undefined}
+        rows={rows}
+        getRowId={r => r.id}
+        columns={columns}
+        selection={selected}
+        onSelectionChange={setSelected}
+        onColumnOrderChange={() => {}}
+        onRowOrderChange={ids => setRows(rs => ids.map(id => rs.find(r => r.id === id)!))}
+      />
+    </div>
+  );
+}
+
 // empty·error는 기본(일러스트)과 icon 버전을 함께 보여 줌
 type KeyState = 'normal' | 'loading' | 'empty' | 'error' | 'empty-icon' | 'error-icon';
 
@@ -302,6 +341,7 @@ function App() {
       <div className="sn:flex sn:gap-2">
         <Button size="sm" variant="secondary" onClick={() => { const h = document.documentElement; h.dataset.theme = h.dataset.theme === 'dark' ? 'light' : 'dark'; }}>테마 전환</Button>
       </div>
+      <DataGridDemo />
       <div className="sn:flex sn:flex-wrap sn:items-start sn:gap-10">
         <div id="buttons" className={panel} style={{ width: 400 }}>
           {variants.flatMap(v => [false, true].flatMap(d => sizes.map(s => <Button key={v + d + s} variant={v} size={s} disabled={d}>Button</Button>)))}

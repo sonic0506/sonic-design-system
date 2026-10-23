@@ -12,4 +12,7 @@ for (const c of cols) {
 }
 const textStyles = {};
 for (const s of await figma.getLocalTextStylesAsync()) textStyles[s.name] = { fontFamily: s.fontName.family, fontStyle: s.fontName.style, fontSize: s.fontSize, lineHeight: s.lineHeight.value, letterSpacingPercent: s.letterSpacing.value };
-return { source: 'figma:XifnZsjqJWJqFmAmrM6p3u', collections, textStyles };
+// 코드와 이름을 맞춰야 하는 variant 목록 (테스트가 비교해요)
+const dataGridCell = await figma.getNodeByIdAsync('130:6234');
+const components = { 'Data Grid Cell': { type: dataGridCell.componentPropertyDefinitions.type.variantOptions } };
+return { source: 'figma:XifnZsjqJWJqFmAmrM6p3u', collections, textStyles, components };

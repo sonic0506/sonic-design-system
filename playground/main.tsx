@@ -214,7 +214,7 @@ type Todo = { userId: number; id: number; title: string; completed: boolean };
 const TODO_COLUMNS: DataGridColumn<Todo>[] = [
   { field: 'id', header: 'ID', type: 'number', width: 80, sortable: true },
   { field: 'userId', header: '사용자', type: 'number', width: 100, sortable: true },
-  { field: 'title', header: '할 일', type: 'text', sortable: true },
+  { field: 'title', header: '할 일', type: 'text', sortable: true, minWidth: 276 },
   { field: 'completed', header: '상태', type: 'badge', width: 120, sortable: true, tones: { true: 'success', false: 'neutral' }, labels: { true: '완료', false: '진행 중' } },
 ];
 
@@ -227,6 +227,8 @@ function ServerGridDemo() {
   const [loading, setLoading] = React.useState(true);
   const [failed, setFailed] = React.useState(false);
   const [retry, setRetry] = React.useState(0);
+  // 처음은 loading(Skeleton), 그다음부터는 이전 행을 두고 refreshing(막 + 스피너)
+  const [hasLoaded, setHasLoaded] = React.useState(false);
 
   React.useEffect(() => {
     const ctrl = new AbortController();
@@ -234,13 +236,15 @@ function ServerGridDemo() {
     if (sort) { q.set('_sort', sort.id); q.set('_order', sort.desc ? 'desc' : 'asc'); }
     setLoading(true);
     setFailed(false);
-    fetch(`https://jsonplaceholder.typicode.com/todos?${q}`, { signal: ctrl.signal })
+    // 확인용: 느린 API처럼 다시 불러오는 중 표시가 보이도록 일부러 600ms 늦춰요
+    new Promise(resolve => setTimeout(resolve, 600))
+      .then(() => fetch(`https://jsonplaceholder.typicode.com/todos?${q}`, { signal: ctrl.signal }))
       .then(res => {
         if (!res.ok) throw new Error(String(res.status));
         setTotal(Number(res.headers.get('X-Total-Count') ?? 0));
         return res.json() as Promise<Todo[]>;
       })
-      .then(data => { setRows(data); setLoading(false); })
+      .then(data => { setRows(data); setLoading(false); setHasLoaded(true); })
       .catch(err => { if (err.name !== 'AbortError') { setFailed(true); setLoading(false); } });
     return () => ctrl.abort();
   }, [page, pageSize, sort, retry]);
@@ -250,10 +254,11 @@ function ServerGridDemo() {
       <Text variant="label">서버 정렬·페이지 (jsonplaceholder.typicode.com/todos)</Text>
       <DataGrid
         aria-label="할 일"
-        rows={loading ? [] : rows}
+        rows={rows}
         getRowId={r => String(r.id)}
         columns={TODO_COLUMNS}
-        loading={loading}
+        loading={loading && !hasLoaded}
+        refreshing={loading && hasLoaded}
         sorting={sort}
         onSortingChange={next => { setSort(next); setPage(1); }}
         errorState={failed && <ErrorState title="할 일을 불러오지 못했어요" description="네트워크 연결을 확인하고 다시 시도해 주세요." onRetry={() => setRetry(n => n + 1)} />}

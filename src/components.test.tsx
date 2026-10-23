@@ -755,6 +755,51 @@ describe('DataGrid', () => {
   ];
   const names = () => screen.getAllByRole('row').slice(1).map(r => r.querySelectorAll('td')[0]?.textContent);
 
+  describe('다시 불러오는 중 (refreshing)', () => {
+    const grid = (props: { refreshing?: boolean; loading?: boolean }) => (
+      <DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} {...props} />
+    );
+    it('누르자마자 aria-busy와 안내를 보여 주고 행은 그대로 둬요', () => {
+      render(grid({ refreshing: true }));
+      expect(screen.getByRole('table', { name: 'API 키' })).toHaveAttribute('aria-busy', 'true');
+      expect(screen.getByText('불러오는 중이에요')).toBeInTheDocument();
+      expect(screen.getByText('production')).toBeInTheDocument();
+    });
+
+    it('끝나면 바로 막과 aria-busy를 걷어요', () => {
+      const { rerender } = render(grid({ refreshing: true }));
+      rerender(grid({ refreshing: false }));
+      expect(screen.queryByText('불러오는 중이에요')).toBeNull();
+      expect(screen.getByRole('table', { name: 'API 키' })).not.toHaveAttribute('aria-busy');
+    });
+
+    it('loading과 함께면 막 대신 Skeleton을 보여 줘요', () => {
+      render(grid({ refreshing: true, loading: true }));
+      expect(screen.queryByText('불러오는 중이에요')).toBeNull();
+      expect(screen.queryByText('production')).toBeNull();
+    });
+  });
+
+  it('minWidth를 준 열은 width 없이 최소 너비만 걸어요', () => {
+    render(
+      <DataGrid
+        aria-label="API 키"
+        rows={keys}
+        getRowId={r => r.id}
+        columns={[
+          { field: 'id', header: 'ID', type: 'text', width: 64 },
+          { field: 'name', header: '이름', type: 'text', minWidth: 276 },
+        ]}
+      />,
+    );
+    const head = screen.getByRole('columnheader', { name: '이름' });
+    expect(head.style.minWidth).toBe('276px');
+    expect(head.style.width).toBe('');
+    const cell = screen.getByText('production').closest('td');
+    expect(cell?.style.minWidth).toBe('276px');
+    expect(screen.getByRole('columnheader', { name: 'ID' }).style.width).toBe('64px');
+  });
+
   it('서버에서 그린 HTML을 hydration해도 속성이 어긋나지 않음 (dnd-kit id)', async () => {
     const { renderToString } = await import('react-dom/server');
     const { hydrateRoot } = await import('react-dom/client');

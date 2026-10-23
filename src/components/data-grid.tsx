@@ -17,7 +17,7 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors, type Announcements, type DragEndEvent, type DragOverEvent } from '@dnd-kit/core';
 import { SortableContext, arrayMove, horizontalListSortingStrategy, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Ellipsis, GripVertical } from 'lucide-react';
+import { Ellipsis, GripVertical, LoaderCircle } from 'lucide-react';
 import { cn } from '../lib/cn';
 import { formatDate, formatDateTime, formatNumber } from '../lib/format';
 import { Badge, type BadgeProps } from './badge';
@@ -36,6 +36,8 @@ interface ColumnBase {
   header?: string;
   /** px. 고정 열에는 꼭 줘요 (다음 고정 열 위치 계산) */
   width?: number;
+  /** px. width 없이 남은 너비를 쓰는 열의 최소 너비. 좁은 화면에서 이보다 줄지 않고 표가 가로로 스크롤돼요 */
+  minWidth?: number;
   pinned?: 'left' | 'right';
 }
 interface FieldColumn<Row> extends ColumnBase {
@@ -98,6 +100,8 @@ export interface DataGridProps<Row> {
   /** 넘기면 핸들 열이 생겨요. 정렬 중에는 핸들을 숨겨요 */
   onRowOrderChange?: (ids: string[]) => void;
   loading?: boolean;
+  /** 이미 보이는 행을 다시 불러오는 중. 행은 두고 본문 위에 막과 스피너를 올려요(300ms 넘을 때만). 처음 불러올 때는 loading */
+  refreshing?: boolean;
   emptyState?: React.ReactNode;
   errorState?: React.ReactNode;
   /** 넘기면 표 아래에 Pagination이 붙어요. rowCount를 넘기면 서버 모드(받은 rows를 그대로, 정렬도 서버) */
@@ -178,12 +182,13 @@ function useControlled<T>(value: T | undefined, initial: T, onChange?: (v: T) =>
   return [current, set] as const;
 }
 
-function sizeStyle<R extends RowData>(column: Column<Features, R, unknown>, fixed: boolean): React.CSSProperties {
+// minWidth: width가 없는 열(남은 너비를 쓰는 열)의 최소 너비. 좁은 화면에서는 표가 줄지 않고 가로로 스크롤돼요
+function sizeStyle<R extends RowData>(column: Column<Features, R, unknown>, fixed: boolean, minWidth?: number): React.CSSProperties {
   const pin = column.getIsPinned();
   const width = fixed || pin ? column.getSize() : undefined;
   return {
     width,
-    minWidth: width,
+    minWidth: width ?? minWidth,
     left: pin === 'start' ? column.getStart('start') : undefined,
     right: pin === 'end' ? column.getAfter('end') : undefined,
   };
@@ -298,11 +303,14 @@ export function DataGrid<Row extends RowData>({
   onColumnOrderChange,
   onRowOrderChange,
   loading,
+  refreshing,
   emptyState,
   errorState,
   pagination,
   className,
 }: DataGridProps<Row>) {
+  // 누르자마자 보여요. loading(Skeleton)과 에러가 먼저예요
+  const isRefreshShown = !!refreshing && !loading && !errorState;
   const selectable = selection !== undefined || onSelectionChange !== undefined;
   const reorderRows = onRowOrderChange !== undefined;
   const reorderColumns = onColumnOrderChange !== undefined;
@@ -395,7 +403,7 @@ export function DataGrid<Row extends RowData>({
     const pinned = pin === 'start' ? 'left' : pin === 'end' ? 'right' : undefined;
     const base = {
       pinned,
-      style: sizeStyle(column, id === SELECT || id === HANDLE || byId.get(id)?.width !== undefined),
+      style: sizeStyle(column, id === SELECT || id === HANDLE || byId.get(id)?.width !== undefined, byId.get(id)?.minWidth),
       className: cn('sn:sticky sn:top-0 sn:z-20 sn:bg-surface', pinned && 'sn:z-30'),
     } as const;
     if (id === SELECT)
@@ -424,7 +432,10 @@ export function DataGrid<Row extends RowData>({
 
   const stateRow = (content: React.ReactNode) => (
     <TableRow>
-      <TableCell colSpan={headers.length} className="sn:h-auto sn:p-0">{content}</TableCell>
+      <TableCell colSpan={headers.length} className="sn:h-auto sn:p-0">
+        {/* 표가 가로로 스크롤돼도 보이는 너비(스크롤 영역 100cqw) 가운데에 있어요 */}
+        <div className="sn:sticky sn:left-0 sn:w-[100cqw]">{content}</div>
+      </TableCell>
     </TableRow>
   );
 
@@ -475,7 +486,7 @@ export function DataGrid<Row extends RowData>({
                     <TableCell
                       key={cell.id}
                       pinned={pinned}
-                      style={sizeStyle(column, id === SELECT || id === HANDLE || c?.width !== undefined)}
+                      style={sizeStyle(column, id === SELECT || id === HANDLE || c?.width !== undefined, c?.minWidth)}
                       align={c?.type === 'number' ? 'end' : 'start'}
                       className={cn((c?.type === 'date' || c?.type === 'datetime') && 'sn:font-mono', c?.type === 'actions' && 'sn:text-right', drop)}
                     >
@@ -494,8 +505,9 @@ export function DataGrid<Row extends RowData>({
   return (
     <div className={cn('sn:flex sn:w-full sn:flex-col sn:gap-4', className)}>
       {/* relative: 칸 안 sr-only(absolute)가 스크롤 영역에 갇히게 해요. 없으면 밖으로 빠져 페이지가 넓어져요 */}
-      <div ref={scrollRef} className="sn:relative sn:min-h-0 sn:w-full sn:flex-1 sn:overflow-auto">
-        <table aria-label={ariaLabel} aria-busy={loading || undefined} aria-rowcount={virtual ? model.length + 1 : undefined} className={cn(tableClass, 'sn:bg-surface')}>
+      {/* @container: 상태 칸과 스피너가 보이는 너비(100cqw)를 알아요 */}
+      <div ref={scrollRef} className="sn:@container sn:relative sn:min-h-0 sn:w-full sn:flex-1 sn:overflow-auto">
+        <table aria-label={ariaLabel} aria-busy={loading || refreshing || undefined} aria-rowcount={virtual ? model.length + 1 : undefined} className={cn(tableClass, 'sn:bg-surface')}>
           <DndContext
             id={`DndDescribedBy-${dndId}-columns`}
             sensors={sensors}
@@ -521,10 +533,26 @@ export function DataGrid<Row extends RowData>({
             onDragCancel={rowDrop.onDragCancel}
           >
             <SortableContext items={canDragRows ? pageIds : []} strategy={verticalListSortingStrategy}>
-              <TableBody>{body}</TableBody>
+              {/* relative: 다시 불러오는 중 막이 본문 행만 덮어요(머리글은 그대로 보여요) */}
+              <TableBody className={isRefreshShown ? 'sn:relative' : undefined}>
+                {body}
+                {isRefreshShown && (
+                  <tr aria-hidden>
+                    {/* 누르자마자 duration/fast로 나타나고, 끝나면 바로 걷혀요 */}
+                    <td colSpan={headers.length} className="sn:absolute sn:inset-0 sn:bg-scrim-subtle sn:p-0 sn:text-muted sn:transition-opacity sn:duration-(--sn-duration-fast) sn:ease-standard sn:starting:opacity-0 sn:motion-reduce:transition-none">
+                      <div className="sn:sticky sn:left-0 sn:flex sn:h-full sn:w-[100cqw] sn:items-center sn:justify-center">
+                        <LoaderCircle className="sn:size-6 sn:animate-[sn-spin_var(--sn-duration-loop)_linear_infinite] sn:motion-reduce:animate-none" />
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </TableBody>
             </SortableContext>
           </DndContext>
         </table>
+        <span role="status" className="sn:sr-only">
+          {isRefreshShown ? '불러오는 중이에요' : ''}
+        </span>
       </div>
       {pagination && !errorState && (loading || model.length > 0) && (
         <Pagination

@@ -71,6 +71,7 @@ Figma Variable 이름이 그대로 CSS 변수가 돼요. `/`는 `-`로 바꾸고
 | `color/border/warning` | amber/600 | amber/400 | 주의 강조 테두리 |
 | `color/bg/danger-subtle` | red/50 `#FCEDEC` | red/950 `#2B1311` | danger Badge(subtle) |
 | `color/bg/selected` | cobalt/50 `#EEF1FF` | cobalt/950 `#18214D` | DataGrid 선택된 행 (hover `bg/subtle`과 구분) |
+| `color/bg/scrim-subtle` | gray/0 60% | gray/900 60% | DataGrid 다시 불러오는 중, 이전 행 위에 까는 연한 막 (화면 전체를 덮는 막은 `bg/overlay`) |
 
 글자와 바탕 조합은 모두 WCAG 4.5:1 이상이에요. 토큰을 바꾸면 `npm run check:contrast`로 다시 확인해요(배포 전 검사에도 들어 있어요).
 
@@ -279,6 +280,8 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 | 에러 | 무엇이 실패했는지, 다시 시도할 방법 | `ErrorState` |
 
 저장처럼 사용자가 일으킨 동작이 진행 중일 때는 화면 전체가 아니라 그 버튼에 `loading`을 켜요.
+
+데이터를 이미 보여 주는 중에 조건을 바꿔 다시 불러올 때는 로딩(Skeleton)으로 되돌리지 않아요. 이전 결과를 유지하고 다시 불러오는 중 표시를 써요(DataGrid `refreshing`).
 
 ## 9. frontend-design 사용 규칙
 
@@ -764,6 +767,7 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 | `columnOrder`, `onColumnOrderChange` | 열 id 순서. `onColumnOrderChange`를 넘기면 머리글을 끌어서 옮길 수 있어요 |
 | `onRowOrderChange` | `(ids) => void`. 넘기면 핸들 열이 생겨요. 정렬 중에는 핸들을 숨겨요 |
 | `loading` | Skeleton 행 5개 + `aria-busy` |
+| `refreshing` | 이미 보이는 행을 다시 불러오는 중. 행은 그대로 두고 본문 위에 막과 스피너를 올려요. 처음 불러올 때는 `loading`을 써요 |
 | `emptyState`, `errorState` | 행이 없을 때, 불러오기 실패했을 때 본문 자리에 보여 줄 EmptyState·ErrorState |
 | `pagination` | 넘기면 표 아래에 Pagination이 붙어요. `{ page, defaultPage, onPageChange, pageSize, defaultPageSize, onPageSizeChange, pageSizeOptions, showFirstLast, rowCount }` (모두 선택, 페이지는 1부터) |
 
@@ -776,12 +780,22 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 | `switch` | Switch, 누르면 바로 적용 | `onChange(row, checked)` (필수) |
 | `actions` | 1개면 ghost `icon-sm` 버튼, 2개 이상이면 `ellipsis` Menu | `actions: { label, icon?, tone?, onClick(row) }[]` (필수) |
 
-공통 열 속성: `header`, `width`(px), `pinned`(`left` · `right`), `sortable`. 고정 열에는 `width`를 꼭 줘요(다음 고정 열 위치 계산에 써요). `select`·`handle` 열은 너비 40이고, 있으면 항상 왼쪽에 고정돼요.
+공통 열 속성: `header`, `width`(px), `minWidth`(px), `pinned`(`left` · `right`), `sortable`. 고정 열에는 `width`를 꼭 줘요(다음 고정 열 위치 계산에 써요). `select`·`handle` 열은 너비 40이고, 있으면 항상 왼쪽에 고정돼요.
+
+- `width`가 없는 열은 남은 너비를 써요. 좁은 화면에서 글자가 여러 줄로 감기지 않게 `minWidth`를 줘요. 그보다 좁아지면 표가 줄지 않고 가로로 스크롤돼요(예: 제목 열 `minWidth: 276`이면 4열 표가 640부터 스크롤). `width`를 주면 넓은 화면에서도 그 너비로 고정되니, 남은 너비를 써야 하는 열에는 `minWidth`만 써요.
+- 빈 상태·에러·다시 불러오는 중 스피너는 표가 가로로 스크롤돼도 보이는 너비의 가운데에 있어요.
 
 - 행 hover `bg/subtle`, 선택 `bg/selected`. 고정 열 경계는 1px `border/default`이고 그림자는 쓰지 않아요(§1 원칙 4).
 - 컬럼 이동 중인 머리글은 `bg/subtle`, 행 이동 중인 행은 `bg/surface` + 1px `border/default` + `radius/md`. 놓을 위치는 2px `border/focus` 선이에요.
 - 핸들은 `grip-vertical` 16(`text/muted`, hover `text/default`)이고 바깥 2px 포커스 링을 그려요. 키보드로도 옮겨요: 핸들에 포커스 → Space로 들기 → 화살표 → Space로 놓기(Esc 취소). 화면 낭독기 안내는 한국어 해요체예요.
 - 위험한 actions는 바로 실행하지 말고 `onClick`에서 AlertDialog를 열어요(§10 Menu).
+- 다시 불러오는 중(`refreshing`): 정렬·필터·페이지를 바꿔 새 데이터를 기다리는 동안이에요. 이전 행을 지우지 않아 화면이 흔들리지 않아요.
+  - 본문 행 위에 `bg/scrim-subtle` 막을 깔고, 가운데에 `loader-circle` 24(`text/muted`)가 `duration/loop`로 돌아요. `prefers-reduced-motion`이면 회전을 멈춰요.
+  - 머리글과 Pagination은 덮지 않아요. 어떤 조건으로 불러오는지 보이게 해요.
+  - 막은 마우스 클릭만 막아요. 키보드 포커스는 그대로 둬요(`inert`를 쓰지 않아요).
+  - 누르자마자 보이고 막은 `duration/fast`로 나타나요(움직임 줄이기면 바로). 데이터가 오면 바로 걷혀요. 응답이 빠르면 살짝 흐려졌다 돌아오는 정도예요.
+  - 표에 `aria-busy`를 달고, 화면 낭독기에 "불러오는 중이에요"를 알려요.
+  - `loading`과 `refreshing`이 둘 다 켜지면 `loading`(Skeleton)이 먼저예요.
 - 행이 많으면(100개 초과) 보이는 행만 그려요. 이때는 `className`으로 높이를 정해 주세요(예: `h-96`). 그 안에서 세로로 스크롤돼요.
 - Next.js: `columns`에 함수가 들어 있어서 서버 컴포넌트에서 넘길 수 없어요. DataGrid는 클라이언트 컴포넌트 안에서 정의해요.
 

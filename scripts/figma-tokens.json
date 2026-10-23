@@ -203,6 +203,18 @@
           "values": {
             "Value": "#18214D"
           }
+        },
+        "gray/0-a60": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#FFFFFF99"
+          }
+        },
+        "gray/900-a60": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#161B2199"
+          }
         }
       }
     },
@@ -539,6 +551,17 @@
             },
             "Dark": {
               "alias": "cobalt/950"
+            }
+          }
+        },
+        "color/bg/scrim-subtle": {
+          "type": "COLOR",
+          "values": {
+            "Light": {
+              "alias": "gray/0-a60"
+            },
+            "Dark": {
+              "alias": "gray/900-a60"
             }
           }
         }

@@ -178,6 +178,7 @@ function DataGridDemo() {
   const [rows, setRows] = React.useState(GRID_KEYS);
   const [selected, setSelected] = React.useState<string[]>(['c']);
   const [many, setMany] = React.useState(false);
+  const [paged, setPaged] = React.useState(true);
   const columns: DataGridColumn<GridKey>[] = [
     { field: 'name', header: '이름', type: 'text', pinned: 'left', width: 160, sortable: true },
     { field: 'requests', header: '요청 수', type: 'number', width: 120, sortable: true },
@@ -188,10 +189,14 @@ function DataGridDemo() {
   ];
   return (
     <div id="data-grid" className="sn:flex sn:flex-col sn:gap-3" style={{ maxWidth: 800 }}>
-      <Checkbox checked={many} onCheckedChange={on => { setMany(on); setRows(on ? MANY_KEYS : GRID_KEYS); }}>행 1,000개 (가상 스크롤)</Checkbox>
+      <div className="sn:flex sn:gap-4">
+        <Checkbox checked={many} onCheckedChange={on => { setMany(on); setRows(on ? MANY_KEYS : GRID_KEYS); }}>행 1,000개</Checkbox>
+        <Checkbox checked={paged} onCheckedChange={setPaged}>페이지네이션 (끄면 가상 스크롤)</Checkbox>
+      </div>
       <DataGrid
         aria-label="API 키"
-        className={many ? 'sn:h-96' : undefined}
+        className={many && !paged ? 'sn:h-96' : undefined}
+        pagination={paged ? { defaultPageSize: 10 } : undefined}
         rows={rows}
         getRowId={r => r.id}
         columns={columns}

@@ -8,11 +8,12 @@ import {
   EmptyState, ErrorState, ErrorPage, illustrations, Field, Skeleton, Badge, Progress, ToastProvider, useToast,
   Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
   FileDropzone, FileList, formatBytes, type FileItemData,
-  DataGrid, type DataGridColumn, formatNumber, formatDate, formatDateTime,
+  DataGrid, type DataGridColumn, formatNumber, formatDate, formatDateTime, Pagination,
   Avatar, Button, buttonVariants, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
 } from './index';
 import { X } from 'lucide-react';
 import { dataGridCellTypes } from './components/data-grid';
+import { getPageItems } from './components/pagination';
 import figmaTokens from '../scripts/figma-tokens.json';
 
 describe('Button', () => {
@@ -888,5 +889,90 @@ describe('DataGrid', () => {
     const ringed = [...container.querySelectorAll('[class*="focus-visible:outline-2"]')];
     expect(ringed.length).toBeGreaterThan(10);
     for (const el of ringed) expect(el.className).not.toMatch(/(^|\s)sn:outline-none(\s|$)/);
+  });
+});
+
+describe('Pagination', () => {
+  it('번호: 7칸을 넘으면 처음·마지막과 현재 양옆만, 나머지는 줄임표', () => {
+    expect(getPageItems(1, 5)).toEqual([1, 2, 3, 4, 5]);
+    expect(getPageItems(2, 20)).toEqual([1, 2, 3, 4, 5, 'ellipsis', 20]);
+    expect(getPageItems(10, 20)).toEqual([1, 'ellipsis', 9, 10, 11, 'ellipsis', 20]);
+    expect(getPageItems(19, 20)).toEqual([1, 'ellipsis', 16, 17, 18, 19, 20]);
+  });
+
+  it('현재 페이지에 aria-current, 첫 페이지에서는 처음·이전 비활성, 번호를 누르면 onPageChange', async () => {
+    const onPageChange = vi.fn();
+    render(<Pagination page={1} pageCount={20} onPageChange={onPageChange} />);
+    expect(screen.getByRole('button', { name: '1페이지' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('button', { name: '처음 페이지' })).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('button', { name: '이전 페이지' })).toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(screen.getByRole('button', { name: '20페이지' }));
+    expect(onPageChange).toHaveBeenLastCalledWith(20);
+    await userEvent.click(screen.getByRole('button', { name: '다음 페이지' }));
+    expect(onPageChange).toHaveBeenLastCalledWith(2);
+  });
+
+  it('마지막 페이지로 가서 버튼이 비활성이 돼도 포커스가 남음', async () => {
+    function Controlled() {
+      const [page, setPage] = React.useState(1);
+      return <Pagination page={page} pageCount={5} onPageChange={setPage} />;
+    }
+    render(<Controlled />);
+    const last = screen.getByRole('button', { name: '마지막 페이지' });
+    await userEvent.click(last);
+    expect(last).toHaveAttribute('aria-disabled', 'true');
+    expect(last).toHaveFocus();
+    expect(screen.getByRole('button', { name: '5페이지' })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('showFirstLast={false}면 처음·마지막 버튼이 없음, onPageSizeChange가 없으면 Select도 없음', () => {
+    render(<Pagination page={3} pageCount={5} onPageChange={() => {}} showFirstLast={false} />);
+    expect(screen.queryByRole('button', { name: '처음 페이지' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '마지막 페이지' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: '페이지' })).toBeInTheDocument();
+  });
+
+  it('DataGrid 클라이언트: rows를 나누고, 행 수를 바꾸면 1페이지로', async () => {
+    type R = { id: string; n: number };
+    const rows: R[] = Array.from({ length: 45 }, (_, i) => ({ id: `r${i + 1}`, n: i + 1 }));
+    render(<DataGrid aria-label="숫자" rows={rows} getRowId={r => r.id} columns={[{ field: 'n', header: 'n', type: 'number' }]} pagination={{ defaultPageSize: 10 }} />);
+    expect(screen.getAllByRole('row')).toHaveLength(11);
+    expect(screen.getByRole('button', { name: '5페이지' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: '5페이지' }));
+    expect(screen.getAllByRole('row').slice(1).map(r => r.textContent)).toEqual(['41', '42', '43', '44', '45']);
+    await userEvent.click(screen.getByRole('combobox', { name: '페이지당 행' }));
+    await userEvent.click(await screen.findByRole('option', { name: '20' }));
+    expect(screen.getByRole('button', { name: '1페이지' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getAllByRole('row')).toHaveLength(21);
+  });
+
+  it('DataGrid 서버: rows를 그대로 보여 주고 rowCount로 페이지 수, 정렬은 서버에 맡김', async () => {
+    type R = { id: string; n: number };
+    const pageRows: R[] = [{ id: 'b', n: 2 }, { id: 'a', n: 1 }];
+    const onSortingChange = vi.fn();
+    const onPageChange = vi.fn();
+    render(
+      <DataGrid aria-label="숫자" rows={pageRows} getRowId={r => r.id} columns={[{ field: 'n', header: 'n', type: 'number', sortable: true }]}
+        onSortingChange={onSortingChange} pagination={{ page: 1, onPageChange, pageSize: 2, rowCount: 9 }} />,
+    );
+    expect(screen.getByRole('button', { name: '5페이지' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'n' }));
+    expect(onSortingChange).toHaveBeenCalledWith({ id: 'n', desc: false });
+    expect(screen.getAllByRole('row').slice(1).map(r => r.textContent)).toEqual(['2', '1']);
+    await userEvent.click(screen.getByRole('button', { name: '2페이지' }));
+    expect(onPageChange).toHaveBeenCalledWith(2);
+  });
+
+  it('DataGrid 전체 선택은 현재 페이지 행만, 다른 페이지 선택은 남김', async () => {
+    type R = { id: string; n: number };
+    const rows: R[] = Array.from({ length: 4 }, (_, i) => ({ id: `r${i + 1}`, n: i + 1 }));
+    const onSelectionChange = vi.fn();
+    render(
+      <DataGrid aria-label="숫자" rows={rows} getRowId={r => r.id} columns={[{ field: 'n', header: 'n', type: 'number' }]}
+        selection={['r4']} onSelectionChange={onSelectionChange} pagination={{ defaultPageSize: 2 }} />,
+    );
+    await userEvent.click(screen.getByRole('checkbox', { name: '모든 행 선택' }));
+    expect(onSelectionChange).toHaveBeenLastCalledWith(['r4', 'r1', 'r2']);
   });
 });

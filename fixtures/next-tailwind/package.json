@@ -6,7 +6,7 @@
     "start": "next start -p 5182"
   },
   "dependencies": {
-    "@xonic0506/sonic-ui": "^0.6.1",
+    "@xonic0506/sonic-ui": "^0.6.2",
     "next": "16.4.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

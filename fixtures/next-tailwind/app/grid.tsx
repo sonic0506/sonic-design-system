@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { DataGrid, Pagination, type DataGridColumn } from '@xonic0506/sonic-ui';
+import { DataGrid, Pagination, Switch, type DataGridColumn } from '@xonic0506/sonic-ui';
 
 type Key = { id: string; name: string; requests: number; status: string; createdAt: string };
 const KEYS: Key[] = Array.from({ length: 25 }, (_, i) => ({ id: `k${i + 1}`, name: `key-${i + 1}`, requests: (i * 7919) % 20000, status: i % 3 ? 'active' : 'paused', createdAt: '2026-10-21' }));
@@ -10,6 +10,7 @@ export function Grid() {
   const [rows, setRows] = useState(KEYS);
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(3);
+  const [refreshing, setRefreshing] = useState(false);
   const columns: DataGridColumn<Key>[] = [
     { field: 'name', header: '이름', type: 'text', pinned: 'left', width: 160, sortable: true },
     { field: 'requests', header: '요청 수', type: 'number', sortable: true },
@@ -18,6 +19,7 @@ export function Grid() {
   ];
   return (
     <div className="w-180 flex flex-col gap-4">
+      <Switch checked={refreshing} onCheckedChange={setRefreshing}>다시 불러오는 중</Switch>
       <DataGrid
         aria-label="API 키"
         rows={rows}
@@ -27,6 +29,7 @@ export function Grid() {
         onSelectionChange={setSelected}
         onRowOrderChange={ids => setRows(rs => ids.map(id => rs.find(r => r.id === id)!))}
         pagination={{ defaultPageSize: 10 }}
+        refreshing={refreshing}
       />
       <Pagination page={page} pageCount={20} onPageChange={setPage} showFirstLast={false} />
     </div>

@@ -46,6 +46,8 @@ export { Badge, type BadgeProps } from './components/badge';
 export { Progress, type ProgressProps } from './components/progress';
 export { Link, type LinkProps } from './components/link';
 export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './components/table';
+export { DataGrid, type DataGridProps, type DataGridColumn, type DataGridAction, type DataGridSort } from './components/data-grid';
+export { formatNumber, formatDate, formatDateTime } from './lib/format';
 export { ToggleGroup, ToggleGroupItem, type ToggleGroupProps, type ToggleGroupItemProps } from './components/toggle-group';
 export { Accordion, AccordionItem, AccordionTrigger, AccordionPanel, type AccordionProps, type AccordionItemProps } from './components/accordion';
 export { FileDropzone, FileList, formatBytes, type FileDropzoneProps, type FileListProps, type FileItemData, type FileRejection } from './components/file-upload';

@@ -70,6 +70,7 @@ Figma Variable 이름이 그대로 CSS 변수가 돼요. `/`는 `-`로 바꾸고
 | `color/text/warning` | amber/700 `#85520A` | amber/300 `#EEC46A` | 주의 문구, 아이콘 |
 | `color/border/warning` | amber/600 | amber/400 | 주의 강조 테두리 |
 | `color/bg/danger-subtle` | red/50 `#FCEDEC` | red/950 `#2B1311` | danger Badge(subtle) |
+| `color/bg/selected` | cobalt/50 `#EEF1FF` | cobalt/950 `#18214D` | DataGrid 선택된 행 (hover `bg/subtle`과 구분) |
 
 글자와 바탕 조합은 모두 WCAG 4.5:1 이상이에요. 토큰을 바꾸면 `npm run check:contrast`로 다시 확인해요(배포 전 검사에도 들어 있어요).
 
@@ -254,7 +255,7 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 
 | 계층 | 위치 | 기준 | 예 |
 |---|---|---|---|
-| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Toast, Badge, Progress, Link, Table, ToggleGroup, Accordion, FileDropzone, FileList, Field, Skeleton, EmptyState, ErrorState, ErrorPage |
+| **Core** | sonic-ui `src/components/` | 더 나눌 수 없고, 도메인을 전혀 모름 | Button, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Text, Card, Avatar, Dialog, AlertDialog, Menu, Popover, Tooltip, Tabs, Separator, Toast, Badge, Progress, Link, Table, DataGrid, ToggleGroup, Accordion, FileDropzone, FileList, Field, Skeleton, EmptyState, ErrorState, ErrorPage |
 | **Pattern** | sonic-ui `src/patterns/` | Core 조합이고 도메인을 모르지만, **두 프로젝트 이상에서 같은 형태로 복사됨** | (아직 없음) |
 | **Domain** | 각 프로젝트 | 도메인 타입, API, 비즈니스 로직 중 하나라도 앎 | `UserProfileCard`, `ApiKeyList` |
 
@@ -716,8 +717,71 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 | prop | 값 |
 |---|---|
 | `TableHead`, `TableCell`의 `align` | `start` · `end` (숫자 열은 `end`) |
+| `TableHead`의 `sort`, `onSort` | `asc` · `desc` · `none`. `onSort`를 넘기면 머리글이 버튼이 되고 `aria-sort`가 붙어요 |
+| `TableRow`의 `selected`, `interactive`, `dragging` | 선택 `bg/selected`, hover `bg/subtle`(interactive일 때만), 이동 중 모양 |
+| `TableHead`의 `handle` | 컬럼 이동 손잡이. hover·포커스 때만 보이고 정렬 반대쪽 끝에 놓여요 (DataGrid가 씀) |
+| `TableHead`, `TableCell`의 `pinned` | `left` · `right`. 가로 스크롤 중에도 붙어 있고 경계에 1px `border/default`. 여러 열을 고정하면 `style.left`·`style.right`로 위치를 넘겨요 |
 
-여러 항목의 같은 속성을 비교할 때 써요. 행 높이 40(`space/10`), 좌우 padding `space/3`, 행 아래 1px `border/default`. 머리글 `label` + `text/muted`, 본문 `body` + `text/default`, `align="end"`인 본문 칸은 숫자라서 `mono`예요. 줄무늬나 hover 바탕은 쓰지 않아요. 표가 부모보다 넓으면 가로로 스크롤해요.
+여러 항목의 같은 속성을 비교할 때 써요. 행 높이 40(`space/10`), 좌우 padding `space/3`, 행 아래 1px `border/default`. 머리글 `label` + `text/muted`, 본문 `body` + `text/default`, `align="end"`인 본문 칸은 숫자라서 `mono`예요. 줄무늬는 쓰지 않고, hover 바탕은 `interactive` 행에만 써요. 표가 부모보다 넓으면 가로로 스크롤해요.
+
+위 상태 props는 모양만 바꿔요. 정렬·선택·이동 상태를 직접 관리하기 번거로우면 DataGrid를 써요. 정렬된 머리글은 `text/default` + `arrow-up`/`arrow-down` 16(간격 `space/1`)이고, 칸끼리 붙어 있어서 포커스 링은 안쪽(offset −2px)에 그려요.
+
+### DataGrid
+
+```tsx
+<DataGrid
+  aria-label="API 키"
+  rows={keys}
+  getRowId={row => row.id}
+  columns={[
+    { field: 'name', header: '이름', type: 'text', pinned: 'left', width: 160, sortable: true },
+    { field: 'requests', header: '요청 수', type: 'number', sortable: true },
+    { field: 'status', header: '상태', type: 'badge', tones: { active: 'success', revoked: 'danger' }, labels: { active: '활성', revoked: '폐기됨' } },
+    { field: 'createdAt', header: '만든 날', type: 'date' },
+    { field: 'enabled', header: '사용', type: 'switch', onChange: (row, on) => toggle(row.id, on) },
+    { id: 'actions', type: 'actions', pinned: 'right', actions: [
+      { label: '이름 바꾸기', icon: Pencil, onClick: rename },
+      { label: '삭제', icon: Trash2, tone: 'danger', onClick: confirmDelete },
+    ] },
+  ]}
+  selection={selected} onSelectionChange={setSelected}
+  onRowOrderChange={ids => saveOrder(ids)}
+  loading={isLoading}
+  emptyState={<EmptyState title="API 키가 없어요" action={<Button>API 키 만들기</Button>} />}
+/>
+```
+
+정렬, 행 선택, 좌/우 고정, 컬럼·행 이동이 필요한 목록에 써요. 보여 주기만 하는 표는 Table을 써요. 모양은 Table이 그리고, 상태는 DataGrid가 관리해요(TanStack Table, dnd-kit. 쓰는 쪽은 설치하지 않아요).
+
+| prop | 값 |
+|---|---|
+| `rows`, `getRowId` | 행 데이터와 행 id. `rows`에는 **원본 값**을 넣어요(숫자는 number, 날짜는 ISO 문자열) |
+| `columns` | 열 정의 배열. `type`에 따라 필요한 속성이 타입으로 강제돼요(아래 표) |
+| `aria-label` | 표 이름 (필수) |
+| `sorting`, `defaultSorting`, `onSortingChange` | `{ id, desc }` 또는 `null`. 한 번에 한 열만 정렬해요 |
+| `selection`, `onSelectionChange` | 선택된 행 id 배열. `onSelectionChange`를 넘기면 맨 앞에 체크박스 열이 생겨요 |
+| `columnOrder`, `onColumnOrderChange` | 열 id 순서. `onColumnOrderChange`를 넘기면 머리글을 끌어서 옮길 수 있어요 |
+| `onRowOrderChange` | `(ids) => void`. 넘기면 핸들 열이 생겨요. 정렬 중에는 핸들을 숨겨요 |
+| `loading` | Skeleton 행 5개 + `aria-busy` |
+| `emptyState`, `errorState` | 행이 없을 때, 불러오기 실패했을 때 본문 자리에 보여 줄 EmptyState·ErrorState |
+
+| `type` | 보여 주는 것 | 추가 속성 |
+|---|---|---|
+| `text` | `body` | — |
+| `number` | `mono`, 오른쪽 정렬, 천 단위 쉼표 | — |
+| `date` · `datetime` | `mono`, `YYYY-MM-DD` · `YYYY-MM-DD HH:mm:ss` (브라우저 현지 시간) | — |
+| `badge` | Badge subtle | `tones`(값 → tone, 필수), `labels`(값 → 문구). 없는 값은 neutral |
+| `switch` | Switch, 누르면 바로 적용 | `onChange(row, checked)` (필수) |
+| `actions` | 1개면 ghost `icon-sm` 버튼, 2개 이상이면 `ellipsis` Menu | `actions: { label, icon?, tone?, onClick(row) }[]` (필수) |
+
+공통 열 속성: `header`, `width`(px), `pinned`(`left` · `right`), `sortable`. 고정 열에는 `width`를 꼭 줘요(다음 고정 열 위치 계산에 써요). `select`·`handle` 열은 너비 40이고, 있으면 항상 왼쪽에 고정돼요.
+
+- 행 hover `bg/subtle`, 선택 `bg/selected`. 고정 열 경계는 1px `border/default`이고 그림자는 쓰지 않아요(§1 원칙 4).
+- 컬럼 이동 중인 머리글은 `bg/subtle`, 행 이동 중인 행은 `bg/surface` + 1px `border/default` + `radius/md`. 놓을 위치는 2px `border/focus` 선이에요.
+- 핸들은 `grip-vertical` 16(`text/muted`, hover `text/default`)이고 바깥 2px 포커스 링을 그려요. 키보드로도 옮겨요: 핸들에 포커스 → Space로 들기 → 화살표 → Space로 놓기(Esc 취소). 화면 낭독기 안내는 한국어 해요체예요.
+- 위험한 actions는 바로 실행하지 말고 `onClick`에서 AlertDialog를 열어요(§10 Menu).
+- 행이 많으면(100개 초과) 보이는 행만 그려요. 이때는 `className`으로 높이를 정해 주세요(예: `h-96`). 그 안에서 세로로 스크롤돼요.
+- Next.js: `columns`에 함수가 들어 있어서 서버 컴포넌트에서 넘길 수 없어요. DataGrid는 클라이언트 컴포넌트 안에서 정의해요.
 
 ### ToggleGroup
 
@@ -862,11 +926,12 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Badge | `57:3498` | `<Badge tone variant>` (`children` → 자식 문구) | `src/components/badge.tsx` |
 | Progress | `58:5093` | `<Progress value max label>` (`value` variant는 채움 미리보기, `value text`는 코드가 자동 표시) | `src/components/progress.tsx` |
 | Link | `65:3733` | `<Link href external>` (`children` → 자식 문구) | `src/components/link.tsx` |
-| Table Cell · Table | `65:3742` · `65:3743` | `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell` (`type=header` → `TableHead`, `align` → 같은 prop) | `src/components/table.tsx` |
+| Table Cell · Table | `65:3742` · `65:3743` | `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell` (`type=header` → `TableHead`, `align`·`sort`·`pinned` → 같은 prop, `state=hover·selected` → `TableRow`의 `interactive`·`selected`) | `src/components/table.tsx` |
+| Data Grid Cell | `130:6234` | `<DataGrid columns>`의 `columns[].type` (`type` 값이 같음. `select`·`handle`은 `onSelectionChange`·`onRowOrderChange`로 생기는 열) | `src/components/data-grid.tsx` |
 | Toggle Item · Toggle Group | `66:3760` · `66:3761` | `<ToggleGroup multiple>` + `<ToggleGroupItem value disabled>` (`pressed` → 현재 값, `content=icon`이면 `aria-label`) | `src/components/toggle-group.tsx` |
 | Accordion Item · Accordion | `66:3792` · `66:3793` | `Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionPanel` (`open` → 현재 값, `title`/`content` → 자식) | `src/components/accordion.tsx` |
 | File Dropzone · File Item | `71:4191` · `72:4251` | `<FileDropzone variant accept multiple maxSize maxFiles onFilesChange>` (`state` → 끌어다 놓기·거부·`disabled`), `<FileList layout items onRemove onRetry>` (`status` → `items[].status`) | `src/components/file-upload.tsx` |
 | Illustration (5개) | Foundations `Source illustrations` | 제품 화면은 EmptyState·ErrorState·ErrorPage 안에서 써요. 문서 화면은 `illustrations['error-404']`로 URL(§3.7) | `src/illustrations/*.webp` |
-| Icon (37개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
+| Icon (40개) | Foundations `Source icons` | `lucide-react`의 같은 이름 컴포넌트 (`Icon / chevron-down` → `<ChevronDown />`) | 쓰는 쪽에서 설치 |
 
 Figma 속성 → props 변환 규칙: variant 속성은 같은 이름의 prop으로, 텍스트 속성 `children`은 자식으로, boolean `header`/`footer`는 해당 하위 컴포넌트를 넣을지 말지로 옮겨요. Button의 `iconLeft`/`iconRight`(+ `leftIcon`/`rightIcon` 교체)와 Button Icon의 `icon`은 prop이 아니라 **자식 순서**예요: `<Button><Plus />추가하기<ChevronDown /></Button>`.

@@ -8,8 +8,12 @@ import {
   EmptyState, ErrorState, ErrorPage, illustrations, Field, Skeleton, Badge, Progress, ToastProvider, useToast,
   Link, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, ToggleGroup, ToggleGroupItem, Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
   FileDropzone, FileList, formatBytes, type FileItemData,
+  DataGrid, type DataGridColumn, formatNumber, formatDate, formatDateTime,
   Avatar, Button, buttonVariants, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, Input, Text,
 } from './index';
+import { X } from 'lucide-react';
+import { dataGridCellTypes } from './components/data-grid';
+import figmaTokens from '../scripts/figma-tokens.json';
 
 describe('Button', () => {
   it('variant/size 클래스를 붙이고, 같은 그룹의 className은 덮어씀', () => {
@@ -730,5 +734,159 @@ describe('파일 업로드: FileDropzone, FileList', () => {
 
   it('formatBytes', () => {
     expect([formatBytes(512), formatBytes(2048), formatBytes(2_516_582)]).toEqual(['512 B', '2 KB', '2.4 MB']);
+  });
+});
+
+describe('DataGrid', () => {
+  type Key = { id: string; name: string; requests: number; status: string; createdAt: string; enabled: boolean };
+  const keys: Key[] = [
+    { id: 'a', name: 'production', requests: 12480, status: 'active', createdAt: '2026-10-21', enabled: true },
+    { id: 'b', name: 'staging', requests: 3201, status: 'paused', createdAt: '2026-10-18', enabled: false },
+    { id: 'c', name: 'legacy', requests: 0, status: 'unknown', createdAt: '2026-09-12', enabled: false },
+  ];
+  const columns = (extra: Partial<Record<'onToggle' | 'onDelete', (row: Key) => void>> = {}): DataGridColumn<Key>[] => [
+    { field: 'name', header: '이름', type: 'text', pinned: 'left', width: 160, sortable: true },
+    { field: 'requests', header: '요청 수', type: 'number', sortable: true },
+    { field: 'status', header: '상태', type: 'badge', tones: { active: 'success', paused: 'warning' }, labels: { active: '활성', paused: '일시 정지' } },
+    { field: 'createdAt', header: '만든 날', type: 'date' },
+    { field: 'enabled', header: '사용', type: 'switch', onChange: (row, on) => extra.onToggle?.({ ...row, enabled: on }) },
+    { id: 'actions', type: 'actions', pinned: 'right', actions: [{ label: '삭제', icon: X, tone: 'danger', onClick: row => extra.onDelete?.(row) }] },
+  ];
+  const names = () => screen.getAllByRole('row').slice(1).map(r => r.querySelectorAll('td')[0]?.textContent);
+
+  it('형식 함수: 천 단위 쉼표, YYYY-MM-DD, YYYY-MM-DD HH:mm:ss', () => {
+    expect(formatNumber(12480)).toBe('12,480');
+    expect(formatNumber(null)).toBe('');
+    expect(formatDate('2026-10-23')).toBe('2026-10-23');
+    expect(formatDateTime(new Date(2026, 9, 23, 4, 5, 9))).toBe('2026-10-23 04:05:09');
+    expect(formatDate('잘못된 값')).toBe('');
+  });
+
+  it('Figma Data Grid Cell의 type 목록과 같음', () => {
+    expect([...dataGridCellTypes].sort()).toEqual([...figmaTokens.components['Data Grid Cell'].type].sort());
+  });
+
+  it('셀 타입: 숫자는 오른쪽 mono, 날짜는 mono, badge는 tone 매핑(없으면 neutral), switch는 바로 적용', async () => {
+    const onToggle = vi.fn();
+    render(<DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns({ onToggle })} />);
+    expect(screen.getByRole('cell', { name: '12,480' })).toHaveClass('sn:text-right', 'sn:font-mono');
+    expect(screen.getByRole('cell', { name: '2026-10-21' })).toHaveClass('sn:font-mono');
+    expect(screen.getByText('활성')).toHaveClass('sn:text-success');
+    expect(screen.getByText('unknown')).toHaveClass('sn:text-default');
+    await userEvent.click(screen.getAllByRole('switch', { name: '사용' })[1]);
+    expect(onToggle).toHaveBeenCalledWith(expect.objectContaining({ id: 'b', enabled: true }));
+  });
+
+  it('actions: 1개면 aria-label 버튼, 2개 이상이면 더 보기 Menu (danger는 구분선 뒤)', async () => {
+    const onDelete = vi.fn();
+    const { rerender } = render(<DataGrid aria-label="API 키" rows={keys.slice(0, 1)} getRowId={r => r.id} columns={columns({ onDelete })} />);
+    await userEvent.click(screen.getByRole('button', { name: '삭제' }));
+    expect(onDelete).toHaveBeenCalledWith(keys[0]);
+    const two: DataGridColumn<Key>[] = [
+      { field: 'name', header: '이름', type: 'text' },
+      { id: 'actions', type: 'actions', actions: [{ label: '삭제', tone: 'danger', onClick: onDelete }, { label: '이름 바꾸기', onClick: () => {} }] },
+    ];
+    rerender(<DataGrid aria-label="API 키" rows={keys.slice(0, 1)} getRowId={r => r.id} columns={two} />);
+    await userEvent.click(screen.getByRole('button', { name: '더 보기' }));
+    const items = await screen.findAllByRole('menuitem');
+    expect(items.map(i => i.textContent)).toEqual(['이름 바꾸기', '삭제']);
+    expect(screen.getByRole('separator')).toBeInTheDocument();
+  });
+
+  it('정렬: 머리글을 누르면 오름차순 → 내림차순 → 해제, aria-sort가 바뀜', async () => {
+    const onSortingChange = vi.fn();
+    render(<DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} onSortingChange={onSortingChange} />);
+    const head = screen.getByRole('columnheader', { name: '요청 수' });
+    const btn = screen.getByRole('button', { name: '요청 수' });
+    expect(head).toHaveAttribute('aria-sort', 'none');
+    await userEvent.click(btn);
+    expect(head).toHaveAttribute('aria-sort', 'ascending');
+    expect(names()).toEqual(['legacy', 'staging', 'production']);
+    await userEvent.click(btn);
+    expect(names()).toEqual(['production', 'staging', 'legacy']);
+    await userEvent.click(btn);
+    expect(head).toHaveAttribute('aria-sort', 'none');
+    expect(onSortingChange.mock.calls.map(c => c[0])).toEqual([{ id: 'requests', desc: false }, { id: 'requests', desc: true }, null]);
+  });
+
+  it('선택: 행 체크박스, 머리글은 일부 선택이면 indeterminate, 전체 선택', async () => {
+    const onSelectionChange = vi.fn();
+    render(<DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} onSelectionChange={onSelectionChange} />);
+    await userEvent.click(screen.getAllByRole('checkbox', { name: '행 선택' })[1]);
+    expect(onSelectionChange).toHaveBeenLastCalledWith(['b']);
+    expect(screen.getAllByRole('row')[2]).toHaveAttribute('data-selected');
+    const all = screen.getByRole('checkbox', { name: '모든 행 선택' });
+    expect(all).toHaveAttribute('aria-checked', 'mixed');
+    await userEvent.click(all);
+    expect(onSelectionChange).toHaveBeenLastCalledWith(['a', 'b', 'c']);
+  });
+
+  it('고정 열: 왼쪽·오른쪽 고정 칸이 sticky + 경계선', () => {
+    render(<DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} />);
+    expect(screen.getByRole('cell', { name: 'production' })).toHaveClass('sn:sticky', 'sn:border-r');
+    expect(screen.getAllByRole('button', { name: '삭제' })[0].closest('td')).toHaveClass('sn:sticky', 'sn:border-l');
+  });
+
+  it('행 이동: 핸들이 생기고, 정렬 중에는 숨김', () => {
+    const { rerender } = render(<DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} onRowOrderChange={() => {}} />);
+    expect(screen.getAllByRole('button', { name: '행 옮기기' })).toHaveLength(3);
+    rerender(<DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} onRowOrderChange={() => {}} sorting={{ id: 'name', desc: false }} />);
+    expect(screen.queryByRole('button', { name: '행 옮기기' })).not.toBeInTheDocument();
+  });
+
+  it('행 이동: 키보드로 Space → ↓ → Space 하면 새 순서를 넘김', async () => {
+    // jsdom은 크기를 계산하지 않아서 행마다 40px 높이를 흉내 내요
+    const rect = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      const tr = this.closest('tr');
+      const i = tr?.parentElement ? [...tr.parentElement.children].indexOf(tr) : 0;
+      return { x: 0, y: i * 40, top: i * 40, left: 0, bottom: i * 40 + 40, right: 600, width: 600, height: 40, toJSON: () => ({}) } as DOMRect;
+    });
+    const onRowOrderChange = vi.fn();
+    render(<DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} onRowOrderChange={onRowOrderChange} />);
+    const handle = screen.getAllByRole('button', { name: '행 옮기기' })[0];
+    handle.focus();
+    const user = userEvent.setup();
+    await user.keyboard(' ');
+    await user.keyboard('{ArrowDown}');
+    await user.keyboard(' ');
+    expect(onRowOrderChange).toHaveBeenCalledWith(['b', 'a', 'c']);
+    rect.mockRestore();
+  });
+
+  it('4가지 상태: loading이면 aria-busy, 행이 없으면 emptyState, 실패면 errorState', () => {
+    const { rerender } = render(<DataGrid aria-label="API 키" rows={[]} getRowId={(r: Key) => r.id} columns={columns()} loading />);
+    expect(screen.getByRole('table')).toHaveAttribute('aria-busy', 'true');
+    rerender(<DataGrid aria-label="API 키" rows={[]} getRowId={(r: Key) => r.id} columns={columns()} emptyState={<EmptyState title="API 키가 없어요" />} />);
+    expect(screen.getByText('API 키가 없어요')).toBeInTheDocument();
+    rerender(<DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} errorState={<ErrorState title="불러오지 못했어요" />} />);
+    expect(screen.getByText('불러오지 못했어요')).toBeInTheDocument();
+    expect(screen.queryByText('production')).not.toBeInTheDocument();
+  });
+
+  it('Table 상태 props: onSort면 머리글 버튼 + aria-sort, selected 행은 data-selected', () => {
+    render(
+      <Table>
+        <TableHeader><TableRow><TableHead sort="desc" onSort={() => {}}>이름</TableHead></TableRow></TableHeader>
+        <TableBody><TableRow selected><TableCell pinned="left">production</TableCell></TableRow></TableBody>
+      </Table>,
+    );
+    expect(screen.getByRole('columnheader')).toHaveAttribute('aria-sort', 'descending');
+    expect(screen.getByRole('button', { name: '이름' })).toHaveClass('sn:focus-visible:-outline-offset-2');
+    expect(screen.getAllByRole('row')[1]).toHaveAttribute('data-selected');
+  });
+
+  it('화면 낭독기 안내는 table 밖(body)에 그려서 DOM 구조를 지킴', () => {
+    const { container } = render(<DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} onRowOrderChange={() => {}} />);
+    expect(container.querySelector('table > div')).toBeNull();
+    expect(document.body.querySelector(':scope > [id^="DndDescribedBy"]')).not.toBeNull();
+  });
+
+  it('포커스 링이 있는 요소에는 outline-none을 같이 쓰지 않음', () => {
+    const { container } = render(
+      <DataGrid aria-label="API 키" rows={keys} getRowId={r => r.id} columns={columns()} onSelectionChange={() => {}} onRowOrderChange={() => {}} onColumnOrderChange={() => {}} />,
+    );
+    const ringed = [...container.querySelectorAll('[class*="focus-visible:outline-2"]')];
+    expect(ringed.length).toBeGreaterThan(10);
+    for (const el of ringed) expect(el.className).not.toMatch(/(^|\s)sn:outline-none(\s|$)/);
   });
 });

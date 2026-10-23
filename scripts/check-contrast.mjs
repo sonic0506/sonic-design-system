@@ -15,6 +15,7 @@ const PAIRS = [
   ['text/on-success', 'bg/success'], ['text/success', 'bg/success-subtle'], ['text/success', 'bg/surface'],
   ['text/on-warning', 'bg/warning'], ['text/warning', 'bg/warning-subtle'], ['text/warning', 'bg/surface'],
   ['text/danger', 'bg/danger-subtle'], ['text/default', 'bg/subtle'],
+  ['text/default', 'bg/selected'], ['text/muted', 'bg/selected'],
 ];
 
 const lum = hex => {

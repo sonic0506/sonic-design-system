@@ -90,6 +90,7 @@
   --sn-color-bg-danger-subtle: #FCEDEC;
   --sn-color-border-success: #16804F;
   --sn-color-border-warning: #A86C12;
+  --sn-color-bg-selected: #EEF1FF;
 }
 
 [data-theme="dark"] {
@@ -123,4 +124,5 @@
   --sn-color-bg-danger-subtle: #2B1311;
   --sn-color-border-success: #3DB882;
   --sn-color-border-warning: #E3A43A;
+  --sn-color-bg-selected: #18214D;
 }

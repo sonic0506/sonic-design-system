@@ -316,6 +316,8 @@ export function DataGrid<Row extends RowData>({
   const pageCount = pagination ? Math.max(1, Math.ceil((server ? pagination.rowCount! : rows.length) / pageSize)) : 1;
   const page = Math.min(pageState, pageCount);
 
+  // dnd-kit은 id가 없으면 전역 카운터로 aria-describedby를 만들어 SSR과 브라우저 값이 달라져요. id는 안내 요소 id로 그대로 쓰여요
+  const dndId = React.useId();
   const byId = React.useMemo(() => new Map(columns.map(c => [colId(c), c])), [columns]);
   const defs = React.useMemo(() => {
     const list: ColumnDef<Features, Row, unknown>[] = [];
@@ -491,9 +493,11 @@ export function DataGrid<Row extends RowData>({
 
   return (
     <div className={cn('sn:flex sn:w-full sn:flex-col sn:gap-4', className)}>
-      <div ref={scrollRef} className="sn:min-h-0 sn:w-full sn:flex-1 sn:overflow-auto">
+      {/* relative: 칸 안 sr-only(absolute)가 스크롤 영역에 갇히게 해요. 없으면 밖으로 빠져 페이지가 넓어져요 */}
+      <div ref={scrollRef} className="sn:relative sn:min-h-0 sn:w-full sn:flex-1 sn:overflow-auto">
         <table aria-label={ariaLabel} aria-busy={loading || undefined} aria-rowcount={virtual ? model.length + 1 : undefined} className={cn(tableClass, 'sn:bg-surface')}>
           <DndContext
+            id={`DndDescribedBy-${dndId}-columns`}
             sensors={sensors}
             collisionDetection={closestCenter}
             accessibility={{ container: a11yContainer, announcements: announcements('열', () => centerIds), screenReaderInstructions: instructions }}
@@ -508,6 +512,7 @@ export function DataGrid<Row extends RowData>({
             </TableHeader>
           </DndContext>
           <DndContext
+            id={`DndDescribedBy-${dndId}-rows`}
             sensors={sensors}
             collisionDetection={closestCenter}
             accessibility={{ container: a11yContainer, announcements: announcements('행', () => pageIds), screenReaderInstructions: instructions }}

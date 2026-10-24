@@ -1,6 +1,6 @@
 # sonic-ui 저장소 운영 규칙
 
-이 저장소는 디자인 규칙과 컴포넌트만 담당해요. Claude Code hooks, 쓰는 쪽 ESLint/Prettier 설정, API 계층 규칙은 별도 코딩 하네스 저장소에서 다뤄요. 여기서 만들지 않아요. 디자인 시스템 소개 사이트(코드와 Figma 파일 Sonic UI Site)는 별도 저장소 [sonic-ui-site](https://github.com/sonic0506/sonic-ui-site)에서 다뤄요.
+이 저장소는 디자인 규칙과 컴포넌트만 담당해요. 쓰는 쪽 프로젝트의 Claude Code hooks, ESLint/Prettier 설정, API 계층 규칙은 별도 코딩 하네스 저장소(sonic-harness-fe)에서 다뤄요. 여기서 만들지 않아요. 예외로 이 저장소에서 작업할 때 쓰는 훅(`.claude/settings.json`, `scripts/hooks/`)은 여기에 둬요. 디자인 시스템 소개 사이트(코드와 Figma 파일 Sonic UI Site)는 별도 저장소 [sonic-ui-site](https://github.com/sonic0506/sonic-ui-site)에서 다뤄요.
 
 @DESIGN.md
 
@@ -41,7 +41,7 @@ Foundations, Core, Patterns 페이지는 읽는 사람을 위한 문서예요. �
 - 클래스는 모두 `sn:` 접두사를 붙이고, `cn()`(cva + tailwind-merge)으로 합쳐요.
 - 공개 props에 Base UI 타입을 드러내지 않아요. 우리 props로 감싸요.
 - 상태 스타일은 Base UI data 속성을 써요(`data-disabled`, `data-open`, `data-starting-style`, `data-ending-style` …).
-- 컴포넌트를 구현할 때는 frontend-design을 쓰지 않아요. Figma를 그대로 따라요.
+- 컴포넌트를 구현할 때는 frontend-design을 쓰지 않아요. Figma를 그대로 따라요. 시안(`explorations/`)·화면 디자인은 frontend-design을 먼저 부르고, 코딩과 세션을 나눠요(DESIGN.md §9, `scripts/hooks/frontend-design-gate.mjs`가 막아요).
 - 하위 컴포넌트는 이름 있는 export만 써요(`CardHeader`). `Card.Header`는 서버 컴포넌트에서 깨져요.
 - 포커스 링(`focus-visible:outline-2`)을 그리는 요소에 `outline-none`을 같이 쓰지 않아요. Tailwind v4에서 `--tw-outline-style`이 none이 되어 링이 사라져요(테스트 '포커스 링'이 막아요). 포커스 확인은 클래스가 아니라 실제 키보드 이동으로 해요.
 

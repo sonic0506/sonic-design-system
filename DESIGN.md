@@ -285,9 +285,20 @@ hover, focus는 **컴포넌트 variant로 만들지 않아요.** React prop이 �
 
 ## 9. frontend-design 사용 규칙
 
-- **디자인 시스템을 만들 때**(이 저장소): frontend-design으로 방향을 탐색할 수 있어요. 결과물은 `explorations/`에만 두고 라이브러리에 넣지 않습니다.
-- **프로젝트에서 쓸 때**: DESIGN.md, sonic-ui 컴포넌트, `sn` 토큰만 씁니다. frontend-design의 새 색, 새 폰트, 임의의 값 제안은 쓰지 않아요. 레이아웃과 문구 판단에만 참고해요.
-- **컴포넌트를 구현할 때**: Figma를 그대로 따르고 frontend-design은 쓰지 않습니다.
+frontend-design은 **디자인 작업에서는 꼭 쓰고, 코딩에서는 쓰지 않아요.** 디자인 단계에서는 AI가 만든 듯한 뻔한 화면을 피하려고 쓰고, 코딩 단계에서는 이미 정한 Figma를 그대로 옮겨야 해서 쓰지 않아요.
+
+| 작업 | frontend-design | 기준 |
+|---|---|---|
+| 화면 디자인 (Figma 화면 시안) | 먼저 불러요 | 레이아웃, 위계, 밀도, 문구 판단에 써요. 색·폰트·간격·radius 제안은 따르지 않고 토큰(§3)과 sonic-ui 컴포넌트로 그려요 |
+| 방향 탐색 (이 저장소 `explorations/`) | 먼저 불러요 | 새 방향을 자유롭게 탐색해요. 결과는 라이브러리에 넣지 않아요 |
+| 코딩 (컴포넌트 구현, 화면 구현) | 쓰지 않아요 | Figma를 그대로 따라요 |
+| Figma 컴포넌트·문서 페이지·토큰 | 쓰지 않아요 | DESIGN.md와 Doc Kit 규칙을 따라요 |
+
+디자인과 코딩은 **세션을 나눠요.** 훅이 세션 기록을 보고 확인해요(이 저장소는 `.claude/settings.json`, 쓰는 쪽 프로젝트는 sonic-harness).
+
+- `explorations/` 편집, `figma-generate-design` 스킬: 같은 세션에서 frontend-design을 먼저 부르지 않았으면 막아요.
+- `src/` 편집: 같은 세션에서 frontend-design을 불렀으면 막아요.
+- `src/`를 고친 세션에서 frontend-design을 부르면 막아요.
 
 ## 10. 컴포넌트 스펙 (Core)
 

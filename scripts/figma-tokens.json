@@ -425,6 +425,72 @@
           "values": {
             "Value": "#0E1E2C"
           }
+        },
+        "secondary/50": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#E4F6F6"
+          }
+        },
+        "secondary/100": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#ADE4E4"
+          }
+        },
+        "secondary/200": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#6AD4D3"
+          }
+        },
+        "secondary/300": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#19BEBF"
+          }
+        },
+        "secondary/400": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#10A7A7"
+          }
+        },
+        "secondary/500": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#078585"
+          }
+        },
+        "secondary/600": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#076565"
+          }
+        },
+        "secondary/700": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#035253"
+          }
+        },
+        "secondary/800": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#004646"
+          }
+        },
+        "secondary/900": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#023939"
+          }
+        },
+        "secondary/950": {
+          "type": "COLOR",
+          "values": {
+            "Value": "#002D2D"
+          }
         }
       }
     },

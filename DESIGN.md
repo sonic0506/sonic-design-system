@@ -42,11 +42,12 @@ Figma Variable 이름이 그대로 CSS 변수가 돼요. `/`는 `-`로 바꾸고
 
 #### 팔레트 (Primitives)
 
-팔레트는 세 그룹으로 나눠요. 모든 색은 같은 11단계(50 · 100 · 200 … 900 · 950)이고, 번호가 클수록 어두워요.
+팔레트는 세 그룹(Primary · Gray scale · System)으로 나누고, 브랜드에 보조색이 있으면 Primary 아래에 Secondary를 더해요. 모든 색은 같은 11단계(50 · 100 · 200 … 900 · 950)이고, 번호가 클수록 어두워요.
 
 | 그룹 | 이름 | 기본 단계 | 쓰는 곳 |
 |---|---|---|---|
 | **Primary** | `primary/50…950` | ★ 600 `#2340D0` (Dark 400) | 브랜드 강조. 행동을 유도하는 곳에만 써요 |
+| **Secondary** (선택) | `secondary/50…950` | ★ 500 `#078585` | 브랜드 보조색. Primary와 함께 브랜드를 나타내지만 행동 유도(버튼, 링크, 포커스)에는 쓰지 않아요. Sonic은 teal이고 아직 Semantic이 참조하지 않아요 |
 | **Gray scale** | `gray/0` · `gray/50…950` · alpha(`gray/scrim`, `gray/0-a60`, `gray/900-a60`) | Default 950 (본문 글자) · Border 200 (기본 테두리) | 바탕, 글자, 테두리. 흰 바탕 위 글자는 600 이상 |
 | **System** | `danger/*` · `success/*` · `warning/*` · `info/*` | ★ danger 600 · success 600 · warning 400 · info 600 | 상태 알림. 꾸밈에는 쓰지 않아요 |
 

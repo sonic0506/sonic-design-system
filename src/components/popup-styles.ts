@@ -1,6 +1,6 @@
 // 떠 있는 요소(Select, Menu, Popover) 공통: 그림자 없이 bg/surface + 1px 테두리 (DESIGN.md 원칙 4)
 export const popupClass =
-  'sn:box-border sn:min-w-(--anchor-width) sn:max-h-(--available-height) sn:overflow-y-auto sn:origin-(--transform-origin) sn:rounded-lg sn:border sn:border-default sn:bg-surface sn:p-1 sn:font-sans sn:text-body sn:text-default sn:outline-none sn:transition-[opacity,scale] sn:duration-(--sn-duration-normal) sn:ease-standard sn:data-starting-style:scale-98 sn:data-starting-style:opacity-0 sn:data-ending-style:scale-98 sn:data-ending-style:opacity-0 sn:motion-reduce:transition-none';
+  'sn:box-border sn:min-w-(--anchor-width) sn:max-h-(--available-height) sn:overflow-y-auto sn:origin-(--transform-origin) sn:rounded-lg sn:border sn:border-default sn:bg-surface sn:p-1 sn:font-sans sn:text-body-1 sn:text-default sn:outline-none sn:transition-[opacity,scale] sn:duration-(--sn-duration-normal) sn:ease-standard sn:data-starting-style:scale-98 sn:data-starting-style:opacity-0 sn:data-ending-style:scale-98 sn:data-ending-style:opacity-0 sn:motion-reduce:transition-none';
 
 // 목록 항목(Select Item, Menu Item) 공통
 export const itemClass =

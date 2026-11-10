@@ -1,5 +1,5 @@
 /* 생성물: scripts/build-tokens.mjs. 손으로 수정 금지 (원본: Figma → scripts/figma-tokens.json) */
-/* Tailwind v4 @theme 매핑. sn 토큰을 Tailwind 클래스 이름으로 연결해요 (bg-primary, text-muted, rounded-md, text-body …).
+/* Tailwind v4 @theme 매핑. sn 토큰을 Tailwind 클래스 이름으로 연결해요 (bg-primary, text-muted, rounded-md, text-body-1 …).
    inline reference: 클래스가 var(--sn-*)를 직접 참조하고, Tailwind 테마 변수는 따로 출력하지 않음 */
 @theme inline reference {
   --spacing: var(--sn-space-1);
@@ -10,30 +10,29 @@
   --ease-standard: var(--sn-easing-standard);
   --font-sans: var(--sn-font-sans);
   --font-mono: var(--sn-font-mono);
-  --text-display: var(--sn-text-display);
-  --text-display--line-height: var(--sn-text-display--line-height);
-  --text-display--font-weight: var(--sn-text-display--font-weight);
-  --text-display--letter-spacing: var(--sn-text-display--letter-spacing);
-  --text-title: var(--sn-text-title);
-  --text-title--line-height: var(--sn-text-title--line-height);
-  --text-title--font-weight: var(--sn-text-title--font-weight);
-  --text-title--letter-spacing: var(--sn-text-title--letter-spacing);
-  --text-body: var(--sn-text-body);
-  --text-body--line-height: var(--sn-text-body--line-height);
-  --text-body--font-weight: var(--sn-text-body--font-weight);
-  --text-body--letter-spacing: var(--sn-text-body--letter-spacing);
-  --text-body-strong: var(--sn-text-body-strong);
-  --text-body-strong--line-height: var(--sn-text-body-strong--line-height);
-  --text-body-strong--font-weight: var(--sn-text-body-strong--font-weight);
-  --text-body-strong--letter-spacing: var(--sn-text-body-strong--letter-spacing);
-  --text-label: var(--sn-text-label);
-  --text-label--line-height: var(--sn-text-label--line-height);
-  --text-label--font-weight: var(--sn-text-label--font-weight);
-  --text-label--letter-spacing: var(--sn-text-label--letter-spacing);
-  --text-caption: var(--sn-text-caption);
-  --text-caption--line-height: var(--sn-text-caption--line-height);
-  --text-caption--font-weight: var(--sn-text-caption--font-weight);
-  --text-caption--letter-spacing: var(--sn-text-caption--letter-spacing);
+  --font-weight-regular: var(--sn-font-weight-regular);
+  --font-weight-medium: var(--sn-font-weight-medium);
+  --font-weight-semibold: var(--sn-font-weight-semibold);
+  --text-heading-1: var(--sn-text-heading-1);
+  --text-heading-1--line-height: var(--sn-text-heading-1--line-height);
+  --text-heading-1--font-weight: var(--sn-text-heading-1--font-weight);
+  --text-heading-1--letter-spacing: var(--sn-text-heading-1--letter-spacing);
+  --text-title-1: var(--sn-text-title-1);
+  --text-title-1--line-height: var(--sn-text-title-1--line-height);
+  --text-title-1--font-weight: var(--sn-text-title-1--font-weight);
+  --text-title-1--letter-spacing: var(--sn-text-title-1--letter-spacing);
+  --text-body-1: var(--sn-text-body-1);
+  --text-body-1--line-height: var(--sn-text-body-1--line-height);
+  --text-body-1--font-weight: var(--sn-text-body-1--font-weight);
+  --text-body-1--letter-spacing: var(--sn-text-body-1--letter-spacing);
+  --text-body-2: var(--sn-text-body-2);
+  --text-body-2--line-height: var(--sn-text-body-2--line-height);
+  --text-body-2--font-weight: var(--sn-text-body-2--font-weight);
+  --text-body-2--letter-spacing: var(--sn-text-body-2--letter-spacing);
+  --text-body-3: var(--sn-text-body-3);
+  --text-body-3--line-height: var(--sn-text-body-3--line-height);
+  --text-body-3--font-weight: var(--sn-text-body-3--font-weight);
+  --text-body-3--letter-spacing: var(--sn-text-body-3--letter-spacing);
   --background-color-canvas: var(--sn-color-bg-canvas);
   --background-color-surface: var(--sn-color-bg-surface);
   --background-color-subtle: var(--sn-color-bg-subtle);

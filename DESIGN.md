@@ -9,7 +9,7 @@ Sonic(`sonic-ui`)의 디자인 규칙이에요. Figma에서 디자인할 때, �
 
 1. **토큰 밖의 값은 없다.** 색, 간격, radius, 글자 크기는 모두 아래 표에서 고릅니다. 임의의 값(`#3355ff`, `13px`, `p-[7px]`)은 쓰지 않아요.
 2. **강조는 한 곳에만.** 한 화면에서 `primary` 버튼은 하나만 둬요. 나머지는 `secondary`나 `ghost`를 씁니다.
-3. **숫자는 고정폭.** 수치, ID, 키 값은 `mono` 계열 스타일로 써서 자리를 맞춰요.
+3. **숫자는 고정폭.** 수치, ID, 키 값은 `Mono` 그룹 스타일로 써서 자리를 맞춰요.
 4. **그림자 대신 선.** 높낮이는 1px 테두리(`color/border/default`)와 배경 단계(canvas → surface → subtle)로 구분해요. Menu, Popover, Select, Toast처럼 떠 있는 요소도 `bg/surface` + 1px 테두리로 구분하고, 그림자 토큰은 없어요.
 5. **움직임은 사용자 행동에 대한 응답만.** 열기, 닫기, hover처럼 사용자가 일으킨 변화에만 모션을 넣고, `prefers-reduced-motion`을 지켜요.
 
@@ -24,8 +24,9 @@ Figma Variable 이름이 그대로 CSS 변수가 돼요. `/`는 `-`로 바꾸고
 | `color/border/default` | `--sn-color-border-default` | `border-default`, `outline-default` | `sn:border-default` |
 | `space/4` | `--sn-space-4` | `p-4`, `gap-4` (1단위 = `space/1` = 4px) | `sn:p-4` |
 | `radius/md` | `--sn-radius-md` | `rounded-md` | `sn:rounded-md` |
-| 텍스트 스타일 `body` | `--sn-text-body` (+ `--line-height`, `--font-weight`, `--letter-spacing`) | `text-body` | `sn:text-body` |
-| 텍스트 스타일 `mono` / `mono-caption` | `--sn-font-mono` | `font-mono text-body` / `font-mono text-caption` | 앞에 `sn:` |
+| 텍스트 스타일 `Body / B1R-14` | `--sn-text-body-1` (+ `--line-height`, `--font-weight`, `--letter-spacing`) | `text-body-1` | `sn:text-body-1` |
+| 텍스트 스타일 `Body / B1M-14` (같은 단계, 다른 굵기) | `--sn-font-weight-medium` | `text-body-1 font-medium` | 앞에 `sn:` |
+| 텍스트 스타일 `Mono / MN1R-14` / `MN2R-12` | `--sn-font-mono` | `font-mono text-body-1` / `font-mono text-body-3` | 앞에 `sn:` |
 | `duration/fast`, `easing/standard` | `--sn-duration-fast`, `--sn-easing-standard` | `duration-(--sn-duration-fast) ease-standard` | 앞에 `sn:` |
 
 - 쓰는 쪽 클래스는 `@xonic0506/sonic-ui/tailwind.css`를 import해야 생겨요(README 참고). Tailwind가 없는 프로젝트는 `var(--sn-…)`를 직접 써요.
@@ -103,16 +104,24 @@ Figma Variable 이름이 그대로 CSS 변수가 돼요. `/`는 `-`로 바꾸고
 
 한글과 영문을 모두 IBM Plex Sans KR로 그려요. IBM Plex Sans에는 한글이 없어서, 쓰면 Figma와 브라우저가 각자 다른 대체 글꼴로 그려 줄바꿈이 달라져요.
 
-| 스타일 | 크기/행간 | 굵기 | 자간 | 쓰는 곳 |
-|---|---|---|---|---|
-| `display` | 32/40 | 600 | −2% | 페이지 제목, 핵심 수치 |
-| `title` | 20/28 | 600 | −1% | 섹션, Card, Dialog 제목 |
-| `body` | 14/20 | 400 | 0 | 본문 |
-| `body-strong` | 14/20 | 500 | 0 | 버튼(md/lg), 강조 본문 |
-| `label` | 13/16 | 500 | 0 | 폼 라벨, 버튼(sm) |
-| `caption` | 12/16 | 400 | 0 | 보조 설명, 에러 메시지 |
-| `mono` | 14/20 | 400 | 0 | 수치, 코드 |
-| `mono-caption` | 12/16 | 400 | 0 | 작은 ID, 키 값 |
+스타일은 **그룹(Heading · Title · Body)과 번호**로 나눠요. 번호가 작을수록 커요. 단계 수는 필요한 만큼만 두고(Heading·Title 최대 6, Body 최대 7), 수치·코드용 `Mono` 그룹을 더해요.
+
+- Figma 이름: `{그룹} / {머리글자}{번호}{굵기}-{크기}`. 머리글자 H · T · B · MN, 굵기 B(Bold) · SB(SemiBold) · M(Medium) · R(Regular). 예: `Body / B1M-14`
+- 코드: 단계마다 크기 클래스 하나(`text-body-1` = 크기 + 행간 + 자간 + 기본 굵기)이고, 다른 굵기는 굵기 클래스(`font-medium`)로 바꿔요. 기본 굵기는 그 단계에서 가장 가는 스타일이에요. Text는 `variant` + `weight`예요.
+- 그룹 안에서 번호가 커지면 크기는 같거나 작아야 해요.
+
+| Figma 스타일 | 코드 | 크기/행간 | 굵기 | 자간 | 쓰는 곳 |
+|---|---|---|---|---|---|
+| `Heading / H1SB-32` | `text-heading-1` | 32/40 | 600 | −2% | 페이지 제목, 핵심 수치 |
+| `Title / T1SB-20` | `text-title-1` | 20/28 | 600 | −1% | 섹션, Card, Dialog 제목 |
+| `Body / B1R-14` | `text-body-1` | 14/20 | 400 | 0 | 본문 |
+| `Body / B1M-14` | `text-body-1 font-medium` | 14/20 | 500 | 0 | 버튼(md/lg), 강조 본문 |
+| `Body / B2M-13` | `text-body-2` | 13/16 | 500 | 0 | 폼 라벨, 버튼(sm) |
+| `Body / B3R-12` | `text-body-3` | 12/16 | 400 | 0 | 보조 설명, 에러 메시지 |
+| `Mono / MN1R-14` | `font-mono text-body-1` | 14/20 | 400 | 0 | 수치, 코드 |
+| `Mono / MN2R-12` | `font-mono text-body-3` | 12/16 | 400 | 0 | 작은 ID, 키 값 |
+
+문서에서는 스타일을 코드 이름으로 줄여 써요(`body-1` medium = `Body / B1M-14`, `mono-2` = `Mono / MN2R-12`).
 
 ### 3.5 모션
 
@@ -189,7 +198,7 @@ import { Plus } from 'lucide-react';
 | 제목 ↔ 바로 아래 설명 | `space/1` |
 
 - 버튼 묶음은 오른쪽 정렬이고, 보조 버튼이 왼쪽, primary가 맨 오른쪽이에요. Dialog Footer도 같아요.
-- 에러 상태: 입력란 테두리를 `color/border/danger`로 바꾸고, 입력란 바로 아래(설명 자리)에 `caption` + `color/text/danger`로 고치는 방법을 씁니다. 설명은 숨겨요. 라벨 색은 바꾸지 않아요. 이 묶음은 **Field 컴포넌트**가 처리해요(§10).
+- 에러 상태: 입력란 테두리를 `color/border/danger`로 바꾸고, 입력란 바로 아래(설명 자리)에 `body-3` + `color/text/danger`로 고치는 방법을 씁니다. 설명은 숨겨요. 라벨 색은 바꾸지 않아요. 이 묶음은 **Field 컴포넌트**가 처리해요(§10).
 - 문구는 한국어 해요체예요. 취소 버튼은 "취소"로 충분해요. 무엇을 취소하는지는 바로 옆 primary 버튼 문구가 알려 줘요.
 - Avatar 이니셜은 이름에서 1~2글자를 써요(한글은 이름 첫 글자, 영문은 이름·성 첫 글자).
 
@@ -324,7 +333,7 @@ Figma Core 페이지의 컴포넌트 속성 이름 = React props 이름이에요
 |---|---|---|---|
 | 높이 | `space/7` (28) | `space/8` (32) | `space/10` (40) |
 | 좌우 padding | `space/2` | `space/3` | `space/4` |
-| 글자 | `label` | `body-strong` | `body-strong` |
+| 글자 | `body-2` | `body-1` medium | `body-1` medium |
 | 아이콘 | 16 | 16 | 20 |
 
 | | icon-sm | icon-md | icon-lg |
@@ -354,17 +363,18 @@ Figma Core 페이지의 컴포넌트 속성 이름 = React props 이름이에요
 | `disabled` | boolean |
 | 그 외 | 기본 `<input>` 속성 전부 |
 
-높이 `space/8`, 좌우 padding `space/3`, radius `radius/md`, 바탕 `bg/surface`, 테두리 `border/default`(hover `border/strong`, invalid `border/danger`), 입력값 `body` + `text/default`, placeholder `text/muted`, 너비는 부모를 채움. 좁은 화면(640 미만)에서는 입력 글자가 16px이에요(iOS 자동 확대 방지, Textarea·Select 트리거도 같음).
+높이 `space/8`, 좌우 padding `space/3`, radius `radius/md`, 바탕 `bg/surface`, 테두리 `border/default`(hover `border/strong`, invalid `border/danger`), 입력값 `body-1` + `text/default`, placeholder `text/muted`, 너비는 부모를 채움. 좁은 화면(640 미만)에서는 입력 글자가 16px이에요(iOS 자동 확대 방지, Textarea·Select 트리거도 같음).
 
 focus 링은 2px, 간격 2px이고, 색은 기본 `border/focus`, invalid일 때 `border/danger`예요. 에러 상태에서 파란 링이 뜨면 상태 신호가 섞이기 때문이에요.
 
 ### Text
 
-`<Text variant="caption" tone="muted" as="p">…</Text>`
+`<Text variant="body-3" tone="muted" as="p">…</Text>` · `<Text variant="body-1" weight="medium">…</Text>`
 
 | prop | 값 | 기본값 |
 |---|---|---|
-| `variant` | 텍스트 스타일 8개 (`display` … `mono-caption`) | `body` |
+| `variant` | 단계 7개 (`heading-1` · `title-1` · `body-1` · `body-2` · `body-3` · `mono-1` · `mono-2`) | `body-1` |
+| `weight` | `regular` · `medium` · `semibold`. 없으면 단계 기본 굵기 | — |
 | `tone` | `default` · `muted` · `danger` | `default` |
 | `as` | 렌더할 태그 (`p`, `span`, `div`, `h1`~`h6`, `label`, `strong`, `code`) | `span` |
 
@@ -378,7 +388,7 @@ focus 링은 2px, 간격 2px이고, 색은 기본 `border/focus`, invalid일 때
 </Card>
 ```
 
-바탕 `bg/surface`, 테두리 `border/default` 1px, radius `radius/lg`, padding `space/5`, 영역 사이 `space/4`. Title은 `title`, Description은 `body` + `text/muted`, Header 안 간격 `space/1`. Footer는 오른쪽 정렬, 버튼 사이 `space/2`.
+바탕 `bg/surface`, 테두리 `border/default` 1px, radius `radius/lg`, padding `space/5`, 영역 사이 `space/4`. Title은 `title-1`, Description은 `body-1` + `text/muted`, Header 안 간격 `space/1`. Footer는 오른쪽 정렬, 버튼 사이 `space/2`.
 
 ### Avatar
 
@@ -386,9 +396,9 @@ focus 링은 2px, 간격 2px이고, 색은 기본 `border/focus`, invalid일 때
 
 | size | 크기 | fallback 글자 |
 |---|---|---|
-| `sm` | `space/6` (24) | `caption` |
-| `md` | `space/8` (32) | `label` |
-| `lg` | `space/10` (40) | `body-strong` |
+| `sm` | `space/6` (24) | `body-3` |
+| `md` | `space/8` (32) | `body-2` |
+| `lg` | `space/10` (40) | `body-1` medium |
 
 radius `radius/full`, 바탕 `bg/subtle`, fallback 글자 `text/muted`. 이미지를 불러오지 못하면 fallback을 보여 줘요(Base UI Avatar).
 
@@ -462,7 +472,7 @@ const retryRef = useRef<HTMLButtonElement>(null);
 | `invalid`, `disabled` | boolean. 안의 Input에 자동으로 전달돼요 (Base UI Field) |
 | `children` | 입력 컨트롤 (`Input`, `Textarea`, `Select`, `FileDropzone`) |
 
-간격: 라벨 ↔ 입력 ↔ 설명·에러 `space/2`. 라벨 `label` + `text/default`(invalid여도 그대로), 설명 `caption` + `text/muted`, 에러 `caption` + `text/danger`. **Field 안의 Input에는 `invalid`를 따로 주지 않아요.** 입력 컨트롤과 설명 또는 에러는 `aria-describedby`로 연결돼요.
+간격: 라벨 ↔ 입력 ↔ 설명·에러 `space/2`. 라벨 `body-2` + `text/default`(invalid여도 그대로), 설명 `body-3` + `text/muted`, 에러 `body-3` + `text/danger`. **Field 안의 Input에는 `invalid`를 따로 주지 않아요.** 입력 컨트롤과 설명 또는 에러는 `aria-describedby`로 연결돼요.
 
 에러는 설명과 함께 보이지 않고 **설명을 대신해요**(Material, Carbon, Spectrum과 같은 방식). 아래 줄이 늘어나지 않아 레이아웃이 밀리지 않고, 화면 낭독기도 에러 하나만 읽어요. 설명에 있던 형식 안내는 에러 문구가 대신 전해야 하니, 에러 문구에는 고치는 방법을 꼭 써요(§5).
 
@@ -490,7 +500,7 @@ const retryRef = useRef<HTMLButtonElement>(null);
 |---|---|---|
 | 그림 (기본) | 캐릭터 `empty` 120 (§3.7) | 캐릭터 `error` 120 |
 | 아이콘 (`icon`을 넘기면) | 24, `text/muted`, `bg/subtle` 원 `space/12` | 24, `text/danger` (예: `triangle-alert`), 원은 같음 |
-| 제목 / 설명 | `body-strong` / `body` + `text/muted`, 가운데 정렬 | 같음 |
+| 제목 / 설명 | `body-1` medium / `body-1` + `text/muted`, 가운데 정렬 | 같음 |
 | 행동 | `action` (보통 primary Button 하나) | `onRetry`가 있으면 secondary Button + `refresh-cw`, 문구 `retryLabel`(기본 "다시 시도") |
 | 간격 | 요소 사이 `space/4`, 위아래 `space/12`, 좌우 `space/6` | 같음 |
 
@@ -520,7 +530,7 @@ export default function NotFound() {
 | 500 | `error-500` | 서버에 문제가 생겼어요 | 잠시 뒤 다시 시도해 주세요. | `refresh-cw` + 다시 시도 (페이지 다시 불러오기) |
 
 - 화면 전체를 쓰는 에러예요. 카드 하나가 실패하면 ErrorState, 페이지 자체를 보여 줄 수 없을 때 ErrorPage를 써요.
-- 그림 320(§3.7), 그 아래 오류 코드 `mono-caption` + `text/muted`("오류 코드 404", 문의할 때 쓰도록), 제목 `title`(페이지의 `h1`), 설명 `body` + `text/muted`, 가운데 정렬. 숫자는 그림 안에 있어서 크게 따로 쓰지 않아요.
+- 그림 320(§3.7), 그 아래 오류 코드 `mono-2` + `text/muted`("오류 코드 404", 문의할 때 쓰도록), 제목 `title-1`(페이지의 `h1`), 설명 `body-1` + `text/muted`, 가운데 정렬. 숫자는 그림 안에 있어서 크게 따로 쓰지 않아요.
 - 너비는 부모를 채우고, 위아래 `space/16`, 좌우 `space/6`, 요소 사이 `space/6`(글자 묶음 안 `space/2`).
 - 500은 일시적인 실패일 때가 많아서 홈으로 보내지 않고 그 자리에서 다시 불러오게 해요. Next.js `error.tsx`는 클라이언트 컴포넌트라 `reset`을 연결해요: `<ErrorPage status={500} action={<Button onClick={reset}><RefreshCw />다시 시도</Button>} />`. `reset`이 없으면 `location.reload()`를 써요.
 
@@ -539,8 +549,8 @@ export default function NotFound() {
 ```
 
 - 여러 개를 고를 수 있을 때 써요. 일부만 선택된 상위 항목은 `indeterminate`예요(화면 낭독기에는 "mixed").
-- 상자 16(`space/4`), `radius/sm`. 해제: `bg/surface` + `border/strong`, 선택: `bg/primary` + check 12(`text/on-primary`). 라벨 `body`, 상자와 간격 `space/2`.
-- 그룹은 `fieldset` + `legend`(`label` 스타일)로 묶고, 항목 사이 `space/2`, legend와 `space/3`이에요.
+- 상자 16(`space/4`), `radius/sm`. 해제: `bg/surface` + `border/strong`, 선택: `bg/primary` + check 12(`text/on-primary`). 라벨 `body-1`, 상자와 간격 `space/2`.
+- 그룹은 `fieldset` + `legend`(`body-2` 스타일)로 묶고, 항목 사이 `space/2`, legend와 `space/3`이에요.
 
 ### RadioGroup
 
@@ -618,13 +628,13 @@ export default function NotFound() {
 
 `<Popover><PopoverTrigger render={<Button variant="secondary" />}>공유</PopoverTrigger><PopoverPopup><PopoverTitle>…</PopoverTitle><PopoverDescription>…</PopoverDescription>…</PopoverPopup></Popover>`
 
-대상 가까이에 짧은 내용이나 간단한 입력을 띄울 때 써요. 너비 320, padding `space/4`, 영역 사이 `space/3`, 제목 `body-strong`, 설명 `caption` + `text/muted`, 대상에서 8px. 확인이 필요한 결정은 Dialog, 목록형 동작은 Menu를 써요.
+대상 가까이에 짧은 내용이나 간단한 입력을 띄울 때 써요. 너비 320, padding `space/4`, 영역 사이 `space/3`, 제목 `body-1` medium, 설명 `body-3` + `text/muted`, 대상에서 8px. 확인이 필요한 결정은 Dialog, 목록형 동작은 Menu를 써요.
 
 ### Tooltip
 
 `<Tooltip content="설정"><Button size="icon-md" variant="ghost" aria-label="설정"><Settings /></Button></Tooltip>`
 
-아이콘만 있는 버튼의 이름을 보여 줘요. `bg/inverse` + `text/inverse`, `caption`, padding `space/2`·`space/1`, `radius/md`, 대상에서 4px. 마우스는 600ms 뒤, 키보드 포커스는 바로 보여요. 중요한 정보나 클릭할 요소는 넣지 않아요(Tooltip이 있어도 `aria-label`은 따로 달아요).
+아이콘만 있는 버튼의 이름을 보여 줘요. `bg/inverse` + `text/inverse`, `body-3`, padding `space/2`·`space/1`, `radius/md`, 대상에서 4px. 마우스는 600ms 뒤, 키보드 포커스는 바로 보여요. 중요한 정보나 클릭할 요소는 넣지 않아요(Tooltip이 있어도 `aria-label`은 따로 달아요).
 
 ### Tabs
 
@@ -636,7 +646,7 @@ export default function NotFound() {
 </Tabs>
 ```
 
-같은 대상의 다른 보기를 오갈 때만 써요(페이지 이동 링크에는 쓰지 않아요). 탭 높이 32, padding `space/3`, `body-strong`. 선택 `text/default`, 나머지 `text/muted`(hover 시 `text/default`). 목록 아래 1px `border/default`, 선택 표시 막대 2px `bg/primary`가 `duration/normal`로 움직여요. 목록과 패널 사이 `space/4`예요. 탭이 많아 넘치면 목록이 가로로 스크롤돼요(스크롤 막대는 숨기고, 탭은 줄지 않아요).
+같은 대상의 다른 보기를 오갈 때만 써요(페이지 이동 링크에는 쓰지 않아요). 탭 높이 32, padding `space/3`, `body-1` medium. 선택 `text/default`, 나머지 `text/muted`(hover 시 `text/default`). 목록 아래 1px `border/default`, 선택 표시 막대 2px `bg/primary`가 `duration/normal`로 움직여요. 목록과 패널 사이 `space/4`예요. 탭이 많아 넘치면 목록이 가로로 스크롤돼요(스크롤 막대는 숨기고, 탭은 줄지 않아요).
 
 키보드: 기본은 화살표 키로 이동하면 **바로 탭이 바뀌어요**(`activateOnFocus`, 기본 `true`). 탭을 바꿀 때 무거운 내용을 불러온다면 `<TabsList activateOnFocus={false}>`로 화살표는 이동만, Enter·Space로 전환하게 해요. 끝에서 처음으로 돌아가는 `loopFocus`도 기본 `true`예요. 키보드 조작 자체를 끄는 옵션은 없어요. 포커스 링은 탭끼리 겹치지 않도록 탭 **안쪽**(offset −2px)에 그려요. 패널(`TabsPanel`)은 Tab 키로 들어갈 수 있어서(WAI-ARIA Tabs 패턴), 키보드 포커스일 때 패널 **바깥**에 같은 2px 링(offset 2px)을 그려요. 마우스로 누를 때는 보이지 않아요(Figma › 10 Navigation › Tabs › Focus).
 
@@ -665,7 +675,7 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 - 사용자 동작의 결과를 잠깐 알려 줄 때 써요. 되돌릴 수 없는 동작의 확인은 AlertDialog, 화면을 채우는 실패는 ErrorState를 써요.
 - 너비 360(좁은 화면은 좌우 `space/4`를 뺀 너비), 화면 가장자리에서 `space/4`, 알림 사이 `space/2`. 최대 3개까지 보이고 오래된 것부터 가려져요.
 - 상자: 떠 있는 요소 공통 스타일(`bg/surface` + 1px `border/default` + `radius/lg`, 그림자 없음), padding·간격 `space/3`.
-- 아이콘 16: neutral `info`(`text/muted`) · success `circle-check`(`text/success`) · warning `triangle-alert`(`text/warning`) · danger `circle-alert`(`text/danger`). 제목 `body-strong`, 설명 `caption` + `text/muted`, 오른쪽에 닫기(ghost `icon-sm`, `x`, "알림 닫기").
+- 아이콘 16: neutral `info`(`text/muted`) · success `circle-check`(`text/success`) · warning `triangle-alert`(`text/warning`) · danger `circle-alert`(`text/danger`). 제목 `body-1` medium, 설명 `body-3` + `text/muted`, 오른쪽에 닫기(ghost `icon-sm`, `x`, "알림 닫기").
 - 마우스를 올리거나 포커스하면 시간이 멈춰요. 들어오고 나갈 때 opacity와 위치(`space/2`)가 `duration/normal`로 바뀌어요.
 - 화면 낭독기: 보통은 차례가 오면 읽고, `danger`는 바로 읽어요. 알림은 F6으로 이동할 수 있어요.
 - `useToast`는 클라이언트 컴포넌트에서만 써요(`ToastProvider` 안).
@@ -686,7 +696,7 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 | warning | `bg/warning-subtle` + `text/warning` | `bg/warning` + `text/on-warning` |
 | danger | `bg/danger-subtle` + `text/danger` | `bg/danger` + `text/on-danger` |
 
-높이 20(`space/5`), 좌우 `space/2`, `label`, `radius/sm`. 상태를 짧은 낱말로 표시해요. 목록과 표에서는 subtle을, 꼭 눈에 띄어야 하는 한 곳에만 solid를 써요. 누를 수 없는 표시라 버튼처럼 쓰지 않아요.
+높이 20(`space/5`), 좌우 `space/2`, `body-2`, `radius/sm`. 상태를 짧은 낱말로 표시해요. 목록과 표에서는 subtle을, 꼭 눈에 띄어야 하는 한 곳에만 solid를 써요. 누를 수 없는 표시라 버튼처럼 쓰지 않아요.
 
 ### Progress
 
@@ -698,7 +708,7 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 | `max` | 최댓값 (기본 100) |
 | `label` | 라벨 문구. 없으면 `aria-label`이 필수예요 (타입으로 강제) |
 
-라벨 `label` + `text/default`, 오른쪽에 백분율 `mono-caption` + `text/muted`, 막대와 사이 `space/2`. 트랙 높이 4(`space/1`) `bg/subtle` `radius/full`, 채움 `bg/primary`이 `duration/normal`로 늘어나요. 끝이 정해진 작업(업로드, 내보내기)에만 써요. 끝을 알 수 없는 기다림은 Button `loading`이나 Skeleton을 써요.
+라벨 `body-2` + `text/default`, 오른쪽에 백분율 `mono-2` + `text/muted`, 막대와 사이 `space/2`. 트랙 높이 4(`space/1`) `bg/subtle` `radius/full`, 채움 `bg/primary`이 `duration/normal`로 늘어나요. 끝이 정해진 작업(업로드, 내보내기)에만 써요. 끝을 알 수 없는 기다림은 Button `loading`이나 Skeleton을 써요.
 
 ### Link
 
@@ -737,7 +747,7 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 | `TableHead`의 `handle` | 컬럼 이동 손잡이. hover·포커스 때만 보이고 정렬 반대쪽 끝에 놓여요 (DataGrid가 씀) |
 | `TableHead`, `TableCell`의 `pinned` | `left` · `right`. 가로 스크롤 중에도 붙어 있고 경계에 1px `border/default`. 여러 열을 고정하면 `style.left`·`style.right`로 위치를 넘겨요 |
 
-여러 항목의 같은 속성을 비교할 때 써요. 행 높이 40(`space/10`), 좌우 padding `space/3`, 행 아래 1px `border/default`. 머리글 `label` + `text/muted`, 본문 `body` + `text/default`, `align="end"`인 본문 칸은 숫자라서 `mono`예요. 줄무늬는 쓰지 않고, hover 바탕은 `interactive` 행에만 써요. 표가 부모보다 넓으면 가로로 스크롤해요.
+여러 항목의 같은 속성을 비교할 때 써요. 행 높이 40(`space/10`), 좌우 padding `space/3`, 행 아래 1px `border/default`. 머리글 `body-2` + `text/muted`, 본문 `body-1` + `text/default`, `align="end"`인 본문 칸은 숫자라서 `mono-1`예요. 줄무늬는 쓰지 않고, hover 바탕은 `interactive` 행에만 써요. 표가 부모보다 넓으면 가로로 스크롤해요.
 
 위 상태 props는 모양만 바꿔요. 정렬·선택·이동 상태를 직접 관리하기 번거로우면 DataGrid를 써요. 정렬된 머리글은 `text/default` + `arrow-up`/`arrow-down` 16(간격 `space/1`)이고, 칸끼리 붙어 있어서 포커스 링은 안쪽(offset −2px)에 그려요.
 
@@ -784,9 +794,9 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 
 | `type` | 보여 주는 것 | 추가 속성 |
 |---|---|---|
-| `text` | `body` | — |
-| `number` | `mono`, 오른쪽 정렬, 천 단위 쉼표 | — |
-| `date` · `datetime` | `mono`, `YYYY-MM-DD` · `YYYY-MM-DD HH:mm:ss` (브라우저 현지 시간) | — |
+| `text` | `body-1` | — |
+| `number` | `mono-1`, 오른쪽 정렬, 천 단위 쉼표 | — |
+| `date` · `datetime` | `mono-1`, `YYYY-MM-DD` · `YYYY-MM-DD HH:mm:ss` (브라우저 현지 시간) | — |
 | `badge` | Badge subtle | `tones`(값 → tone, 필수), `labels`(값 → 문구). 없는 값은 neutral |
 | `switch` | Switch, 누르면 바로 적용 | `onChange(row, checked)` (필수) |
 | `actions` | 1개면 ghost `icon-sm` 버튼, 2개 이상이면 `ellipsis` Menu | `actions: { label, icon?, tone?, onClick(row) }[]` (필수) |
@@ -842,11 +852,11 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 
 목록을 페이지로 나눌 때 써요. Table이나 카드 목록과 함께 쓰고, DataGrid는 `pagination` prop으로 붙여요.
 
-- 왼쪽에 페이지당 행 수(라벨 `label` + `text/muted`, Select는 글자 너비에 맞춰요, 라벨과 `space/2`), 오른쪽에 `« ‹ 1 … 4 5 6 … 20 › »`. 둘 사이 `space/4`, 버튼 사이 `space/1`.
-- 번호 칸 28×28(`space/7`), `radius/md`, `mono`. 현재 페이지는 `bg/subtle` + `text/default` + `aria-current="page"`이고 강조색은 쓰지 않아요(§1 원칙 2). 다른 번호는 `text/muted`, hover `bg/subtle` + `text/default`. 포커스 링은 바깥 2px(offset 2px).
+- 왼쪽에 페이지당 행 수(라벨 `body-2` + `text/muted`, Select는 글자 너비에 맞춰요, 라벨과 `space/2`), 오른쪽에 `« ‹ 1 … 4 5 6 … 20 › »`. 둘 사이 `space/4`, 버튼 사이 `space/1`.
+- 번호 칸 28×28(`space/7`), `radius/md`, `mono-1`. 현재 페이지는 `bg/subtle` + `text/default` + `aria-current="page"`이고 강조색은 쓰지 않아요(§1 원칙 2). 다른 번호는 `text/muted`, hover `bg/subtle` + `text/default`. 포커스 링은 바깥 2px(offset 2px).
 - 번호는 처음·마지막과 현재 양옆 1개만 보이고, 나머지는 `…`로 줄여요. 항상 최대 7칸이라 너비가 흔들리지 않아요.
 - 처음·이전·다음·마지막은 ghost `icon-sm`(`chevrons-left`, `chevron-left`, `chevron-right`, `chevrons-right`)이고, 첫 페이지에서는 처음·이전이, 마지막 페이지에서는 다음·마지막이 비활성이에요.
-- 좁은 화면(640 미만)에서는 번호 대신 `4 / 20`(`mono-caption` + `text/muted`)만 보이고, 행 수 라벨도 숨겨요(Select 이름은 `aria-label`로 남아요). Figma `viewport=mobile`.
+- 좁은 화면(640 미만)에서는 번호 대신 `4 / 20`(`mono-2` + `text/muted`)만 보이고, 행 수 라벨도 숨겨요(Select 이름은 `aria-label`로 남아요). Figma `viewport=mobile`.
 
 ### ToggleGroup
 
@@ -866,7 +876,7 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 | `disabled` | 그룹 전체 또는 항목 하나 |
 | `ToggleGroupItem`의 `iconOnly` | 아이콘만 있는 24×24 항목. `aria-label`이 필수예요(타입으로 강제) |
 
-같은 대상을 **보는 방식**을 바꿀 때 써요(목록/카드, 라이트/다크). 누르면 바로 적용돼요. 폼에서 값을 고를 때는 RadioGroup이나 Select를 써요. 바탕 `bg/subtle` + 안쪽 `space/1` + `radius/md`(전체 높이 32). 항목 높이 24(`space/6`), 좌우 `space/2`, `label`, `radius/sm`. 눌린 항목 `bg/surface` + 1px `border/default` + `text/default`, 나머지 `text/muted`(hover `text/default`). 아이콘만 있는 항목은 24×24, 아이콘 16이에요. 화살표 키로 항목 사이를 이동해요. 항목끼리 붙어 있어서 포커스 링은 Tab처럼 **안쪽**(offset −2px)에 그려요.
+같은 대상을 **보는 방식**을 바꿀 때 써요(목록/카드, 라이트/다크). 누르면 바로 적용돼요. 폼에서 값을 고를 때는 RadioGroup이나 Select를 써요. 바탕 `bg/subtle` + 안쪽 `space/1` + `radius/md`(전체 높이 32). 항목 높이 24(`space/6`), 좌우 `space/2`, `body-2`, `radius/sm`. 눌린 항목 `bg/surface` + 1px `border/default` + `text/default`, 나머지 `text/muted`(hover `text/default`). 아이콘만 있는 항목은 24×24, 아이콘 16이에요. 화살표 키로 항목 사이를 이동해요. 항목끼리 붙어 있어서 포커스 링은 Tab처럼 **안쪽**(offset −2px)에 그려요.
 
 ### Accordion
 
@@ -885,7 +895,7 @@ toast.add({ title: 'API 키를 만들었어요', description: '키는 지금 한
 | `value`, `defaultValue`, `onValueChange` | 열린 항목들의 `value` 배열 |
 | `AccordionItem`의 `disabled` | 항목 하나를 비활성화 |
 
-긴 내용을 제목만 먼저 보여 주고 필요할 때 펼칠 때 써요(자주 묻는 질문, 문서 사이드바 그룹). 꼭 읽어야 하는 내용은 접어 두지 않아요. 항목 아래 1px `border/default`. 트리거는 위아래 `space/3` + `body-strong`, 오른쪽 `chevron-down` 16(`text/muted`)이 열리면 180° 돌아요. 패널은 `body` + `text/muted`, 아래 `space/4`이고, 높이가 `duration/normal`로 변해요. 닫힌 내용도 브라우저 페이지 찾기로 찾아 열 수 있어요.
+긴 내용을 제목만 먼저 보여 주고 필요할 때 펼칠 때 써요(자주 묻는 질문, 문서 사이드바 그룹). 꼭 읽어야 하는 내용은 접어 두지 않아요. 항목 아래 1px `border/default`. 트리거는 위아래 `space/3` + `body-1` medium, 오른쪽 `chevron-down` 16(`text/muted`)이 열리면 180° 돌아요. 패널은 `body-1` + `text/muted`, 아래 `space/4`이고, 높이가 `duration/normal`로 변해요. 닫힌 내용도 브라우저 페이지 찾기로 찾아 열 수 있어요.
 
 ### FileDropzone / FileList
 
@@ -921,7 +931,7 @@ const [items, setItems] = useState<FileItemData[]>(serverFiles.map(toItem));   /
 - 영역 전체가 버튼이라 눌러도, Enter·Space를 눌러도 파일 선택 창이 열려요. 파일을 끌어다 놓아도 돼요.
 - 터치 기기(`pointer: coarse`)에는 끌어다 놓기가 없어서, 기본 제목이 "눌러서 파일을 고르세요"(image는 "눌러서 이미지를 고르세요")로 바뀌어요. `title`을 넘기면 그 문구를 그대로 써요.
 - 조건(형식 `type`, 크기 `size`, 개수 `count`)에 맞지 않는 파일은 `rejected`로 넘기고, 영역 안에 고치는 방법을 기본 문구로 보여 줘요(예: "계약서.pdf: 10MB보다 큰 파일은 올릴 수 없어요"). 문구는 `rejected[].message`로 바꿀 수 있어요.
-- 점선 1px `border/strong` + `bg/surface` + `radius/lg`, 위아래 `space/6`, 좌우 `space/4`, 요소 사이 `space/2`. 아이콘 24(`upload` · `image`, `text/muted`), 제목 `body-strong`, 조건 `caption` + `text/muted`. hover `bg/subtle`, 끌어다 놓는 중 `border/focus` + `bg/subtle`, 거부되면 `border/danger` + 문구 `text/danger`.
+- 점선 1px `border/strong` + `bg/surface` + `radius/lg`, 위아래 `space/6`, 좌우 `space/4`, 요소 사이 `space/2`. 아이콘 24(`upload` · `image`, `text/muted`), 제목 `body-1` medium, 조건 `body-3` + `text/muted`. hover `bg/subtle`, 끌어다 놓는 중 `border/focus` + `bg/subtle`, 거부되면 `border/danger` + 문구 `text/danger`.
 
 **FileList**
 
@@ -955,8 +965,8 @@ interface FileItemData {
 | 방금 고른 파일 | 넣지 않고 `file`만 넘김 | 컴포넌트가 blob URL을 만들고, 목록에서 빠지면 해제해요 |
 | 인증이 필요한 파일 | 프로젝트가 받아 만든 blob URL | `<img>`는 인증 헤더를 붙일 수 없어요 |
 
-- `list`: `bg/surface` + 1px `border/default` + `radius/md`, padding·간격 `space/3`, 항목 사이 `space/2`. 아이콘 칸 32(`bg/subtle`, `file` 16), 이름 `body`(완료이고 `url`이 있으면 Link), 크기·진행률 `mono-caption` + `text/muted`. 업로드 중에는 라벨 없는 Progress, 에러면 `border/danger` + `caption` + `text/danger`. 버튼은 ghost `icon-sm`(`refresh-cw` 다시 시도, `x` 삭제).
-- `grid`: 썸네일 96×96(`bg/subtle`, 1px `border/default`, `radius/md`, 안쪽 `space/1`), 항목 사이 `space/3`. 오른쪽 위 secondary `icon-sm` 버튼, 아래 Progress, 아래 이름 `caption` 한 줄 말줄임. 에러면 `border/danger` + `circle-alert`.
+- `list`: `bg/surface` + 1px `border/default` + `radius/md`, padding·간격 `space/3`, 항목 사이 `space/2`. 아이콘 칸 32(`bg/subtle`, `file` 16), 이름 `body-1`(완료이고 `url`이 있으면 Link), 크기·진행률 `mono-2` + `text/muted`. 업로드 중에는 라벨 없는 Progress, 에러면 `border/danger` + `body-3` + `text/danger`. 버튼은 ghost `icon-sm`(`refresh-cw` 다시 시도, `x` 삭제).
+- `grid`: 썸네일 96×96(`bg/subtle`, 1px `border/default`, `radius/md`, 안쪽 `space/1`), 항목 사이 `space/3`. 오른쪽 위 secondary `icon-sm` 버튼, 아래 Progress, 아래 이름 `body-3` 한 줄 말줄임. 에러면 `border/danger` + `circle-alert`.
 
 ## 11. Figma ↔ 코드 매핑 (Code Connect 대체)
 
@@ -967,7 +977,7 @@ Sonic 팀은 Figma Pro 요금제라 Code Connect(Organization 이상)를 쓸 수
 | Button | `5:52` | `<Button variant size disabled>` (페이지 이동은 링크에 `buttonVariants({ variant, size })`) | `src/components/button.tsx` |
 | Button Icon | `23:2294` | `<Button size="icon-*" variant disabled aria-label>` + 아이콘 자식 | `src/components/button.tsx` |
 | Input | `5:61` | `<Input invalid disabled placeholder>` | `src/components/input.tsx` |
-| Text | `5:110` | `<Text variant tone as>` | `src/components/text.tsx` |
+| Text | `5:110` | `<Text variant weight tone as>` | `src/components/text.tsx` |
 | Avatar | `5:117` | `<Avatar size src alt fallback>` | `src/components/avatar.tsx` |
 | Card | `6:2` | `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardBody`, `CardFooter` | `src/components/card.tsx` |
 | Dialog | `106:4859` | (`viewport` → prop 아님. 좁은 화면은 코드가 자동 처리) `Dialog`, `DialogTrigger`, `DialogPopup`, `DialogTitle`, `DialogDescription`, `DialogClose`, `DialogFooter` | `src/components/dialog.tsx` |

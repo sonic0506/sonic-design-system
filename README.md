@@ -69,7 +69,7 @@ Tailwind v4 프로젝트(권장)에서는 이렇게 연결해요.
 @layer theme, base, sonic, components, utilities;
 @import "tailwindcss";
 @import "@xonic0506/sonic-ui/styles.css";
-@import "@xonic0506/sonic-ui/tailwind.css"; /* 선택: bg-primary, text-muted, rounded-md, text-body 같은 클래스 */
+@import "@xonic0506/sonic-ui/tailwind.css"; /* 선택: bg-primary, text-muted, rounded-md, text-body-1 같은 클래스 */
 ```
 
 > [!IMPORTANT]
@@ -99,7 +99,7 @@ import { Button, Card, CardBody, CardHeader, CardTitle, Dialog, DialogClose, Dia
 <Card>
   <CardHeader><CardTitle>API 키</CardTitle></CardHeader>
   <CardBody>
-    <Text variant="mono-caption" tone="muted">sk_live_…a91f</Text>
+    <Text variant="mono-2" tone="muted">sk_live_…a91f</Text>
   </CardBody>
 </Card>
 

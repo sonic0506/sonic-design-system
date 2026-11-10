@@ -7,7 +7,7 @@ const avatarVariants = cva(
   'sn:box-border sn:inline-flex sn:shrink-0 sn:items-center sn:justify-center sn:overflow-hidden sn:rounded-full sn:bg-subtle sn:align-middle sn:font-sans sn:text-muted sn:select-none',
   {
     variants: {
-      size: { sm: 'sn:size-6 sn:text-caption', md: 'sn:size-8 sn:text-label', lg: 'sn:size-10 sn:text-body-strong' },
+      size: { sm: 'sn:size-6 sn:text-body-3', md: 'sn:size-8 sn:text-body-2', lg: 'sn:size-10 sn:text-body-1 sn:font-medium' },
     },
     defaultVariants: { size: 'md' },
   },

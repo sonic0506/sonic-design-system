@@ -28,9 +28,9 @@ export function ErrorPage({ status, title = copy[status][0], description = copy[
       {/* 장식 이미지. 숫자는 그림 안에 있고 내용은 제목이 전해요 */}
       <img src={illustrations[`error-${status}`]} alt="" width={320} height={213} className="sn:block sn:h-auto sn:max-w-full" />
       <div className="sn:flex sn:flex-col sn:items-center sn:gap-2">
-        <p className="sn:m-0 sn:font-mono sn:text-caption sn:tabular-nums sn:text-muted">오류 코드 {status}</p>
-        <h1 className="sn:m-0 sn:text-title sn:text-default">{title}</h1>
-        {description && <p className="sn:m-0 sn:text-body sn:text-muted">{description}</p>}
+        <p className="sn:m-0 sn:font-mono sn:text-body-3 sn:tabular-nums sn:text-muted">오류 코드 {status}</p>
+        <h1 className="sn:m-0 sn:text-title-1 sn:text-default">{title}</h1>
+        {description && <p className="sn:m-0 sn:text-body-1 sn:text-muted">{description}</p>}
       </div>
       {action}
     </div>

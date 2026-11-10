@@ -54,7 +54,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab({ 
       value={value}
       disabled={disabled}
       className={cn(
-        'sn:box-border sn:flex sn:h-8 sn:shrink-0 sn:items-center sn:whitespace-nowrap sn:border-0 sn:bg-transparent sn:px-3 sn:font-sans sn:text-body-strong sn:text-muted sn:cursor-pointer sn:focus-visible:outline-2 sn:focus-visible:-outline-offset-2 sn:focus-visible:outline-focus sn:transition-colors sn:duration-(--sn-duration-fast) sn:hover:not-data-disabled:text-default sn:data-active:text-default sn:data-disabled:cursor-not-allowed sn:data-disabled:opacity-(--sn-opacity-disabled)',
+        'sn:box-border sn:flex sn:h-8 sn:shrink-0 sn:items-center sn:whitespace-nowrap sn:border-0 sn:bg-transparent sn:px-3 sn:font-sans sn:text-body-1 sn:font-medium sn:text-muted sn:cursor-pointer sn:focus-visible:outline-2 sn:focus-visible:-outline-offset-2 sn:focus-visible:outline-focus sn:transition-colors sn:duration-(--sn-duration-fast) sn:hover:not-data-disabled:text-default sn:data-active:text-default sn:data-disabled:cursor-not-allowed sn:data-disabled:opacity-(--sn-opacity-disabled)',
         className,
       )}
     >
@@ -65,7 +65,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab({ 
 
 export function TabsPanel({ value, className, children }: { value: string; className?: string; children?: React.ReactNode }) {
   return (
-    <BaseTabs.Panel value={value} className={cn('sn:text-body sn:text-default sn:focus-visible:outline-2 sn:focus-visible:outline-offset-2 sn:focus-visible:outline-focus', className)}>
+    <BaseTabs.Panel value={value} className={cn('sn:text-body-1 sn:text-default sn:focus-visible:outline-2 sn:focus-visible:outline-offset-2 sn:focus-visible:outline-focus', className)}>
       {children}
     </BaseTabs.Panel>
   );

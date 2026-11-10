@@ -59,7 +59,7 @@ export type ToggleGroupItemProps = ToggleGroupItemBaseProps & ({ iconOnly?: fals
 
 // 항목끼리 붙어 있어서 포커스 링은 Tab처럼 안쪽(-2px)에 그려요
 const itemClass =
-  'sn:box-border sn:inline-flex sn:h-6 sn:items-center sn:justify-center sn:gap-1 sn:rounded-sm sn:border sn:border-transparent sn:bg-transparent sn:px-2 sn:font-sans sn:text-label sn:text-muted sn:cursor-pointer sn:select-none sn:transition-colors sn:duration-(--sn-duration-fast) sn:ease-standard sn:hover:not-data-disabled:text-default sn:data-pressed:border-default sn:data-pressed:bg-surface sn:data-pressed:text-default sn:focus-visible:outline-2 sn:focus-visible:-outline-offset-2 sn:focus-visible:outline-focus sn:data-disabled:cursor-not-allowed sn:data-disabled:opacity-(--sn-opacity-disabled) sn:motion-reduce:transition-none sn:[&_svg]:size-4 sn:[&_svg]:shrink-0';
+  'sn:box-border sn:inline-flex sn:h-6 sn:items-center sn:justify-center sn:gap-1 sn:rounded-sm sn:border sn:border-transparent sn:bg-transparent sn:px-2 sn:font-sans sn:text-body-2 sn:text-muted sn:cursor-pointer sn:select-none sn:transition-colors sn:duration-(--sn-duration-fast) sn:ease-standard sn:hover:not-data-disabled:text-default sn:data-pressed:border-default sn:data-pressed:bg-surface sn:data-pressed:text-default sn:focus-visible:outline-2 sn:focus-visible:-outline-offset-2 sn:focus-visible:outline-focus sn:data-disabled:cursor-not-allowed sn:data-disabled:opacity-(--sn-opacity-disabled) sn:motion-reduce:transition-none sn:[&_svg]:size-4 sn:[&_svg]:shrink-0';
 
 export const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps>(function ToggleGroupItem({ value, disabled, iconOnly, className, children, ...props }, ref) {
   return (

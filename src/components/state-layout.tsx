@@ -27,8 +27,8 @@ export function StateLayout({ icon, iconClassName, illustration, title, descript
         <img src={illustration} alt="" width={120} height={120} className="sn:block" />
       )}
       <div className="sn:flex sn:flex-col sn:gap-1">
-        <p className="sn:m-0 sn:text-body-strong sn:text-default">{title}</p>
-        {description && <p className="sn:m-0 sn:text-body sn:text-muted">{description}</p>}
+        <p className="sn:m-0 sn:text-body-1 sn:font-medium sn:text-default">{title}</p>
+        {description && <p className="sn:m-0 sn:text-body-1 sn:text-muted">{description}</p>}
       </div>
       {children}
     </div>

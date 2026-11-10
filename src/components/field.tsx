@@ -21,12 +21,12 @@ export const Field = React.forwardRef<HTMLDivElement, FieldProps>(function Field
   const showError = invalid && !!error;
   return (
     <BaseField.Root ref={ref} invalid={invalid} disabled={disabled} className={cn('sn:flex sn:flex-col sn:gap-2 sn:font-sans', className)}>
-      <BaseField.Label className="sn:text-label sn:text-default">{label}</BaseField.Label>
+      <BaseField.Label className="sn:text-body-2 sn:text-default">{label}</BaseField.Label>
       {children}
       {/* 에러가 있으면 설명 자리를 대신함 (DESIGN.md §10 Field) */}
-      {description && !showError && <BaseField.Description className="sn:m-0 sn:text-caption sn:text-muted">{description}</BaseField.Description>}
+      {description && !showError && <BaseField.Description className="sn:m-0 sn:text-body-3 sn:text-muted">{description}</BaseField.Description>}
       {showError && (
-        <BaseField.Error match className="sn:m-0 sn:text-caption sn:text-danger">
+        <BaseField.Error match className="sn:m-0 sn:text-body-3 sn:text-danger">
           {error}
         </BaseField.Error>
       )}

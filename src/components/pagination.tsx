@@ -28,7 +28,7 @@ export function getPageItems(page: number, pageCount: number): Array<number | 'e
 }
 
 const itemClass =
-  'sn:box-border sn:flex sn:h-7 sn:min-w-7 sn:items-center sn:justify-center sn:rounded-md sn:border-0 sn:px-1 sn:font-mono sn:text-body';
+  'sn:box-border sn:flex sn:h-7 sn:min-w-7 sn:items-center sn:justify-center sn:rounded-md sn:border-0 sn:px-1 sn:font-mono sn:text-body-1';
 
 export function Pagination({
   page,
@@ -54,7 +54,7 @@ export function Pagination({
     <div className={cn('sn:flex sn:items-center sn:justify-between sn:gap-4 sn:font-sans', className)}>
       {onPageSizeChange && (
         <div className="sn:flex sn:items-center sn:gap-2">
-          <span aria-hidden className="sn:hidden sn:text-label sn:text-muted sn:sm:inline">페이지당 행</span>
+          <span aria-hidden className="sn:hidden sn:text-body-2 sn:text-muted sn:sm:inline">페이지당 행</span>
           <Select
             aria-label="페이지당 행"
             className="sn:w-auto"
@@ -91,7 +91,7 @@ export function Pagination({
             ),
           )}
         </ul>
-        <span className="sn:px-1 sn:font-mono sn:text-caption sn:text-muted sn:sm:hidden">{current} / {count}</span>
+        <span className="sn:px-1 sn:font-mono sn:text-body-3 sn:text-muted sn:sm:hidden">{current} / {count}</span>
         {arrow('다음 페이지', current + 1, current >= count, ChevronRight)}
         {showFirstLast && arrow('마지막 페이지', count, current >= count, ChevronsRight)}
       </nav>

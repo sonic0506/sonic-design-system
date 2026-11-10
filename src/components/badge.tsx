@@ -3,7 +3,7 @@ import { cva } from 'class-variance-authority';
 import { cn } from '../lib/cn';
 
 const badgeVariants = cva(
-  'sn:box-border sn:inline-flex sn:h-5 sn:shrink-0 sn:items-center sn:gap-1 sn:whitespace-nowrap sn:rounded-sm sn:px-2 sn:font-sans sn:text-label sn:[&_svg]:size-3 sn:[&_svg]:shrink-0',
+  'sn:box-border sn:inline-flex sn:h-5 sn:shrink-0 sn:items-center sn:gap-1 sn:whitespace-nowrap sn:rounded-sm sn:px-2 sn:font-sans sn:text-body-2 sn:[&_svg]:size-3 sn:[&_svg]:shrink-0',
   {
     variants: {
       tone: { neutral: '', success: '', warning: '', danger: '' },

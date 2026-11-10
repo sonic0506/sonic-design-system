@@ -20,7 +20,7 @@ export function Tooltip({ content, side = 'top', className, children }: TooltipP
         <BaseTooltip.Positioner side={side} sideOffset={4} className="sn:z-50">
           <BaseTooltip.Popup
             className={cn(
-              'sn:origin-(--transform-origin) sn:rounded-md sn:bg-inverse sn:px-2 sn:py-1 sn:font-sans sn:text-caption sn:text-inverse sn:transition-[opacity,scale] sn:duration-(--sn-duration-fast) sn:ease-standard sn:data-starting-style:scale-98 sn:data-starting-style:opacity-0 sn:data-ending-style:scale-98 sn:data-ending-style:opacity-0 sn:motion-reduce:transition-none',
+              'sn:origin-(--transform-origin) sn:rounded-md sn:bg-inverse sn:px-2 sn:py-1 sn:font-sans sn:text-body-3 sn:text-inverse sn:transition-[opacity,scale] sn:duration-(--sn-duration-fast) sn:ease-standard sn:data-starting-style:scale-98 sn:data-starting-style:opacity-0 sn:data-ending-style:scale-98 sn:data-ending-style:opacity-0 sn:motion-reduce:transition-none',
               className,
             )}
           >

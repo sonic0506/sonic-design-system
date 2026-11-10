@@ -7,8 +7,8 @@ import { Grid } from './grid';
 export default function Page() {
   return (
     <>
-      <h1 className="text-display m-0">next-tailwind fixture</h1>
-      <p className="text-body text-muted m-0" id="consumer-token">쓰는 쪽에서 sn 토큰 클래스 사용 (tailwind.css)</p>
+      <h1 className="text-heading-1 m-0">next-tailwind fixture</h1>
+      <p className="text-body-1 text-muted m-0" id="consumer-token">쓰는 쪽에서 sn 토큰 클래스 사용 (tailwind.css)</p>
       <div className="flex gap-2">
         <Button id="b-primary">Primary</Button>
         <Button id="b-secondary" variant="secondary">Secondary</Button>

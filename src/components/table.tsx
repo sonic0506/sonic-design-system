@@ -30,7 +30,7 @@ type RowProps = Props<HTMLTableRowElement> & {
   dragging?: boolean;
 };
 
-export const tableClass = 'sn:w-full sn:border-separate sn:border-spacing-0 sn:font-sans sn:text-body sn:text-default';
+export const tableClass = 'sn:w-full sn:border-separate sn:border-spacing-0 sn:font-sans sn:text-body-1 sn:text-default';
 
 /** 넓으면 가로로 스크롤해요 */
 export const Table = React.forwardRef<HTMLTableElement, Props<HTMLTableElement>>(function Table({ className, ...props }, ref) {
@@ -91,7 +91,7 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, HeadProps>(funct
       className={cn(
         cellClass,
         Boolean(handle) && 'sn:group/head sn:relative',
-        'sn:text-label',
+        'sn:text-body-2',
         sorted ? 'sn:text-default' : 'sn:text-muted',
         align === 'end' ? 'sn:text-right' : 'sn:text-left',
         pinned && pinnedClass[pinned],

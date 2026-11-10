@@ -20,7 +20,7 @@ export interface RadioGroupProps {
 export function RadioGroup({ label, value, defaultValue, onValueChange, disabled, name, className, children }: RadioGroupProps) {
   return (
     <Fieldset.Root className={cn('sn:m-0 sn:flex sn:min-w-0 sn:flex-col sn:gap-3 sn:border-0 sn:p-0 sn:font-sans', className)}>
-      <Fieldset.Legend className="sn:p-0 sn:text-label sn:text-default">{label}</Fieldset.Legend>
+      <Fieldset.Legend className="sn:p-0 sn:text-body-2 sn:text-default">{label}</Fieldset.Legend>
       <BaseRadioGroup value={value} defaultValue={defaultValue} onValueChange={onValueChange && (v => onValueChange(v as string))} disabled={disabled} name={name} className="sn:flex sn:flex-col sn:gap-2">
         {children}
       </BaseRadioGroup>

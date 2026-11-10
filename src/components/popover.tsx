@@ -48,9 +48,9 @@ export const PopoverPopup = React.forwardRef<HTMLDivElement, PopoverPopupProps>(
 });
 
 export const PopoverTitle = React.forwardRef<HTMLHeadingElement, TextProps<HTMLHeadingElement>>(function PopoverTitle({ className, ...props }, ref) {
-  return <BasePopover.Title ref={ref} className={cn('sn:m-0 sn:text-body-strong sn:text-default', className)} {...props} />;
+  return <BasePopover.Title ref={ref} className={cn('sn:m-0 sn:text-body-1 sn:font-medium sn:text-default', className)} {...props} />;
 });
 
 export const PopoverDescription = React.forwardRef<HTMLParagraphElement, TextProps<HTMLParagraphElement>>(function PopoverDescription({ className, ...props }, ref) {
-  return <BasePopover.Description ref={ref} className={cn('sn:-mt-2 sn:mb-0 sn:text-caption sn:text-muted', className)} {...props} />;
+  return <BasePopover.Description ref={ref} className={cn('sn:-mt-2 sn:mb-0 sn:text-body-3 sn:text-muted', className)} {...props} />;
 });

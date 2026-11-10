@@ -1,0 +1,90 @@
+{
+  "$comment": "Sonic 규격으로 만든 디자인 시스템 Figma 파일이 반드시 가져야 하는 것. 값(색, 크기)은 브랜드마다 달라도 되고 구조만 검사해요. 검사: npm run check:spec (scripts/check-ds-spec.mjs)",
+  "pages": ["Cover", "Foundations", "Core", "Patterns", "Playground", "Doc Kit"],
+  "docKit": ["Doc / Page Header", "Doc / Section", "Doc / Token Chip", "Doc / Table Header", "Doc / Table Row", "Doc / Swatch"],
+  "docs": {
+    "Foundations": {
+      "required": ["Typography", "Color", "Spacing, Radius, Motion", "Icon"],
+      "optional": ["Illustration"]
+    }
+  },
+  "variables": {
+    "Primitives": { "modes": ["Value"] },
+    "Semantic": {
+      "modes": ["Light", "Dark"],
+      "required": [
+        "color/bg/canvas", "color/bg/surface", "color/bg/subtle", "color/bg/primary", "color/bg/primary-hover", "color/bg/danger", "color/bg/overlay",
+        "color/bg/inverse", "color/bg/success", "color/bg/success-subtle", "color/bg/warning", "color/bg/warning-subtle", "color/bg/danger-subtle",
+        "color/bg/selected", "color/bg/scrim-subtle",
+        "color/text/default", "color/text/muted", "color/text/on-primary", "color/text/on-danger", "color/text/danger", "color/text/inverse",
+        "color/text/on-success", "color/text/success", "color/text/on-warning", "color/text/warning",
+        "color/border/default", "color/border/strong", "color/border/focus", "color/border/danger", "color/border/success", "color/border/warning"
+      ]
+    },
+    "Spacing": { "modes": ["Value"], "required": ["space/0", "space/1", "space/2", "space/3", "space/4", "space/5", "space/6", "space/7", "space/8", "space/10", "space/12", "space/16"] },
+    "Radius": { "modes": ["Value"], "required": ["radius/sm", "radius/md", "radius/lg", "radius/full", "stroke/default", "stroke/focus"] },
+    "Motion": { "modes": ["Value"], "required": ["duration/fast", "duration/normal", "duration/loop", "easing/standard"] },
+    "Opacity": { "modes": ["Value"], "required": ["opacity/disabled"] }
+  },
+  "palette": {
+    "steps": [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950],
+    "required": ["primary", "gray", "danger", "success", "warning", "info"],
+    "optional": ["secondary"],
+    "extra": ["gray/0"]
+  },
+  "typography": {
+    "name": "^(Heading|Title|Body|Mono) / (H|T|B|MN)(\\d+)(B|SB|M|R)-(\\d+)$",
+    "prefix": { "Heading": "H", "Title": "T", "Body": "B", "Mono": "MN" },
+    "weight": { "B": "Bold", "SB": "SemiBold", "M": "Medium", "R": "Regular" },
+    "groups": {
+      "Heading": { "max": 6, "weights": ["B", "SB"] },
+      "Title": { "max": 6, "weights": ["B", "SB", "M"] },
+      "Body": { "max": 7, "weights": ["SB", "M", "R"] },
+      "Mono": { "max": 3, "weights": ["R", "M"] }
+    }
+  },
+  "components": {
+    "Button": { "variant": ["primary", "secondary", "ghost", "danger"], "size": ["sm", "md", "lg"], "disabled": ["false", "true"], "loading": "BOOLEAN", "iconLeft": "BOOLEAN", "iconRight": "BOOLEAN", "leftIcon": "INSTANCE_SWAP", "rightIcon": "INSTANCE_SWAP", "children": "TEXT" },
+    "Button Icon": { "variant": ["primary", "secondary", "ghost", "danger"], "size": ["icon-sm", "icon-md", "icon-lg"], "disabled": ["false", "true"], "icon": "INSTANCE_SWAP" },
+    "Input": { "invalid": ["false", "true"], "disabled": ["false", "true"], "placeholder": "TEXT" },
+    "Text": { "variant": ["heading-1", "title-1", "body-1", "body-2", "body-3", "mono-1", "mono-2"], "weight": ["semibold", "regular", "medium"], "tone": ["default", "muted", "danger"], "children": "TEXT" },
+    "Avatar": { "size": ["sm", "md", "lg"], "fallback": "TEXT" },
+    "Card": { "title": "TEXT", "description": "TEXT", "header": "BOOLEAN", "footer": "BOOLEAN" },
+    "Dialog": { "viewport": ["desktop", "mobile"], "title": "TEXT", "description": "TEXT" },
+    "Field": { "state": ["default", "invalid", "disabled"], "label": "TEXT", "description": "TEXT", "showDescription": "BOOLEAN", "error": "TEXT" },
+    "Skeleton": { "shape": ["text", "rect", "circle"] },
+    "EmptyState": { "media": ["icon", "illustration"], "icon": "INSTANCE_SWAP", "title": "TEXT", "description": "TEXT", "action": "BOOLEAN" },
+    "ErrorState": { "media": ["icon", "illustration"], "icon": "INSTANCE_SWAP", "title": "TEXT", "description": "TEXT", "retry": "BOOLEAN" },
+    "ErrorPage": { "status": ["404", "403", "500"], "action": "BOOLEAN" },
+    "Textarea": { "invalid": ["false", "true"], "disabled": ["false", "true"], "placeholder": "TEXT" },
+    "Checkbox": { "checked": ["false", "true", "indeterminate"], "disabled": ["false", "true"], "children": "TEXT" },
+    "Radio": { "checked": ["false", "true"], "disabled": ["false", "true"], "children": "TEXT" },
+    "Switch": { "checked": ["false", "true"], "disabled": ["false", "true"], "children": "TEXT" },
+    "Select Trigger": { "state": ["default", "open", "invalid", "disabled"], "value": "TEXT" },
+    "Select Item": { "multiple": ["false", "true"], "selected": ["false", "true"], "highlighted": ["false", "true"], "disabled": ["false", "true"], "children": "TEXT" },
+    "Select Popup": {},
+    "AlertDialog": { "viewport": ["desktop", "mobile"], "title": "TEXT", "description": "TEXT" },
+    "Menu Item": { "tone": ["default", "danger"], "highlighted": ["false", "true"], "disabled": ["false", "true"], "showIcon": "BOOLEAN", "icon": "INSTANCE_SWAP", "children": "TEXT" },
+    "Menu Popup": {},
+    "Popover": { "title": "TEXT", "description": "TEXT" },
+    "Tooltip": { "content": "TEXT" },
+    "Tab": { "selected": ["false", "true"], "disabled": ["false", "true"], "children": "TEXT" },
+    "Tabs List": {},
+    "Separator": { "orientation": ["horizontal", "vertical"] },
+    "Toast": { "tone": ["neutral", "success", "warning", "danger"], "title": "TEXT", "description": "TEXT", "showDescription": "BOOLEAN" },
+    "Badge": { "tone": ["neutral", "success", "warning", "danger"], "variant": ["subtle", "solid"], "children": "TEXT" },
+    "Progress": { "value": ["0", "25", "50", "75", "100"], "label": "TEXT", "value text": "TEXT" },
+    "Link": { "external": ["false", "true"], "children": "TEXT" },
+    "Table Cell": { "type": ["header", "body"], "align": ["start", "end"], "sort": ["none", "asc", "desc"], "state": ["default", "hover", "selected"], "pinned": ["none", "left", "right"], "children": "TEXT" },
+    "Table": {},
+    "Data Grid Cell": { "type": ["text", "number", "date", "datetime", "badge", "switch", "actions", "select", "handle"], "children": "TEXT" },
+    "Pagination Item": { "state": ["default", "current", "ellipsis"], "children": "TEXT" },
+    "Pagination": { "viewport": ["desktop", "mobile"], "showFirstLast": "BOOLEAN" },
+    "Toggle Item": { "content": ["text", "icon"], "pressed": ["false", "true"], "disabled": ["false", "true"], "children": "TEXT" },
+    "Toggle Group": {},
+    "Accordion Item": { "open": ["false", "true"], "disabled": ["false", "true"], "title": "TEXT", "content": "TEXT" },
+    "Accordion": {},
+    "File Dropzone": { "variant": ["file", "image"], "state": ["default", "drag-over", "invalid", "disabled"] },
+    "File Item": { "layout": ["list", "grid"], "status": ["uploading", "done", "error"] }
+  }
+}

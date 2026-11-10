@@ -13,9 +13,9 @@ export const buttonVariants = cva(
         danger: 'sn:bg-danger sn:text-on-danger',
       },
       size: {
-        sm: 'sn:h-7 sn:px-2 sn:text-label sn:[&_svg]:size-4',
-        md: 'sn:h-8 sn:px-3 sn:text-body-strong sn:[&_svg]:size-4',
-        lg: 'sn:h-10 sn:px-4 sn:text-body-strong sn:[&_svg]:size-5',
+        sm: 'sn:h-7 sn:px-2 sn:text-body-2 sn:[&_svg]:size-4',
+        md: 'sn:h-8 sn:px-3 sn:text-body-1 sn:font-medium sn:[&_svg]:size-4',
+        lg: 'sn:h-10 sn:px-4 sn:text-body-1 sn:font-medium sn:[&_svg]:size-5',
         // 아이콘만 있는 정사각형 버튼
         'icon-sm': 'sn:size-7 sn:p-0 sn:[&_svg]:size-4',
         'icon-md': 'sn:size-8 sn:p-0 sn:[&_svg]:size-4',

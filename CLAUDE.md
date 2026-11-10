@@ -15,6 +15,7 @@ Figma(원본, fileKey `XifnZsjqJWJqFmAmrM6p3u`) → DESIGN.md(규칙) → 코드
 3. **토큰을 다시 추출해요.** `scripts/figma-export.js`를 Figma MCP `use_figma`로 실행해 `scripts/figma-tokens.json`에 저장하고 `npm run tokens`를 실행해요.
    - `src/styles/tokens.css`, `src/styles/theme.css`는 생성물이라 손으로 고치지 않아요.
    - 바뀐 게 있는지만 볼 때: 추출 결과를 임시 파일에 저장하고 `node scripts/check-figma-sync.mjs <파일>`을 실행해요.
+   - 규격 검사: `npm run check:spec`. 페이지·컴포넌트를 바꿨으면 `scripts/figma-structure.js` 결과도 넘겨요(`ds-spec/README.md`). 컴포넌트 속성을 바꾸면 `ds-spec/required.json`도 함께 고쳐요.
 4. **코드와 테스트를 고쳐요.** `npm run typecheck && npm test && npm run build`, 그다음 `npm run playground`에서 light/dark를 Figma와 비교해요.
 5. **버전을 올려요.** 1.0 전까지: 깨지는 변경은 minor(`npm version minor`), 나머지는 patch. 배포(`npm publish`)는 사용자 확인 후에만 해요.
 

@@ -23,12 +23,28 @@ for (const [n, v] of Object.entries(c.Motion.variables)) root.push([cssName(n), 
 theme.push(['--ease-standard', 'var(--sn-easing-standard)']);
 for (const [n, v] of Object.entries(c.Opacity.variables)) root.push([cssName(n), String(v.values.Value / 100)]);
 
-const fam = { sans: textStyles.body.fontFamily, mono: textStyles.mono.fontFamily };
+// 텍스트 스타일 이름: "{그룹} / {머리글자}{번호}{굵기}-{크기}" (예: Body / B1M-14) → 코드 단계 body-1 + 굵기 medium
+// 단계 토큰의 기본 굵기는 그 단계에서 가장 가는 스타일이에요. 나머지 굵기는 font-medium 같은 굵기 클래스로 바꿔요
+const levels = {};
+const weights = new Set();
+for (const [name, s] of Object.entries(textStyles)) {
+  const m = name.match(/^(\w+) \/ [A-Z]+(\d+)[A-Z]+-\d+$/);
+  if (!m) throw new Error(`텍스트 스타일 이름 규칙 위반: ${name}`);
+  const level = `${m[1].toLowerCase()}-${m[2]}`;
+  weights.add(s.fontStyle);
+  if (!levels[level] || WEIGHT[s.fontStyle] < WEIGHT[levels[level].fontStyle]) levels[level] = s;
+}
+const fam = { sans: levels['body-1'].fontFamily, mono: levels['mono-1'].fontFamily };
 for (const k of ['sans', 'mono']) { root.push([`--sn-font-${k}`, `"${fam[k]}", ${stack[k]}`]); theme.push([`--font-${k}`, `var(--sn-font-${k})`]); }
-for (const [n, s] of Object.entries(textStyles)) {
+for (const w of [...weights].sort((a, b) => WEIGHT[a] - WEIGHT[b])) {
+  const n = w.toLowerCase();
+  root.push([`--sn-font-weight-${n}`, String(WEIGHT[w])]);
+  theme.push([`--font-weight-${n}`, `var(--sn-font-weight-${n})`]);
+}
+for (const [n, s] of Object.entries(levels)) {
   const base = `--sn-text-${n}`;
   root.push([base, `${s.fontSize}px`], [`${base}--line-height`, `${s.lineHeight}px`], [`${base}--font-weight`, String(WEIGHT[s.fontStyle])], [`${base}--letter-spacing`, `${s.letterSpacingPercent / 100}em`]);
-  // mono 계열은 글꼴만 다르고 크기는 body/caption과 같아서 Tailwind 글자 크기 이름으로는 등록하지 않음 (sn:font-mono + sn:text-body)
+  // mono 계열은 글꼴만 다르고 크기는 body-1/body-3과 같아서 Tailwind 글자 크기 이름으로는 등록하지 않음 (sn:font-mono + sn:text-body-1)
   if (s.fontFamily === fam.sans) for (const suf of ['', '--line-height', '--font-weight', '--letter-spacing']) theme.push([`--text-${n}${suf}`, `var(${base}${suf})`]);
 }
 
@@ -48,6 +64,6 @@ writeFileSync(new URL('../src/styles/tokens.css', import.meta.url), HEADER +
   block(':root, [data-theme="light"]', modes.light, '  color-scheme: light;\n') + '\n' +
   block('[data-theme="dark"]', modes.dark, '  color-scheme: dark;\n'));
 writeFileSync(new URL('../src/styles/theme.css', import.meta.url), HEADER +
-  '/* Tailwind v4 @theme 매핑. sn 토큰을 Tailwind 클래스 이름으로 연결해요 (bg-primary, text-muted, rounded-md, text-body …).\n   inline reference: 클래스가 var(--sn-*)를 직접 참조하고, Tailwind 테마 변수는 따로 출력하지 않음 */\n' +
+  '/* Tailwind v4 @theme 매핑. sn 토큰을 Tailwind 클래스 이름으로 연결해요 (bg-primary, text-muted, rounded-md, text-body-1 …).\n   inline reference: 클래스가 var(--sn-*)를 직접 참조하고, Tailwind 테마 변수는 따로 출력하지 않음 */\n' +
   block('@theme inline reference', theme));
 console.log(`tokens.css: ${root.length + modes.light.length * 2} vars, theme.css: ${theme.length} mappings`);

@@ -104,7 +104,7 @@ export function FileDropzone({ onFilesChange, accept, multiple, maxFiles, maxSiz
         )}
       >
         <Icon className="sn:size-6 sn:text-muted sn:group-data-invalid:text-danger sn:group-aria-invalid:text-danger" />
-        <span className="sn:text-body-strong sn:text-default">
+        <span className="sn:text-body-1 sn:font-medium sn:text-default">
           {title ?? (
             // 터치 기기에는 끌어다 놓기가 없어서 문구를 바꿔요
             <>
@@ -113,7 +113,7 @@ export function FileDropzone({ onFilesChange, accept, multiple, maxFiles, maxSiz
             </>
           )}
         </span>
-        <span id={messageId} aria-live="polite" className={cn('sn:text-caption', rejectMessage ? 'sn:text-danger' : 'sn:text-muted')}>
+        <span id={messageId} aria-live="polite" className={cn('sn:text-body-3', rejectMessage ? 'sn:text-danger' : 'sn:text-muted')}>
           {rejectMessage ?? description}
         </span>
       </BaseField.Control>
@@ -197,16 +197,16 @@ function ListItem({ item, onRemove, onRetry }: ItemProps) {
       <div className="sn:flex sn:min-w-0 sn:flex-1 sn:flex-col sn:gap-1">
         <div className="sn:flex sn:items-center sn:justify-between sn:gap-2">
           {item.status === 'done' && item.url ? (
-            <Link href={item.url} target="_blank" rel="noopener noreferrer" className="sn:min-w-0 sn:truncate sn:text-body">{item.name}</Link>
+            <Link href={item.url} target="_blank" rel="noopener noreferrer" className="sn:min-w-0 sn:truncate sn:text-body-1">{item.name}</Link>
           ) : (
-            <span className="sn:min-w-0 sn:truncate sn:text-body sn:text-default">{item.name}</span>
+            <span className="sn:min-w-0 sn:truncate sn:text-body-1 sn:text-default">{item.name}</span>
           )}
-          <span className="sn:shrink-0 sn:font-mono sn:text-caption sn:text-muted">
+          <span className="sn:shrink-0 sn:font-mono sn:text-body-3 sn:text-muted">
             {item.status === 'uploading' ? `${Math.round(item.progress ?? 0)}%` : item.size !== undefined ? formatBytes(item.size) : null}
           </span>
         </div>
         {item.status === 'uploading' && <Progress value={item.progress ?? 0} aria-label={`${item.name} 올리는 중`} />}
-        {error && item.error && <span className="sn:text-caption sn:text-danger">{item.error}</span>}
+        {error && item.error && <span className="sn:text-body-3 sn:text-danger">{item.error}</span>}
       </div>
       <Actions item={item} onRemove={onRemove} onRetry={onRetry} variant="ghost" />
     </li>
@@ -235,7 +235,7 @@ function GridItem({ item, onRemove, onRetry }: ItemProps) {
           </div>
         )}
       </div>
-      <span className={cn('sn:truncate sn:text-caption', error ? 'sn:text-danger' : 'sn:text-muted')} title={item.name}>
+      <span className={cn('sn:truncate sn:text-body-3', error ? 'sn:text-danger' : 'sn:text-muted')} title={item.name}>
         {item.name}
       </span>
       {error && item.error && <span className="sn:sr-only">{item.error}</span>}

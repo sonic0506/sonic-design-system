@@ -23,8 +23,8 @@ export function Progress({ value, max = 100, className, ...props }: ProgressProp
     >
       {label != null && (
         <div className="sn:flex sn:items-center sn:gap-2">
-          <BaseProgress.Label className="sn:min-w-0 sn:flex-1 sn:text-label sn:text-default">{label}</BaseProgress.Label>
-          <BaseProgress.Value className="sn:font-mono sn:text-caption sn:text-muted" />
+          <BaseProgress.Label className="sn:min-w-0 sn:flex-1 sn:text-body-2 sn:text-default">{label}</BaseProgress.Label>
+          <BaseProgress.Value className="sn:font-mono sn:text-body-3 sn:text-muted" />
         </div>
       )}
       <BaseProgress.Track className="sn:h-1 sn:overflow-hidden sn:rounded-full sn:bg-subtle">

@@ -16,7 +16,7 @@ import {
 
 const variants = ['primary', 'secondary', 'ghost', 'danger'] as const;
 const sizes = ['sm', 'md', 'lg'] as const;
-const textVariants: TextVariant[] = ['display', 'title', 'body', 'body-strong', 'label', 'caption', 'mono', 'mono-caption'];
+const textVariants: TextVariant[] = ['heading-1', 'title-1', 'body-1', 'body-2', 'body-3', 'mono-1', 'mono-2'];
 const tones = ['default', 'muted', 'danger'] as const;
 const panel = 'sn:flex sn:flex-wrap sn:items-center sn:gap-4 sn:p-6 sn:rounded-lg sn:bg-canvas sn:box-border';
 
@@ -251,7 +251,7 @@ function ServerGridDemo() {
 
   return (
     <div id="server-grid" className="sn:flex sn:flex-col sn:gap-3" style={{ maxWidth: 800 }}>
-      <Text variant="label">서버 정렬·페이지 (jsonplaceholder.typicode.com/todos)</Text>
+      <Text variant="body-2">서버 정렬·페이지 (jsonplaceholder.typicode.com/todos)</Text>
       <DataGrid
         aria-label="할 일"
         rows={rows}
@@ -275,12 +275,12 @@ type KeyState = 'normal' | 'loading' | 'empty' | 'error' | 'empty-icon' | 'error
 function KeyCard({ state }: { state: KeyState }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sn-space-3)' }}>
-      <Text variant="caption" tone="muted">{state}</Text>
+      <Text variant="body-3" tone="muted">{state}</Text>
       <Card id={`state-${state}`} style={{ width: 360 }} aria-busy={state === 'loading' || undefined}>
         <CardHeader style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}><CardTitle>API 키</CardTitle><Button size="sm" variant="secondary">새 키</Button></CardHeader>
         <CardBody style={{ gap: 0 }}>
           {state === 'normal' && KEYS.map(([i, n, m]) => (
-            <div key={n} style={row}><Avatar fallback={i} /><div style={{ ...grow, gap: 0 }}><div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sn-space-2)' }}><Text>{n}</Text><Badge tone={KEY_STATUS[n][1]}>{KEY_STATUS[n][0]}</Badge></div><Text variant="mono-caption" tone="muted">{m}</Text></div><KeyMenu name={n} /></div>
+            <div key={n} style={row}><Avatar fallback={i} /><div style={{ ...grow, gap: 0 }}><div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sn-space-2)' }}><Text>{n}</Text><Badge tone={KEY_STATUS[n][1]}>{KEY_STATUS[n][0]}</Badge></div><Text variant="mono-2" tone="muted">{m}</Text></div><KeyMenu name={n} /></div>
           ))}
           {state === 'loading' && KEYS.map(([, n]) => (
             <div key={n} style={row}><Skeleton shape="circle" /><div style={grow}><div style={{ width: 120 }}><Skeleton /></div><div style={{ width: 200 }}><Skeleton /></div></div></div>
@@ -461,7 +461,7 @@ function App() {
             <DialogTitle>API 키 만들기</DialogTitle>
             <DialogDescription>키는 만든 직후 한 번만 보여 줘요.</DialogDescription>
             <div className="sn:flex sn:flex-col sn:gap-2">
-              <Text as="label" variant="label" htmlFor="key-name">키 이름</Text>
+              <Text as="label" variant="body-2" htmlFor="key-name">키 이름</Text>
               <Input id="key-name" placeholder="Placeholder" />
             </div>
             <DialogFooter>

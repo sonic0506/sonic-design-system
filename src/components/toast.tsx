@@ -70,8 +70,8 @@ function ToastList() {
       {/* 아이콘과 제목 줄을 닫기 버튼(28) 가운데에 맞춰요 */}
       <span className="sn:flex sn:h-7 sn:shrink-0 sn:items-center sn:[&_svg]:size-4">{icons[(toast.type as ToastTone) ?? 'neutral']}</span>
       <div className="sn:flex sn:min-w-0 sn:flex-1 sn:flex-col sn:gap-1 sn:pt-1">
-        <BaseToast.Title className="sn:m-0 sn:text-body-strong sn:text-default" />
-        <BaseToast.Description className={cn('sn:m-0 sn:text-caption sn:text-muted', !toast.description && 'sn:hidden')} />
+        <BaseToast.Title className="sn:m-0 sn:text-body-1 sn:font-medium sn:text-default" />
+        <BaseToast.Description className={cn('sn:m-0 sn:text-body-3 sn:text-muted', !toast.description && 'sn:hidden')} />
       </div>
       <BaseToast.Close render={<Button size="icon-sm" variant="ghost" aria-label="알림 닫기" />}>
         <X />

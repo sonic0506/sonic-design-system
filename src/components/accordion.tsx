@@ -47,7 +47,7 @@ export function AccordionTrigger({ className, children }: AccordionTriggerProps)
     <BaseAccordion.Header className="sn:m-0">
       <BaseAccordion.Trigger
         className={cn(
-          'sn:group sn:flex sn:w-full sn:items-center sn:gap-2 sn:rounded-sm sn:border-0 sn:bg-transparent sn:px-0 sn:py-3 sn:text-left sn:font-sans sn:text-body-strong sn:text-default sn:cursor-pointer sn:focus-visible:outline-2 sn:focus-visible:outline-offset-2 sn:focus-visible:outline-focus sn:data-disabled:cursor-not-allowed',
+          'sn:group sn:flex sn:w-full sn:items-center sn:gap-2 sn:rounded-sm sn:border-0 sn:bg-transparent sn:px-0 sn:py-3 sn:text-left sn:font-sans sn:text-body-1 sn:font-medium sn:text-default sn:cursor-pointer sn:focus-visible:outline-2 sn:focus-visible:outline-offset-2 sn:focus-visible:outline-focus sn:data-disabled:cursor-not-allowed',
           className,
         )}
       >
@@ -66,7 +66,7 @@ export interface AccordionPanelProps {
 export function AccordionPanel({ className, children }: AccordionPanelProps) {
   return (
     <BaseAccordion.Panel className="sn:h-(--accordion-panel-height) sn:overflow-hidden sn:transition-[height] sn:duration-(--sn-duration-normal) sn:ease-standard sn:data-starting-style:h-0 sn:data-ending-style:h-0 sn:motion-reduce:transition-none">
-      <div className={cn('sn:pb-4 sn:font-sans sn:text-body sn:text-muted', className)}>{children}</div>
+      <div className={cn('sn:pb-4 sn:font-sans sn:text-body-1 sn:text-muted', className)}>{children}</div>
     </BaseAccordion.Panel>
   );
 }

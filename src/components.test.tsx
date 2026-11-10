@@ -76,11 +76,18 @@ describe('Input', () => {
 
 describe('Text', () => {
   it('as로 태그를 바꾸고, mono는 글꼴만 바꿈', () => {
-    render(<Text as="p" variant="mono" tone="muted">72,418</Text>);
+    render(<Text as="p" variant="mono-1" tone="muted">72,418</Text>);
     const el = screen.getByText('72,418');
     expect(el.tagName).toBe('P');
-    expect(el).toHaveClass('sn:font-mono', 'sn:text-body', 'sn:text-muted');
+    expect(el).toHaveClass('sn:font-mono', 'sn:text-body-1', 'sn:text-muted');
     expect(el).not.toHaveClass('sn:font-sans');
+  });
+
+  it('weight는 단계 크기를 지우지 않고 굵기만 바꿈', () => {
+    render(<Text variant="body-1" weight="medium" className="sn:text-body-3">저장</Text>);
+    const el = screen.getByText('저장');
+    expect(el).toHaveClass('sn:text-body-3', 'sn:font-medium');
+    expect(el).not.toHaveClass('sn:text-body-1');
   });
 });
 

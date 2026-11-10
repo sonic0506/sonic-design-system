@@ -36,42 +36,62 @@ Figma Variable 이름이 그대로 CSS 변수가 돼요. `/`는 `-`로 바꾸고
 
 ## 3. 토큰
 
-### 3.1 색 (Semantic, Light / Dark)
+### 3.1 색
 
-화면에서는 Semantic만 써요. Primitives(`gray/*`, `cobalt/*`, `red/*`)는 Semantic이 참조하는 값일 뿐이라 직접 쓰지 않습니다.
+색은 두 층이에요. **팔레트(Primitives)**는 원본 값이고, 화면에서는 그 값을 참조하는 **Semantic**만 써요.
+
+#### 팔레트 (Primitives)
+
+팔레트는 세 그룹으로 나눠요. 모든 색은 같은 11단계(50 · 100 · 200 … 900 · 950)이고, 번호가 클수록 어두워요.
+
+| 그룹 | 이름 | 기본 단계 | 쓰는 곳 |
+|---|---|---|---|
+| **Primary** | `primary/50…950` | ★ 600 `#2340D0` (Dark 400) | 브랜드 강조. 행동을 유도하는 곳에만 써요 |
+| **Gray scale** | `gray/0` · `gray/50…950` · alpha(`gray/scrim`, `gray/0-a60`, `gray/900-a60`) | Default 950 (본문 글자) · Border 200 (기본 테두리) | 바탕, 글자, 테두리. 흰 바탕 위 글자는 600 이상 |
+| **System** | `danger/*` · `success/*` · `warning/*` · `info/*` | ★ danger 600 · success 600 · warning 400 · info 600 | 상태 알림. 꾸밈에는 쓰지 않아요 |
+
+- System 이름은 역할 이름이고 Semantic 토큰 이름과 같아요(`color/bg/warning` → `warning/400`). 색 이름(red, amber)으로 짓지 않아요.
+- System은 danger · success · warning · info 4개가 필수예요. info는 아직 Semantic이 참조하지 않아요. 쓰게 되면 다른 System과 같은 모양(`bg/info`, `bg/info-subtle`, `text/info`, `border/info`)으로 추가해요.
+- 기본 단계는 Figma 변수 설명에 적고, 문서(Foundations › 02 Color)에는 ★·Default·Border로 표시해요.
+- 한 단계 안에서는 번호를 따라 명도가 한 방향으로만 변하고, 서로 다른 단계에 같은 hex가 있으면 안 돼요.
+- 빈 단계는 이웃한 단계 사이를 OKLCH로 보간해 만들어요. 이미 Semantic이 쓰는 값은 바꾸지 않아요.
+
+#### Semantic (Light / Dark)
+
+화면에서는 Semantic만 써요. 팔레트는 Semantic이 참조하는 값일 뿐이라 직접 쓰지 않습니다.
 
 | 토큰 | Light | Dark | 쓰는 곳 |
 |---|---|---|---|
 | `color/bg/canvas` | gray/50 `#F4F6F8` | gray/950 `#0E1216` | 페이지 바탕 |
 | `color/bg/surface` | gray/0 `#FFFFFF` | gray/900 `#161B21` | Card, Dialog, Input 바탕 |
 | `color/bg/subtle` | gray/100 `#E6EAEE` | gray/800 `#1E252D` | hover 바탕, 진행 막대 트랙, Avatar 바탕 |
-| `color/bg/primary` | cobalt/600 `#2340D0` | cobalt/400 `#6E86FF` | primary 버튼, 진행 막대 |
-| `color/bg/primary-hover` | cobalt/700 `#1B33AE` | cobalt/300 `#8C9FFF` | primary hover |
-| `color/bg/danger` | red/600 `#C8312B` | red/400 `#F06A5F` | 삭제처럼 되돌릴 수 없는 동작 |
+| `color/bg/primary` | primary/600 `#2340D0` | primary/400 `#6E86FF` | primary 버튼, 진행 막대 |
+| `color/bg/primary-hover` | primary/700 `#1B33AE` | primary/300 `#8C9FFF` | primary hover |
+| `color/bg/danger` | danger/600 `#C8312B` | danger/400 `#F06A5F` | 삭제처럼 되돌릴 수 없는 동작 |
 | `color/bg/overlay` | gray/scrim `#0E1216` 50% | 같음 | Dialog backdrop |
 | `color/text/default` | gray/950 | gray/100 | 본문, 제목 |
 | `color/text/muted` | gray/600 `#5B6672` | gray/400 `#8D99A6` | 보조 설명, caption |
 | `color/text/on-primary` | gray/0 | gray/950 | primary 바탕 위 글자 |
 | `color/text/on-danger` | gray/0 | gray/950 | danger 바탕 위 글자 |
-| `color/text/danger` | red/600 | red/400 | 에러 메시지 |
+| `color/text/danger` | danger/600 | danger/400 | 에러 메시지 |
 | `color/border/default` | gray/200 `#D5DBE1` | gray/700 `#2A323B` | 기본 테두리, 구분선 |
 | `color/border/strong` | gray/400 | gray/600 | hover 테두리 |
-| `color/border/focus` | cobalt/600 | cobalt/400 | 포커스 링 |
-| `color/border/danger` | red/600 | red/400 | 에러 상태 Input |
+| `color/border/focus` | primary/600 | primary/400 | 포커스 링 |
+| `color/border/danger` | danger/600 | danger/400 | 에러 상태 Input |
 | `color/bg/inverse` | gray/950 | gray/100 | Tooltip, neutral Badge(solid) |
 | `color/text/inverse` | gray/0 | gray/950 | inverse 바탕 위 글자 |
-| `color/bg/success` | green/600 `#16804F` | green/400 `#3DB882` | success Badge(solid) |
+| `color/bg/success` | success/600 `#16804F` | success/400 `#3DB882` | success Badge(solid) |
 | `color/text/on-success` | gray/0 | gray/950 | success 바탕 위 글자 |
-| `color/bg/success-subtle` | green/50 `#EAF7F0` | green/950 `#0B2218` | success Badge(subtle) |
-| `color/text/success` | green/700 `#0F6640` | green/300 `#6BD1A0` | 성공 문구, 아이콘 |
-| `color/border/success` | green/600 | green/400 | 성공 강조 테두리 |
-| `color/bg/warning` | amber/400 `#E3A43A` | amber/400 | warning Badge(solid) |
-| `color/text/on-warning` | gray/950 | gray/950 | warning 바탕 위 글자 (amber 위 흰 글자는 대비 부족) |
-| `color/bg/warning-subtle` | amber/50 `#FCF5E6` | amber/950 `#24190A` | warning Badge(subtle) |
-| `color/text/warning` | amber/700 `#85520A` | amber/300 `#EEC46A` | 주의 문구, 아이콘 |
-| `color/border/warning` | amber/600 | amber/400 | 주의 강조 테두리 |
-| `color/bg/danger-subtle` | red/50 `#FCEDEC` | red/950 `#2B1311` | danger Badge(subtle) |
-| `color/bg/selected` | cobalt/50 `#EEF1FF` | cobalt/950 `#18214D` | DataGrid 선택된 행 (hover `bg/subtle`과 구분) |
+| `color/bg/success-subtle` | success/50 `#EAF7F0` | success/950 `#0B2218` | success Badge(subtle) |
+| `color/text/success` | success/700 `#0F6640` | success/300 `#6BD1A0` | 성공 문구, 아이콘 |
+| `color/border/success` | success/600 | success/400 | 성공 강조 테두리 |
+| `color/bg/warning` | warning/400 `#E3A43A` | warning/400 | warning Badge(solid) |
+| `color/text/on-warning` | gray/950 | gray/950 | warning 바탕 위 글자 (warning 바탕 위 흰 글자는 대비 부족) |
+| `color/bg/warning-subtle` | warning/50 `#FCF5E6` | warning/950 `#24190A` | warning Badge(subtle) |
+| `color/text/warning` | warning/700 `#85520A` | warning/300 `#EEC46A` | 주의 문구, 아이콘 |
+| `color/border/warning` | warning/600 | warning/400 | 주의 강조 테두리 |
+| `color/bg/danger-subtle` | danger/50 `#FCEDEC` | danger/950 `#2B1311` | danger Badge(subtle) |
+| `color/bg/selected` | primary/50 `#EEF1FF` | primary/950 `#18214D` | DataGrid 선택된 행 (hover `bg/subtle`과 구분) |
 | `color/bg/scrim-subtle` | gray/0 60% | gray/900 60% | DataGrid 다시 불러오는 중, 이전 행 위에 까는 연한 막 (화면 전체를 덮는 막은 `bg/overlay`) |
 
 글자와 바탕 조합은 모두 WCAG 4.5:1 이상이에요. 토큰을 바꾸면 `npm run check:contrast`로 다시 확인해요(배포 전 검사에도 들어 있어요).
